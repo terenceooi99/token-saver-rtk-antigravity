@@ -7,8 +7,9 @@ Thumbs.db
 
 # Secrets and Tokens
 Token OpenVXS.txt
-*token*
-*Token*
+*token*.txt
+*Token*.txt
+*token*.json
 *.pat
 .env
 .env.*
