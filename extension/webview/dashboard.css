@@ -573,6 +573,7 @@ h1 {
 
 .cost-price-input[type=number] {
     -moz-appearance: textfield;
+    appearance: textfield;
 }
 
 .btn-cost-save {
