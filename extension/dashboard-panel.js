@@ -82,6 +82,8 @@ class DashboardPanel {
                         });
                         break;
                     case 'updateRtk':
+                        vscode.commands.executeCommand('tokenSaver.updateRtk');
+                        break;
                     case 'installCli':
                         vscode.commands.executeCommand('tokenSaver.installCli');
                         break;

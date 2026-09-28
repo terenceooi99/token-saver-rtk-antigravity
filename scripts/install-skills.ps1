@@ -13,7 +13,7 @@ if (-not (Test-Path $globalConfigSkills)) {
     New-Item -ItemType Directory -Path $globalConfigSkills -Force | Out-Null
 }
 
-$skills = @("rtk-savedtokenon", "rtk-savedtokenoff", "rtk-gain", "publishtokensavernow")
+$skills = @("rtk-savedtokenon", "rtk-savedtokenoff", "rtk-gain", "rtk-update", "publishtokensavernow")
 
 foreach ($skill in $skills) {
     $srcDir = Join-Path $projectRoot "skills\$skill"
@@ -32,6 +32,7 @@ foreach ($skill in $skills) {
 
 Write-Host "`nToken Saver (RTK) skills installed successfully!" -ForegroundColor Cyan
 Write-Host "You can now type / in any Antigravity IDE chat to use:" -ForegroundColor Yellow
+Write-Host "  - /rtk-update            (Sync & update RTK CLI from upstream GitHub)"
 Write-Host "  - /rtk-savedtokenon      (Turn on automated RTK prefixing)"
 Write-Host "  - /rtk-savedtokenoff     (Turn off automated RTK prefixing)"
 Write-Host "  - /rtk-gain              (Show token savings dashboard)"

@@ -136,12 +136,16 @@ async function activate(context) {
         await RtkUpdater.checkForUpdates(false);
     });
 
+    const updateRtkCmd = vscode.commands.registerCommand('tokenSaver.updateRtk', async () => {
+        await RtkUpdater.manualUpdate();
+    });
+
     const installSkillsCmd = vscode.commands.registerCommand('tokenSaver.installSkills', async () => {
         try {
             const scope = config.get('targetScope', 'global');
             const result = SkillInstaller.installSkills(scope === 'workspace' ? 'workspace' : 'global');
             vscode.window.showInformationMessage(
-                `🧠 Successfully installed Antigravity & AI Agent skills (/rtk-savedtokenon, /rtk-savedtokenoff, /rtk-gain) to ${result.destination}!`
+                `🧠 Successfully installed Antigravity & AI Agent skills (/rtk-savedtokenon, /rtk-savedtokenoff, /rtk-gain, /rtk-update) to ${result.destination}!`
             );
         } catch (err) {
             vscode.window.showErrorMessage(`Failed to install skills: ${err.message}`);
@@ -193,6 +197,7 @@ async function activate(context) {
         syncAllIdeRulesCmd,
         selectIdeTargetsCmd,
         checkUpdatesCmd,
+        updateRtkCmd,
         installSkillsCmd,
         syncGlobalRulesCmd,
         showSavingsCmd,

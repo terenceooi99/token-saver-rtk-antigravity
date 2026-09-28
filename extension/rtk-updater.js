@@ -160,6 +160,11 @@ class RtkUpdater {
 
         RtkService.runInTerminal(updateCmd);
     }
+
+    static async manualUpdate() {
+        vscode.window.showInformationMessage('🔄 Checking and syncing RTK with upstream GitHub (rtk-ai/rtk)...');
+        return this.checkForUpdates(false);
+    }
 }
 
 module.exports = RtkUpdater;

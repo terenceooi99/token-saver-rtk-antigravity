@@ -49,6 +49,7 @@ Trigger commands directly in your AI assistant chat by typing `/`:
 
 | Slash Command | Action |
 | :--- | :--- |
+| **`/rtk-update`** | **Manually checks and updates RTK CLI from upstream GitHub (`rtk-ai/rtk`)**. Syncs local binary with the latest release. |
 | **`/rtk-savedtokenon`** | **Enables automated RTK compression**. The AI will automatically route all terminal/shell actions through `rtk` (e.g. `rtk git status`, `rtk cargo test`, `rtk npm test`). |
 | **`/rtk-savedtokenoff`** | **Disables RTK mode**. Reverts to standard unproxied command execution. |
 | **`/rtk-gain`** | **Displays the live token savings scoreboard** and efficiency metrics. |

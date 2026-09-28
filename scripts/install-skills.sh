@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -7,7 +7,7 @@ GLOBAL_SKILLS_DIR="$HOME/.gemini/config/skills"
 
 mkdir -p "$GLOBAL_SKILLS_DIR"
 
-SKILLS=("rtk-savedtokenon" "rtk-savedtokenoff" "rtk-gain")
+SKILLS=("rtk-savedtokenon" "rtk-savedtokenoff" "rtk-gain" "rtk-update")
 
 for skill in "${SKILLS[@]}"; do
     SRC="$PROJECT_ROOT/skills/$skill"
