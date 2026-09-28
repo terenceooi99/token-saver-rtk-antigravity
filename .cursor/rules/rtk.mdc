@@ -1,0 +1,12 @@
+---
+description: Automatically routes terminal execution commands through RTK (Rust Token Killer) to minimize context window consumption.
+globs: *
+alwaysApply: true
+---
+
+# RTK (Rust Token Killer) Automation
+
+Always prefix terminal and CLI execution commands with \tk\ (e.g. \tk git status\, \tk cargo test\, \tk npm test\, \tk pytest\, \tk vitest\, \tk ls\, \tk rg\).
+- Output is compressed to save tokens while preserving critical errors and signal.
+- In multi-command chains, prefix each sub-command: \tk git add . && rtk git commit -m "update"\.
+- Use \tk gain\ to review token savings metrics.

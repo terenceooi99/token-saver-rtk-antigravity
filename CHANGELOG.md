@@ -1,6 +1,25 @@
 # Changelog
 
-All notable changes to the **Token Saver (RTK) for Antigravity IDE** project will be documented in this file.
+All notable changes to the **Token Saver (RTK)** project will be documented in this file.
+
+## [1.2.0] - 2026-09-28
+### Added
+- **Universal Multi-IDE & AI Agent Support**:
+  - **VS Code (GitHub Copilot)**: Automatic synchronization with `.github/copilot-instructions.md`.
+  - **Cursor IDE**: Direct support for `.cursorrules` and modern `.cursor/rules/rtk.mdc`.
+  - **Windsurf IDE (Codeium Cascade)**: Automatic rule management for `.windsurfrules`.
+  - **Cline & Roo Code**: Automatic instructions configuration for `.clinerules`.
+  - **Claude Code**: Direct workspace configuration via `CLAUDE.md`.
+  - **Universal Agent Standard**: Automatic generation of `AGENTS.md`.
+  - **Antigravity IDE**: Global (`~/.gemini/config/`) and workspace (`.agents/`) rules & skills.
+- **Safe Block Delimiter Injection**:
+  - Automatically merges RTK rules using `<!-- RTK_TOKEN_SAVER_START -->` ... `<!-- RTK_TOKEN_SAVER_END -->` markers so user custom instructions are never overwritten or corrupted.
+- **Interactive Multi-IDE Ecosystem Hub**:
+  - New interactive matrix in the Dashboard displaying real-time sync status for each agent target.
+  - Per-IDE single-click sync/toggle buttons.
+  - 1-Click "Sync All Targets" action.
+- **Cross-Platform Multi-IDE Automation Scripts**:
+  - Added `scripts/install-all-ide-rules.ps1` and `scripts/install-all-ide-rules.sh` for multi-IDE CLI deployment.
 
 ## [1.1.0] - 2026-09-28
 ### Added

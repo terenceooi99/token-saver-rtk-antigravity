@@ -1,0 +1,7 @@
+# RTK (Rust Token Killer) Automation Rule for Windsurf Cascade
+
+Prefix all terminal execution commands with `rtk` (e.g. `rtk git status`, `rtk npm test`, `rtk cargo test`, `rtk pytest`, `rtk vitest`, `rtk ls`, `rtk rg`).
+- RTK filters noisy CLI stdout to save 60-90% of LLM context window tokens while preserving errors and exit codes.
+- Commands without specific RTK filters run as-is with sub-millisecond overhead.
+- Use `rtk gain` to view real-time token savings statistics.
+- Use `rtk proxy <cmd>` if an unfiltered raw response is strictly needed.

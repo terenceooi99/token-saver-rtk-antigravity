@@ -1,8 +1,8 @@
 {
   "name": "token-saver-rtk-antigravity",
-  "displayName": "Token Saver (RTK) for Antigravity IDE",
-  "description": "Smart token optimization and CLI output compression proxy for Antigravity IDE using RTK (Rust Token Killer).",
-  "version": "1.1.0",
+  "displayName": "Token Saver (RTK) for VS Code & Agentic IDEs",
+  "description": "Smart token optimization and CLI output compression proxy using RTK (Rust Token Killer) for VS Code (GitHub Copilot), Antigravity IDE, Cursor, Windsurf, Cline, Roo Code, Claude Code, and AGENTS.md.",
+  "version": "1.2.0",
   "publisher": "terenceooi",
   "author": {
     "name": "Terence",
@@ -18,14 +18,21 @@
   },
   "license": "MIT",
   "keywords": [
+    "vscode",
+    "copilot",
+    "cursor",
+    "windsurf",
+    "cline",
+    "roo-code",
+    "claude-code",
     "antigravity",
     "rtk",
     "token-saver",
     "token-killer",
-    "ai",
+    "ai-agents",
+    "context-window",
     "llm",
-    "compression",
-    "context-window"
+    "compression"
   ],
   "engines": {
     "vscode": "^1.74.0"
@@ -64,6 +71,16 @@
         "category": "Token Saver"
       },
       {
+        "command": "tokenSaver.syncAllIdeRules",
+        "title": "Sync Rules to All AI Agents (VS Code, Cursor, Windsurf, Cline, Claude, Antigravity)",
+        "category": "Token Saver"
+      },
+      {
+        "command": "tokenSaver.selectIdeTargets",
+        "title": "Configure Target Agentic IDEs / AI Rules",
+        "category": "Token Saver"
+      },
+      {
         "command": "tokenSaver.checkUpdates",
         "title": "Check for RTK Core Updates (GitHub)",
         "category": "Token Saver"
@@ -95,17 +112,23 @@
         "tokenSaver.enableOnStartup": {
           "type": "boolean",
           "default": true,
-          "description": "Automatically enable RTK token compression when opening a project in Antigravity IDE."
+          "description": "Automatically enable RTK token compression when opening a project."
         },
         "tokenSaver.targetScope": {
           "type": "string",
           "enum": [
+            "all",
             "global",
             "workspace",
-            "all"
+            "copilot",
+            "cursor",
+            "windsurf",
+            "cline",
+            "claude",
+            "agents"
           ],
-          "default": "global",
-          "description": "Scope for rule synchronization: 'global' (~/.gemini/config), 'workspace' (.agents), or 'all'."
+          "default": "all",
+          "description": "Target IDE / Agent rule scope: 'all' (syncs to VS Code, Copilot, Cursor, Windsurf, Cline, Claude, Antigravity, AGENTS.md), 'global' (~/.gemini/config), or specific IDE."
         },
         "tokenSaver.checkForUpdatesOnStartup": {
           "type": "boolean",

@@ -57,6 +57,23 @@ class DashboardPanel {
                         vscode.commands.executeCommand('tokenSaver.toggle');
                         setTimeout(() => this.sendLatestData(), 300);
                         break;
+                    case 'syncAllIdeRules':
+                        vscode.commands.executeCommand('tokenSaver.syncAllIdeRules');
+                        setTimeout(() => this.sendLatestData(), 400);
+                        break;
+                    case 'syncSingleTarget':
+                        if (message.targetId) {
+                            SkillInstaller.syncRules(true, [message.targetId]);
+                            vscode.window.showInformationMessage(`⚡ Synced RTK rule for ${message.targetId}`);
+                            setTimeout(() => this.sendLatestData(), 300);
+                        }
+                        break;
+                    case 'toggleTarget':
+                        if (message.targetId) {
+                            SkillInstaller.syncRules(!message.currentlySynced, [message.targetId]);
+                            setTimeout(() => this.sendLatestData(), 300);
+                        }
+                        break;
                     case 'checkUpdates':
                         const updateResult = await RtkUpdater.checkForUpdates(false);
                         this.panel.webview.postMessage({
@@ -95,6 +112,7 @@ class DashboardPanel {
         const check = await RtkService.checkInstalled();
         const metrics = await RtkService.getParsedMetrics();
         const skillsInstalled = SkillInstaller.checkSkillsInstalled('global');
+        const ideStatus = SkillInstaller.getIdeStatus();
 
         this.panel.webview.postMessage({
             type: 'stateUpdate',
@@ -105,7 +123,8 @@ class DashboardPanel {
                 binaryPath: check.path || 'Not detected',
                 metrics,
                 skillsInstalled,
-                scope: config.get('targetScope', 'global')
+                scope: config.get('targetScope', 'all'),
+                ideStatus
             }
         });
     }

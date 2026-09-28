@@ -1,0 +1,7 @@
+# RTK (Rust Token Killer) Automation Rule for Cline & Roo Code
+
+Whenever executing terminal commands:
+- Always prefix commands with `rtk` (e.g., `rtk git status`, `rtk npm test`, `rtk cargo test`, `rtk pytest`, `rtk vitest`, `rtk ls`, `rtk rg`).
+- RTK condenses bulky compiler/build/test outputs to conserve precious context tokens without losing error details or exit status.
+- Keep the prefix in chained commands: `rtk git add . && rtk git commit -m "msg"`.
+- Use `rtk gain` to inspect token savings metrics.

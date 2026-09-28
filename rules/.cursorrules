@@ -1,0 +1,12 @@
+# RTK (Rust Token Killer) Automation Rule for Cursor IDE
+
+Prefix every shell and terminal command with `rtk`:
+- Examples: `rtk git status`, `rtk cargo test`, `rtk npm test`, `rtk pytest`, `rtk vitest`, `rtk ls src/`, `rtk rg "term"`.
+- Chains: Keep the prefix inside chains: `rtk git add . && rtk git commit -m "msg"`.
+- Safety: Commands RTK has no filter for run as-is without overhead, so prefixing is always safe.
+
+## Output Handling
+- Output is compressed and condensed to preserve LLM context tokens (60%-90% savings).
+- Treat condensed output as complete.
+- Re-run as `rtk proxy <cmd>` only if raw unparsed output is explicitly needed.
+- Check savings anytime with `rtk gain`.

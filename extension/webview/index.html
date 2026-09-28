@@ -15,7 +15,7 @@
                 <div class="brand-icon">⚡</div>
                 <div>
                     <h1>Token Saver <span class="badge-rtk">RTK</span></h1>
-                    <p class="subtitle">Rust Token Killer Optimization Suite for Antigravity IDE</p>
+                    <p class="subtitle">Universal Token Optimization Proxy for VS Code & Agentic IDEs</p>
                 </div>
             </div>
             <div class="header-actions">
@@ -61,30 +61,48 @@
 
             <div class="metric-card card-glow-amber">
                 <div class="metric-header">
-                    <span class="metric-title">Antigravity Skills</span>
-                    <span class="metric-icon">🧠</span>
+                    <span class="metric-title">Active AI Agent Targets</span>
+                    <span class="metric-icon">🤖</span>
                 </div>
-                <div class="metric-value" id="skillsStatusVal">Checking...</div>
-                <div class="metric-footer" id="skillsScopeVal">Scope: Global</div>
+                <div class="metric-value" id="activeTargetsVal">0 Synced</div>
+                <div class="metric-footer" id="skillsScopeVal">VS Code • Cursor • Windsurf • Antigravity</div>
             </div>
         </section>
 
-        <!-- Main Content Area: Visual Charts + Control Center -->
+        <!-- Main Content Area -->
         <div class="content-split">
-            <!-- Left: Command Savings Breakdown -->
-            <section class="panel-card chart-section">
-                <div class="panel-header">
-                    <h2>📊 Command Savings Breakdown</h2>
-                    <span class="panel-tag">Live Filter Breakdown</span>
-                </div>
-                <div class="chart-container" id="chartContainer">
-                    <!-- Dynamic Bars injected by JS -->
-                </div>
-                <div class="raw-output-box" id="rawOutputBox">
-                    <div class="raw-output-header">Terminal Scoreboard Snippet</div>
-                    <pre id="rawOutputText">Loading RTK statistics...</pre>
-                </div>
-            </section>
+            <!-- Left: AI Agent Ecosystem + Command Breakdown -->
+            <div class="content-main">
+                <!-- AI Agent & IDE Ecosystem Matrix -->
+                <section class="panel-card ide-ecosystem-section">
+                    <div class="panel-header">
+                        <div>
+                            <h2>🤖 Multi-IDE & AI Agent Sync Hub</h2>
+                            <p class="panel-subtitle">Automatically synchronize RTK command rules into any AI coding assistant or IDE</p>
+                        </div>
+                        <button class="btn btn-sm btn-primary" id="syncAllIdesBtn">⚡ Sync All Targets</button>
+                    </div>
+                    
+                    <div class="ide-grid" id="ideGridContainer">
+                        <!-- Dynamic IDE cards injected by JS -->
+                    </div>
+                </section>
+
+                <!-- Command Savings Breakdown -->
+                <section class="panel-card chart-section">
+                    <div class="panel-header">
+                        <h2>📊 Command Savings Breakdown</h2>
+                        <span class="panel-tag">Live Filter Breakdown</span>
+                    </div>
+                    <div class="chart-container" id="chartContainer">
+                        <!-- Dynamic Bars injected by JS -->
+                    </div>
+                    <div class="raw-output-box" id="rawOutputBox">
+                        <div class="raw-output-header">Terminal Scoreboard Snippet</div>
+                        <pre id="rawOutputText">Loading RTK statistics...</pre>
+                    </div>
+                </section>
+            </div>
 
             <!-- Right: Action Center & System Health -->
             <div class="action-sidebar">
@@ -97,8 +115,8 @@
                         <button class="btn btn-action" id="syncSkillsBtn">
                             <span class="btn-icon">🧠</span>
                             <div class="btn-text-block">
-                                <span class="btn-label">1-Click Install Antigravity Skills</span>
-                                <span class="btn-sub">Sync /rtk-savedtokenon, /rtk-gain to ~/.gemini</span>
+                                <span class="btn-label">1-Click Antigravity Skills</span>
+                                <span class="btn-sub">Install /rtk-savedtokenon & /rtk-gain</span>
                             </div>
                         </button>
 
@@ -113,7 +131,7 @@
                         <button class="btn btn-action" id="openTerminalBtn">
                             <span class="btn-icon">🖥️</span>
                             <div class="btn-text-block">
-                                <span class="btn-label">Open Full Terminal Scoreboard</span>
+                                <span class="btn-label">Open Terminal Scoreboard</span>
                                 <span class="btn-sub">Run rtk gain interactively</span>
                             </div>
                         </button>
@@ -148,7 +166,11 @@
                         </div>
                         <div class="diag-row">
                             <span class="diag-key">Config Target Scope:</span>
-                            <span class="diag-val" id="diagScope">Global (~/.gemini)</span>
+                            <span class="diag-val" id="diagScope">All Supported IDEs</span>
+                        </div>
+                        <div class="diag-row">
+                            <span class="diag-key">Active Sync Targets:</span>
+                            <span class="diag-val" id="diagActiveTargets">--</span>
                         </div>
                     </div>
                 </section>
@@ -157,7 +179,7 @@
 
         <!-- Footer -->
         <footer class="dashboard-footer">
-            <span>⚡ Token Saver (RTK) for Google Antigravity IDE</span>
+            <span>⚡ Token Saver (RTK) • Universal Agentic AI Token Optimizer</span>
             <span class="footer-links">
                 <a href="https://github.com/rtk-ai/rtk" target="_blank">Upstream RTK</a> • 
                 <a href="https://github.com/terenceooi99/token-saver-rtk-antigravity" target="_blank">Plugin GitHub</a>

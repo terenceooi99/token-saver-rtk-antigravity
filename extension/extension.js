@@ -25,7 +25,7 @@ async function activate(context) {
 
     const config = vscode.workspace.getConfiguration('tokenSaver');
     let isEnabled = context.globalState.get('tokenSaver.enabled', config.get('enableOnStartup', true));
-    const targetScope = config.get('targetScope', 'global');
+    const targetScope = config.get('targetScope', 'all');
 
     // Initial check of RTK binary
     const check = await RtkService.checkInstalled();
@@ -46,7 +46,7 @@ async function activate(context) {
         });
     }
 
-    // Initial rules sync & status bar update
+    // Initial multi-IDE rules sync & status bar update
     SkillInstaller.syncRules(isEnabled, targetScope);
     await refreshStatus(context);
 
@@ -70,11 +70,12 @@ async function activate(context) {
     const toggleCmd = vscode.commands.registerCommand('tokenSaver.toggle', async () => {
         isEnabled = !isEnabled;
         await context.globalState.update('tokenSaver.enabled', isEnabled);
-        SkillInstaller.syncRules(isEnabled, config.get('targetScope', 'global'));
+        const scope = vscode.workspace.getConfiguration('tokenSaver').get('targetScope', 'all');
+        const results = SkillInstaller.syncRules(isEnabled, scope);
         await refreshStatus(context);
 
         if (isEnabled) {
-            vscode.window.showInformationMessage('⚡ Token Saver (RTK) is now ENABLED for Antigravity IDE.');
+            vscode.window.showInformationMessage(`⚡ Token Saver (RTK) is now ENABLED across ${results.length} AI agent target(s).`);
         } else {
             vscode.window.showInformationMessage('⚪ Token Saver (RTK) is now DISABLED.');
         }
@@ -83,17 +84,52 @@ async function activate(context) {
     const enableCmd = vscode.commands.registerCommand('tokenSaver.enable', async () => {
         isEnabled = true;
         await context.globalState.update('tokenSaver.enabled', true);
-        SkillInstaller.syncRules(true, config.get('targetScope', 'global'));
+        const scope = vscode.workspace.getConfiguration('tokenSaver').get('targetScope', 'all');
+        SkillInstaller.syncRules(true, scope);
         await refreshStatus(context);
-        vscode.window.showInformationMessage('⚡ Token Saver (RTK) ENABLED.');
+        vscode.window.showInformationMessage('⚡ Token Saver (RTK) ENABLED across all configured AI Agent targets.');
     });
 
     const disableCmd = vscode.commands.registerCommand('tokenSaver.disable', async () => {
         isEnabled = false;
         await context.globalState.update('tokenSaver.enabled', false);
-        SkillInstaller.syncRules(false, config.get('targetScope', 'global'));
+        const scope = vscode.workspace.getConfiguration('tokenSaver').get('targetScope', 'all');
+        SkillInstaller.syncRules(false, scope);
         await refreshStatus(context);
         vscode.window.showInformationMessage('⚪ Token Saver (RTK) DISABLED.');
+    });
+
+    const syncAllIdeRulesCmd = vscode.commands.registerCommand('tokenSaver.syncAllIdeRules', async () => {
+        try {
+            const results = SkillInstaller.syncRules(isEnabled, 'all');
+            vscode.window.showInformationMessage(
+                `🚀 Synced RTK automation rules across ${results.length} targets: VS Code (Copilot), Cursor, Windsurf, Cline, Claude Code, AGENTS.md, & Antigravity!`
+            );
+        } catch (err) {
+            vscode.window.showErrorMessage(`Failed to sync multi-IDE rules: ${err.message}`);
+        }
+    });
+
+    const selectIdeTargetsCmd = vscode.commands.registerCommand('tokenSaver.selectIdeTargets', async () => {
+        const ideStatus = SkillInstaller.getIdeStatus();
+        const items = ideStatus.map(target => ({
+            label: `${target.synced ? '$(check)' : '$(circle-outline)'} ${target.name}`,
+            description: target.path,
+            targetId: target.id,
+            picked: target.synced
+        }));
+
+        const selected = await vscode.window.showQuickPick(items, {
+            canPickMany: true,
+            placeHolder: 'Select AI Agent / IDE targets to synchronize RTK rules with'
+        });
+
+        if (selected) {
+            const chosenIds = selected.map(s => s.targetId);
+            SkillInstaller.syncRules(true, chosenIds);
+            vscode.window.showInformationMessage(`⚡ Synced RTK rules for: ${selected.map(s => s.label).join(', ')}`);
+            await refreshStatus(context);
+        }
     });
 
     const checkUpdatesCmd = vscode.commands.registerCommand('tokenSaver.checkUpdates', async () => {
@@ -103,9 +139,9 @@ async function activate(context) {
     const installSkillsCmd = vscode.commands.registerCommand('tokenSaver.installSkills', async () => {
         try {
             const scope = config.get('targetScope', 'global');
-            const result = SkillInstaller.installSkills(scope);
+            const result = SkillInstaller.installSkills(scope === 'workspace' ? 'workspace' : 'global');
             vscode.window.showInformationMessage(
-                `🧠 Successfully installed Antigravity skills (/rtk-savedtokenon, /rtk-savedtokenoff, /rtk-gain) to ${result.destination}!`
+                `🧠 Successfully installed Antigravity & AI Agent skills (/rtk-savedtokenon, /rtk-savedtokenoff, /rtk-gain) to ${result.destination}!`
             );
         } catch (err) {
             vscode.window.showErrorMessage(`Failed to install skills: ${err.message}`);
@@ -154,6 +190,8 @@ async function activate(context) {
         toggleCmd,
         enableCmd,
         disableCmd,
+        syncAllIdeRulesCmd,
+        selectIdeTargetsCmd,
         checkUpdatesCmd,
         installSkillsCmd,
         syncGlobalRulesCmd,

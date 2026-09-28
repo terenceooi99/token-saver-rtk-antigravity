@@ -1,6 +1,14 @@
-﻿node_modules/
+node_modules/
 *.vsix
 .DS_Store
 Thumbs.db
 *.log
 .vscode-test/
+
+# Secrets and Tokens
+Token OpenVXS.txt
+*token*
+*Token*
+*.pat
+.env
+.env.*

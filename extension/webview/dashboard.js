@@ -12,8 +12,11 @@ const savedRatioVal = document.getElementById('savedRatioVal');
 const efficiencyVal = document.getElementById('efficiencyVal');
 const efficiencyBar = document.getElementById('efficiencyBar');
 const costSavedVal = document.getElementById('costSavedVal');
-const skillsStatusVal = document.getElementById('skillsStatusVal');
+const activeTargetsVal = document.getElementById('activeTargetsVal');
 const skillsScopeVal = document.getElementById('skillsScopeVal');
+
+const syncAllIdesBtn = document.getElementById('syncAllIdesBtn');
+const ideGridContainer = document.getElementById('ideGridContainer');
 
 const chartContainer = document.getElementById('chartContainer');
 const rawOutputText = document.getElementById('rawOutputText');
@@ -28,6 +31,18 @@ const diagCliStatus = document.getElementById('diagCliStatus');
 const diagVersion = document.getElementById('diagVersion');
 const diagBinaryPath = document.getElementById('diagBinaryPath');
 const diagScope = document.getElementById('diagScope');
+const diagActiveTargets = document.getElementById('diagActiveTargets');
+
+const IDE_ICONS = {
+    antigravity_global: '🌌',
+    antigravity_workspace: '🌌',
+    copilot: '🤖',
+    cursor: '🎯',
+    windsurf: '🏄',
+    cline: '💻',
+    claude: '🧠',
+    agents: '🌐'
+};
 
 // Event Listeners
 toggleModeBtn.addEventListener('click', () => {
@@ -40,6 +55,14 @@ refreshBtn.addEventListener('click', () => {
     setTimeout(() => {
         refreshBtn.style.transform = 'none';
     }, 400);
+});
+
+syncAllIdesBtn.addEventListener('click', () => {
+    syncAllIdesBtn.textContent = 'Syncing...';
+    vscode.postMessage({ command: 'syncAllIdeRules' });
+    setTimeout(() => {
+        syncAllIdesBtn.textContent = '⚡ Sync All Targets';
+    }, 800);
 });
 
 syncSkillsBtn.addEventListener('click', () => {
@@ -84,7 +107,7 @@ window.addEventListener('message', (event) => {
 });
 
 function renderDashboardState(data) {
-    const { isEnabled, installed, version, binaryPath, metrics, skillsInstalled, scope } = data;
+    const { isEnabled, installed, version, binaryPath, metrics, scope, ideStatus } = data;
 
     // Status Pill
     if (isEnabled) {
@@ -111,9 +134,15 @@ function renderDashboardState(data) {
 
     costSavedVal.textContent = metrics.estimatedDollarSavings || '$0.00';
 
-    skillsStatusVal.textContent = skillsInstalled ? 'Active & Synced' : 'Not Installed';
-    skillsStatusVal.style.color = skillsInstalled ? 'var(--accent-green)' : 'var(--accent-amber)';
-    skillsScopeVal.textContent = `Scope: ${scope === 'global' ? 'Global (~/.gemini)' : 'Workspace (.agents)'}`;
+    // IDE Targets Summary
+    const syncedCount = (ideStatus || []).filter(i => i.synced).length;
+    const totalTargets = (ideStatus || []).length;
+    activeTargetsVal.textContent = `${syncedCount} / ${totalTargets} Synced`;
+    activeTargetsVal.style.color = syncedCount > 0 ? 'var(--accent-green)' : 'var(--accent-amber)';
+    skillsScopeVal.textContent = scope === 'all' ? 'Universal (All AI Agents)' : `Scope: ${scope}`;
+
+    // Render Multi-IDE Grid
+    renderIdeGrid(ideStatus || []);
 
     // Command Breakdown Chart
     renderChart(metrics.commandBreakdown);
@@ -126,7 +155,74 @@ function renderDashboardState(data) {
     diagCliStatus.style.color = installed ? 'var(--accent-green)' : 'var(--accent-rose)';
     diagVersion.textContent = version;
     diagBinaryPath.textContent = binaryPath;
-    diagScope.textContent = scope === 'global' ? 'Global (~/.gemini/config)' : 'Workspace (.agents)';
+    diagScope.textContent = scope === 'all' ? 'All Supported IDEs & Agents' : scope;
+    diagActiveTargets.textContent = `${syncedCount} IDE Targets Active`;
+}
+
+function renderIdeGrid(ideList) {
+    ideGridContainer.innerHTML = '';
+
+    if (!ideList || ideList.length === 0) {
+        ideGridContainer.innerHTML = '<div style="color: var(--text-muted); font-size: 13px; grid-column: 1/-1;">No IDE targets available.</div>';
+        return;
+    }
+
+    ideList.forEach(ide => {
+        const card = document.createElement('div');
+        card.className = 'ide-card';
+
+        const top = document.createElement('div');
+        top.className = 'ide-card-top';
+
+        const iconTitle = document.createElement('div');
+        iconTitle.className = 'ide-icon-title';
+
+        const icon = document.createElement('span');
+        icon.className = 'ide-card-icon';
+        icon.textContent = IDE_ICONS[ide.id] || '🤖';
+
+        const textDiv = document.createElement('div');
+        const name = document.createElement('div');
+        name.className = 'ide-card-name';
+        name.textContent = ide.name;
+
+        const pathDiv = document.createElement('div');
+        pathDiv.className = 'ide-card-path';
+        const displayPath = ide.path.length > 35 ? '...' + ide.path.slice(-32) : ide.path;
+        pathDiv.textContent = displayPath;
+        pathDiv.title = ide.path;
+
+        textDiv.appendChild(name);
+        textDiv.appendChild(pathDiv);
+        iconTitle.appendChild(icon);
+        iconTitle.appendChild(textDiv);
+
+        const statusTag = document.createElement('span');
+        statusTag.className = `ide-status-tag ${ide.synced ? 'synced' : 'inactive'}`;
+        statusTag.textContent = ide.synced ? 'SYNCED' : 'OFF';
+
+        top.appendChild(iconTitle);
+        top.appendChild(statusTag);
+
+        const actions = document.createElement('div');
+        actions.className = 'ide-card-actions';
+
+        const syncBtn = document.createElement('button');
+        syncBtn.className = 'btn-ide-sync';
+        syncBtn.textContent = ide.synced ? '🔄 Re-Sync Rule' : '⚡ Enable Rule';
+        syncBtn.addEventListener('click', () => {
+            vscode.postMessage({
+                command: 'syncSingleTarget',
+                targetId: ide.id
+            });
+        });
+
+        actions.appendChild(syncBtn);
+
+        card.appendChild(top);
+        card.appendChild(actions);
+        ideGridContainer.appendChild(card);
+    });
 }
 
 function renderChart(breakdown) {
