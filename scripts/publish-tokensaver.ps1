@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
 Automates version bumping, tagging, and triggering Open VSX + GitHub Releases deployment for Token Saver (RTK).
 #>
@@ -57,7 +57,7 @@ Write-Host " [OK] Updated package.json version to $newVersion (UTF-8 No-BOM)" -F
 Set-Location $projectRoot
 
 Write-Host "Staging and committing release v$newVersion..." -ForegroundColor Yellow
-git add package.json README.md CHANGELOG.md .github/workflows/publish-openvsx.yml scripts/publish-tokensaver.ps1
+git add -A
 git commit -m "chore(release): v$newVersion" --allow-empty
 git tag -a "v$newVersion" -m "Release v$newVersion" -f
 
