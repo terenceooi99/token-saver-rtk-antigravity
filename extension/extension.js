@@ -114,6 +114,15 @@ async function activate(context) {
         checkWeeklyAutoSync(context);
     }, 30000);
 
+    // Listen to configuration changes (e.g. tokenPricePerMillion, statusMetricDisplay)
+    context.subscriptions.push(
+        vscode.workspace.onDidChangeConfiguration(async (e) => {
+            if (e.affectsConfiguration('tokenSaver')) {
+                await refreshStatus(context);
+            }
+        })
+    );
+
     // Commands
     const openDashboardCmd = vscode.commands.registerCommand('tokenSaver.openDashboard', () => {
         DashboardPanel.createOrShow(context.extensionUri, context);

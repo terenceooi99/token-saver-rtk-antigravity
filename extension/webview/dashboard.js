@@ -22,6 +22,10 @@ const savedRatioVal = document.getElementById('savedRatioVal');
 const efficiencyVal = document.getElementById('efficiencyVal');
 const efficiencyBar = document.getElementById('efficiencyBar');
 const costSavedVal = document.getElementById('costSavedVal');
+const costPriceInput = document.getElementById('costPriceInput');
+const saveCostBtn = document.getElementById('saveCostBtn');
+const costPresetToggleBtn = document.getElementById('costPresetToggleBtn');
+const costPresetsPopover = document.getElementById('costPresetsPopover');
 const activeTargetsVal = document.getElementById('activeTargetsVal');
 const skillsScopeVal = document.getElementById('skillsScopeVal');
 
@@ -69,6 +73,62 @@ let isSidebarMode = false;
 let isCompact = false;
 let autoRefreshMinutes = 0; // in minutes, 0 = off
 let autoRefreshTimer = null;
+let currentTokenPrice = 3.00;
+let currentTotalSavedTokens = 0;
+
+function formatCostValue(cost) {
+    if (cost >= 100) {
+        return `$${cost.toFixed(2)}`;
+    } else if (cost >= 1) {
+        return `$${cost.toFixed(2)}`;
+    } else if (cost > 0) {
+        return `$${cost.toFixed(3)}`;
+    }
+    return '$0.00';
+}
+
+function updateLocalCostSavings(price) {
+    if (costSavedVal) {
+        const dollars = (currentTotalSavedTokens / 1000000) * price;
+        costSavedVal.textContent = formatCostValue(dollars);
+    }
+}
+
+function applyCostPrice(price, notifyBackend = true) {
+    if (isNaN(price) || price < 0) {
+        price = 3.00;
+    }
+    const roundedPrice = Math.round(price * 1000) / 1000;
+    currentTokenPrice = roundedPrice;
+
+    if (costPriceInput) {
+        costPriceInput.value = roundedPrice;
+    }
+    if (saveCostBtn) {
+        saveCostBtn.classList.remove('visible');
+    }
+
+    if (costPresetsPopover) {
+        const presetItems = costPresetsPopover.querySelectorAll('.preset-item');
+        presetItems.forEach(item => {
+            const itemPrice = parseFloat(item.getAttribute('data-price'));
+            if (Math.abs(itemPrice - roundedPrice) < 0.001) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+    }
+
+    updateLocalCostSavings(roundedPrice);
+
+    if (notifyBackend) {
+        vscode.postMessage({
+            command: 'setTokenPrice',
+            price: roundedPrice
+        });
+    }
+}
 
 // Restore saved state
 const savedState = vscode.getState() || {};
@@ -222,16 +282,111 @@ refreshDropdownMenu.querySelectorAll('.dropdown-menu-item').forEach(item => {
     });
 });
 
-// Close dropdown on outside click or Escape
+// Cost Price Input & Presets Event Listeners
+if (costPriceInput) {
+    costPriceInput.addEventListener('click', (e) => e.stopPropagation());
+    costPriceInput.addEventListener('input', () => {
+        const val = parseFloat(costPriceInput.value);
+        if (!isNaN(val) && val >= 0) {
+            updateLocalCostSavings(val);
+            if (Math.abs(val - currentTokenPrice) > 0.001) {
+                if (saveCostBtn) saveCostBtn.classList.add('visible');
+            } else {
+                if (saveCostBtn) saveCostBtn.classList.remove('visible');
+            }
+        }
+    });
+
+    costPriceInput.addEventListener('keydown', (e) => {
+        e.stopPropagation();
+        if (e.key === 'Enter') {
+            const val = parseFloat(costPriceInput.value);
+            if (!isNaN(val) && val >= 0) {
+                applyCostPrice(val, true);
+                costPriceInput.blur();
+            }
+        }
+    });
+
+    costPriceInput.addEventListener('blur', () => {
+        const val = parseFloat(costPriceInput.value);
+        if (!isNaN(val) && val >= 0) {
+            if (Math.abs(val - currentTokenPrice) > 0.001) {
+                applyCostPrice(val, true);
+            } else {
+                if (saveCostBtn) saveCostBtn.classList.remove('visible');
+            }
+        } else {
+            costPriceInput.value = currentTokenPrice;
+            if (saveCostBtn) saveCostBtn.classList.remove('visible');
+        }
+    });
+}
+
+if (saveCostBtn) {
+    saveCostBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const val = parseFloat(costPriceInput ? costPriceInput.value : currentTokenPrice);
+        if (!isNaN(val) && val >= 0) {
+            applyCostPrice(val, true);
+        }
+    });
+}
+
+if (costPresetToggleBtn && costPresetsPopover) {
+    costPresetToggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isShowing = costPresetsPopover.classList.toggle('show');
+        costPresetToggleBtn.classList.toggle('active', isShowing);
+        const card = costPresetToggleBtn.closest('.metric-card');
+        if (card) {
+            card.classList.toggle('popover-active', isShowing);
+        }
+    });
+
+    costPresetsPopover.querySelectorAll('.preset-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const price = parseFloat(item.getAttribute('data-price'));
+            if (!isNaN(price)) {
+                applyCostPrice(price, true);
+            }
+            costPresetsPopover.classList.remove('show');
+            costPresetToggleBtn.classList.remove('active');
+            const card = costPresetToggleBtn.closest('.metric-card');
+            if (card) {
+                card.classList.remove('popover-active');
+            }
+        });
+    });
+}
+
+// Close dropdowns and popovers on outside click or Escape
 window.addEventListener('click', (e) => {
     if (!refreshDropdownMenu.contains(e.target) && !refreshMenuBtn.contains(e.target)) {
         refreshDropdownMenu.classList.remove('show');
+    }
+    if (costPresetsPopover && costPresetToggleBtn && !costPresetsPopover.contains(e.target) && !costPresetToggleBtn.contains(e.target)) {
+        costPresetsPopover.classList.remove('show');
+        costPresetToggleBtn.classList.remove('active');
+        const card = costPresetToggleBtn.closest('.metric-card');
+        if (card) {
+            card.classList.remove('popover-active');
+        }
     }
 });
 
 window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
         refreshDropdownMenu.classList.remove('show');
+        if (costPresetsPopover && costPresetToggleBtn) {
+            costPresetsPopover.classList.remove('show');
+            costPresetToggleBtn.classList.remove('active');
+            const card = costPresetToggleBtn.closest('.metric-card');
+            if (card) {
+                card.classList.remove('popover-active');
+            }
+        }
     }
 });
 
@@ -390,6 +545,7 @@ function renderDashboardState(data) {
     }
 
     // Top Metric Cards
+    currentTotalSavedTokens = (metrics && metrics.totalSavedTokens) || 0;
     totalSavedVal.textContent = metrics.totalSavedFormatted || '0';
     savedRatioVal.textContent = metrics.isMock 
         ? 'Awaiting command executions' 
@@ -400,6 +556,29 @@ function renderDashboardState(data) {
     efficiencyBar.style.width = `${Math.min(pct, 100)}%`;
 
     costSavedVal.textContent = metrics.estimatedDollarSavings || '$0.00';
+
+    // Synchronize Token Price / 1M tokens Input & Presets
+    const price = data.tokenPricePerMillion !== undefined
+        ? data.tokenPricePerMillion
+        : (metrics && metrics.tokenPricePerMillion !== undefined ? metrics.tokenPricePerMillion : 3.00);
+
+    currentTokenPrice = price;
+    if (costPriceInput && document.activeElement !== costPriceInput) {
+        costPriceInput.value = price;
+        if (saveCostBtn) saveCostBtn.classList.remove('visible');
+    }
+
+    if (costPresetsPopover) {
+        const presetItems = costPresetsPopover.querySelectorAll('.preset-item');
+        presetItems.forEach(item => {
+            const itemPrice = parseFloat(item.getAttribute('data-price'));
+            if (Math.abs(itemPrice - price) < 0.001) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+    }
 
     // IDE Targets Summary & Auto-Detected Host
     const detected = data.detectedIde || { id: 'antigravity', displayName: 'Antigravity IDE', shortName: 'Antigravity' };

@@ -100,10 +100,48 @@
             <div class="metric-card card-glow-purple">
                 <div class="metric-header">
                     <span class="metric-title">Cost Saved</span>
-                    <span class="metric-icon">💰</span>
+                    <div class="metric-header-actions">
+                        <button class="btn-preset-toggle" id="costPresetToggleBtn" title="Select Model Preset Rate" aria-label="Model Presets">⚡</button>
+                        <span class="metric-icon">💰</span>
+                        <!-- Model Presets Dropdown Popover -->
+                        <div class="cost-presets-popover" id="costPresetsPopover">
+                            <div class="presets-popover-header">⚡ Popular Model Rates</div>
+                            <button class="preset-item" data-price="3.00">
+                                <span class="preset-name">Claude 3.7 / 3.5 Sonnet</span>
+                                <span class="preset-price">$3.00</span>
+                            </button>
+                            <button class="preset-item" data-price="2.50">
+                                <span class="preset-name">GPT-4o</span>
+                                <span class="preset-price">$2.50</span>
+                            </button>
+                            <button class="preset-item" data-price="0.15">
+                                <span class="preset-name">Gemini 2.0 Flash</span>
+                                <span class="preset-price">$0.15</span>
+                            </button>
+                            <button class="preset-item" data-price="1.25">
+                                <span class="preset-name">Gemini 2.5 Pro</span>
+                                <span class="preset-price">$1.25</span>
+                            </button>
+                            <button class="preset-item" data-price="15.00">
+                                <span class="preset-name">Claude 3 Opus</span>
+                                <span class="preset-price">$15.00</span>
+                            </button>
+                            <button class="preset-item" data-price="1.00">
+                                <span class="preset-name">DeepSeek V3 / R1</span>
+                                <span class="preset-price">$1.00</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 <div class="metric-value" id="costSavedVal">$0.00</div>
-                <div class="metric-footer">Est. @ $3.00 / 1M tokens</div>
+                <div class="metric-footer cost-footer">
+                    <div class="cost-input-container" id="costInputContainer" title="Click to edit token price per 1M tokens">
+                        <span class="cost-prefix">Est. @ $</span>
+                        <input type="number" id="costPriceInput" class="cost-price-input" min="0" max="9999" step="0.01" placeholder="3.00" value="3.00" title="Manually type in estimated token price per 1,000,000 tokens (USD)" />
+                        <span class="cost-suffix">/ 1M</span>
+                        <button class="btn-cost-save" id="saveCostBtn" title="Apply Rate">✓</button>
+                    </div>
+                </div>
             </div>
 
             <div class="metric-card card-glow-amber">

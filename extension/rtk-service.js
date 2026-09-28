@@ -150,7 +150,8 @@ class RtkService {
             );
         }
 
-        const dollarSaved = ((totalSaved / 1000000) * pricePerMillion).toFixed(3);
+        const rawCost = (totalSaved / 1000000) * pricePerMillion;
+        const dollarSaved = rawCost >= 100 ? rawCost.toFixed(2) : (rawCost >= 1 ? rawCost.toFixed(2) : rawCost.toFixed(3));
 
         return {
             isMock,
@@ -174,7 +175,7 @@ class RtkService {
             totalSavedTokens: 0,
             totalSavedFormatted: '0',
             savedPercentage: 0,
-            estimatedDollarSavings: '$0.000',
+            estimatedDollarSavings: '$0.00',
             tokenPricePerMillion: pricePerMillion,
             commandBreakdown: [
                 { command: 'git', savedTokens: 0, savedFormatted: '0', percentage: 0 },

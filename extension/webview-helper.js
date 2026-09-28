@@ -24,6 +24,7 @@ class WebviewHelper {
         const config = vscode.workspace.getConfiguration('tokenSaver');
         const isEnabled = context.globalState.get('tokenSaver.enabled', config.get('enableOnStartup', true));
         const weeklyAutoSync = context.globalState.get('tokenSaver.weeklyAutoSync', config.get('weeklyAutoSync', true));
+        const tokenPricePerMillion = config.get('tokenPricePerMillion', 3.00);
         const check = await RtkService.checkInstalled();
         const metrics = await RtkService.getParsedMetrics();
         const skillsInstalled = SkillInstaller.checkSkillsInstalled('all');
@@ -32,6 +33,7 @@ class WebviewHelper {
         return {
             isEnabled,
             weeklyAutoSync,
+            tokenPricePerMillion,
             installed: check.installed,
             version: check.version || 'Not installed',
             binaryPath: check.path || 'Not detected',
@@ -129,6 +131,21 @@ class WebviewHelper {
                 break;
             case 'openScoreboardTerminal':
                 vscode.commands.executeCommand('tokenSaver.showSavings');
+                break;
+            case 'setTokenPrice':
+                const newPrice = parseFloat(message.price);
+                if (!isNaN(newPrice) && newPrice >= 0) {
+                    const roundedPrice = Math.round(newPrice * 1000) / 1000;
+                    try {
+                        const cfg = vscode.workspace.getConfiguration('tokenSaver');
+                        await cfg.update('tokenPricePerMillion', roundedPrice, vscode.ConfigurationTarget.Global);
+                    } catch (e) {
+                        // ignore configuration update error
+                    }
+                    await context.globalState.update('tokenSaver.tokenPricePerMillion', roundedPrice);
+                    vscode.window.showInformationMessage(`💰 Token cost estimate rate updated to $${roundedPrice.toFixed(2)} / 1M tokens.`);
+                    if (onStateRequest) await onStateRequest();
+                }
                 break;
         }
     }

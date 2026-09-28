@@ -420,6 +420,8 @@ h1 {
 
 /* Metrics Grid */
 .metrics-grid {
+    position: relative;
+    z-index: 50;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 12px;
@@ -435,13 +437,18 @@ h1 {
     flex-direction: column;
     gap: 6px;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
     min-width: 0;
     transition: var(--transition);
 }
 .metric-card:hover {
     transform: translateY(-2px);
     border-color: var(--border-glow);
+}
+
+.metric-card.popover-active,
+.metric-card:has(.cost-presets-popover.show) {
+    z-index: 1000;
 }
 
 .metric-header {
@@ -472,6 +479,207 @@ h1 {
 .metric-footer {
     font-size: 10px;
     color: var(--text-muted);
+}
+
+/* Cost Saved Metric Card & Interactive Rate Input */
+.metric-header-actions {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    z-index: 1001;
+}
+
+.btn-preset-toggle {
+    background: rgba(168, 85, 247, 0.15);
+    border: 1px solid rgba(168, 85, 247, 0.35);
+    color: var(--accent-purple);
+    border-radius: var(--radius-sm);
+    padding: 1px 5px;
+    font-size: 10px;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.2;
+}
+
+.btn-preset-toggle:hover,
+.btn-preset-toggle.active {
+    background: rgba(168, 85, 247, 0.3);
+    border-color: var(--accent-purple);
+    box-shadow: 0 0 8px rgba(168, 85, 247, 0.4);
+    transform: scale(1.05);
+}
+
+.cost-footer {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.cost-input-container {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(168, 85, 247, 0.25);
+    border-radius: var(--radius-sm);
+    padding: 2px 5px;
+    font-size: 10px;
+    color: var(--text-muted);
+    transition: var(--transition);
+    max-width: 100%;
+}
+
+.cost-input-container:hover,
+.cost-input-container:focus-within {
+    border-color: var(--accent-purple);
+    background: rgba(0, 0, 0, 0.45);
+    box-shadow: 0 0 8px rgba(168, 85, 247, 0.25);
+}
+
+.cost-prefix,
+.cost-suffix {
+    font-size: 9.5px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.cost-price-input {
+    width: 44px;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 0 1px;
+    text-align: center;
+}
+
+.cost-price-input:focus {
+    color: var(--accent-purple);
+}
+
+.cost-price-input::-webkit-outer-spin-button,
+.cost-price-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.cost-price-input[type=number] {
+    -moz-appearance: textfield;
+}
+
+.btn-cost-save {
+    background: rgba(168, 85, 247, 0.3);
+    border: 1px solid var(--accent-purple);
+    color: #fff;
+    border-radius: 3px;
+    padding: 0 4px;
+    font-size: 9px;
+    font-weight: 700;
+    cursor: pointer;
+    line-height: 13px;
+    display: none;
+    transition: var(--transition);
+}
+
+.btn-cost-save:hover {
+    background: var(--accent-purple);
+    box-shadow: 0 0 6px rgba(168, 85, 247, 0.6);
+}
+
+.btn-cost-save.visible {
+    display: inline-block;
+}
+
+/* Presets Popover Menu */
+.cost-presets-popover {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    left: auto;
+    min-width: 195px;
+    max-width: 250px;
+    background: #0e121e;
+    background: rgba(14, 18, 30, 0.98);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(168, 85, 247, 0.4);
+    border-radius: var(--radius-md);
+    padding: 5px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.85), 0 0 16px rgba(168, 85, 247, 0.25);
+    z-index: 9999;
+    display: none;
+    flex-direction: column;
+    gap: 2px;
+    animation: dropdownSlide 0.15s ease-out forwards;
+}
+
+.cost-presets-popover.show {
+    display: flex;
+}
+
+.presets-popover-header {
+    font-size: 9.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--accent-purple);
+    padding: 4px 6px;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    margin-bottom: 2px;
+}
+
+.preset-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 5px 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-primary);
+    font-size: 10.5px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition);
+    text-align: left;
+}
+
+.preset-item:hover {
+    background: rgba(168, 85, 247, 0.18);
+    color: var(--accent-purple);
+}
+
+.preset-item.active {
+    background: rgba(168, 85, 247, 0.25);
+    color: var(--accent-purple);
+    font-weight: 700;
+}
+
+.preset-name {
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-right: 6px;
+}
+
+.preset-price {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--text-secondary);
+    font-size: 10px;
+    white-space: nowrap;
+}
+.preset-item:hover .preset-price,
+.preset-item.active .preset-price {
+    color: var(--accent-purple);
 }
 
 .progress-bar-bg {
@@ -1118,7 +1326,12 @@ pre {
 }
 
 .dashboard-container.is-compact .metric-footer {
-    display: none;
+    display: none !important;
+}
+
+.dashboard-container.is-compact .btn-preset-toggle,
+.dashboard-container.is-compact .cost-presets-popover {
+    display: none !important;
 }
 
 .dashboard-container.is-compact .raw-output-box {
