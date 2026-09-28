@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src {{cspSource}} 'unsafe-inline'; script-src {{cspSource}} 'unsafe-inline';">
+    <title>Token Saver (RTK) Dashboard</title>
+    <link rel="stylesheet" href="{{styleUri}}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="brand">
+                <div class="brand-icon">⚡</div>
+                <div>
+                    <h1>Token Saver <span class="badge-rtk">RTK</span></h1>
+                    <p class="subtitle">Rust Token Killer Optimization Suite for Antigravity IDE</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <div class="status-pill" id="statusPill">
+                    <span class="status-dot"></span>
+                    <span id="statusText">Checking...</span>
+                </div>
+                <button class="btn btn-primary" id="toggleModeBtn">Toggle Mode</button>
+                <button class="btn btn-ghost" id="refreshBtn" title="Refresh Metrics">🔄</button>
+            </div>
+        </header>
+
+        <!-- Metric Summary Cards -->
+        <section class="metrics-grid">
+            <div class="metric-card card-glow-cyan">
+                <div class="metric-header">
+                    <span class="metric-title">Tokens Saved</span>
+                    <span class="metric-icon">🔥</span>
+                </div>
+                <div class="metric-value" id="totalSavedVal">0</div>
+                <div class="metric-footer" id="savedRatioVal">Calculating savings...</div>
+            </div>
+
+            <div class="metric-card card-glow-green">
+                <div class="metric-header">
+                    <span class="metric-title">Compression Efficiency</span>
+                    <span class="metric-icon">📉</span>
+                </div>
+                <div class="metric-value" id="efficiencyVal">0%</div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="efficiencyBar" style="width: 0%;"></div>
+                </div>
+            </div>
+
+            <div class="metric-card card-glow-purple">
+                <div class="metric-header">
+                    <span class="metric-title">Estimated Cost Saved</span>
+                    <span class="metric-icon">💰</span>
+                </div>
+                <div class="metric-value" id="costSavedVal">$0.00</div>
+                <div class="metric-footer">Est. @ $3.00 / 1M tokens</div>
+            </div>
+
+            <div class="metric-card card-glow-amber">
+                <div class="metric-header">
+                    <span class="metric-title">Antigravity Skills</span>
+                    <span class="metric-icon">🧠</span>
+                </div>
+                <div class="metric-value" id="skillsStatusVal">Checking...</div>
+                <div class="metric-footer" id="skillsScopeVal">Scope: Global</div>
+            </div>
+        </section>
+
+        <!-- Main Content Area: Visual Charts + Control Center -->
+        <div class="content-split">
+            <!-- Left: Command Savings Breakdown -->
+            <section class="panel-card chart-section">
+                <div class="panel-header">
+                    <h2>📊 Command Savings Breakdown</h2>
+                    <span class="panel-tag">Live Filter Breakdown</span>
+                </div>
+                <div class="chart-container" id="chartContainer">
+                    <!-- Dynamic Bars injected by JS -->
+                </div>
+                <div class="raw-output-box" id="rawOutputBox">
+                    <div class="raw-output-header">Terminal Scoreboard Snippet</div>
+                    <pre id="rawOutputText">Loading RTK statistics...</pre>
+                </div>
+            </section>
+
+            <!-- Right: Action Center & System Health -->
+            <div class="action-sidebar">
+                <!-- Action Center -->
+                <section class="panel-card">
+                    <div class="panel-header">
+                        <h2>⚡ Quick Actions</h2>
+                    </div>
+                    <div class="action-buttons-list">
+                        <button class="btn btn-action" id="syncSkillsBtn">
+                            <span class="btn-icon">🧠</span>
+                            <div class="btn-text-block">
+                                <span class="btn-label">1-Click Install Antigravity Skills</span>
+                                <span class="btn-sub">Sync /rtk-savedtokenon, /rtk-gain to ~/.gemini</span>
+                            </div>
+                        </button>
+
+                        <button class="btn btn-action" id="checkUpdatesBtn">
+                            <span class="btn-icon">🚀</span>
+                            <div class="btn-text-block">
+                                <span class="btn-label">Check GitHub RTK Updates</span>
+                                <span class="btn-sub">Sync with upstream rtk-ai/rtk</span>
+                            </div>
+                        </button>
+
+                        <button class="btn btn-action" id="openTerminalBtn">
+                            <span class="btn-icon">🖥️</span>
+                            <div class="btn-text-block">
+                                <span class="btn-label">Open Full Terminal Scoreboard</span>
+                                <span class="btn-sub">Run rtk gain interactively</span>
+                            </div>
+                        </button>
+
+                        <button class="btn btn-action" id="testLatencyBtn">
+                            <span class="btn-icon">⏱️</span>
+                            <div class="btn-text-block">
+                                <span class="btn-label">Test Proxy Latency</span>
+                                <span class="btn-sub" id="latencySubText">Measure overhead ms</span>
+                            </div>
+                        </button>
+                    </div>
+                </section>
+
+                <!-- System Health Diagnostics -->
+                <section class="panel-card">
+                    <div class="panel-header">
+                        <h2>🛠️ System Health & Diagnostics</h2>
+                    </div>
+                    <div class="diagnostics-list">
+                        <div class="diag-row">
+                            <span class="diag-key">RTK CLI Status:</span>
+                            <span class="diag-val" id="diagCliStatus">Checking...</span>
+                        </div>
+                        <div class="diag-row">
+                            <span class="diag-key">Installed Version:</span>
+                            <span class="diag-val" id="diagVersion">--</span>
+                        </div>
+                        <div class="diag-row">
+                            <span class="diag-key">Binary Location:</span>
+                            <span class="diag-val font-mono" id="diagBinaryPath">--</span>
+                        </div>
+                        <div class="diag-row">
+                            <span class="diag-key">Config Target Scope:</span>
+                            <span class="diag-val" id="diagScope">Global (~/.gemini)</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="dashboard-footer">
+            <span>⚡ Token Saver (RTK) for Google Antigravity IDE</span>
+            <span class="footer-links">
+                <a href="https://github.com/rtk-ai/rtk" target="_blank">Upstream RTK</a> • 
+                <a href="https://github.com/terenceooi99/token-saver-rtk-antigravity" target="_blank">Plugin GitHub</a>
+            </span>
+        </footer>
+    </div>
+
+    <script src="{{scriptUri}}"></script>
+</body>
+</html>

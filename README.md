@@ -1,4 +1,4 @@
-﻿# ⚡ Token Saver (RTK) for Antigravity IDE
+# ⚡ Token Saver (RTK) for Antigravity IDE
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![OpenVSX](https://img.shields.io/badge/Open%20VSX-available-blue.svg)](https://open-vsx.org)
@@ -8,7 +8,7 @@
 
 ---
 
-## 🎯 Dual-Mode Usage
+## 🎯 Dual-Mode Architecture & Interactive Dashboard
 
 Token Saver gives you two flexible ways to use RTK in Antigravity IDE:
 
@@ -16,13 +16,13 @@ Token Saver gives you two flexible ways to use RTK in Antigravity IDE:
 ┌────────────────────────────────────────────────────────────────────────┐
 │                      TOKEN SAVER (RTK) MODES                           │
 ├───────────────────────────────────┬────────────────────────────────────┤
-│ WAY 1: Chat / Slash Commands      │ WAY 2: OpenVSX Extension Plugin    │
-│ (In-Chat / Manual Skill Control)  │ (GUI Status Bar & Auto Rules)      │
+│ WAY 1: Chat / Slash Commands      │ WAY 2: Extension & Dashboard       │
+│ (In-Chat / Manual Skill Control)  │ (GUI Status Bar & Webview Panel)   │
 ├───────────────────────────────────┼────────────────────────────────────┤
-│ • Type / in chat for instant menu │ • Status bar toggle: $(zap) RTK ON │
-│ • /rtk-savedtokenon (Enable)      │ • Command palette actions          │
-│ • /rtk-savedtokenoff (Disable)    │ • Automatic workspace rule sync    │
-│ • /rtk-gain (View Scoreboard)     │ • One-click RTK CLI installer      │
+│ • Type / in chat for instant menu │ • Live Status Bar: 48k saved (72%) │
+│ • /rtk-savedtokenon (Enable)      │ • Interactive Webview Dashboard    │
+│ • /rtk-savedtokenoff (Disable)    │ • Upstream GitHub RTK auto-sync    │
+│ • /rtk-gain (View Scoreboard)     │ • 1-Click Global Skill Installer   │
 └───────────────────────────────────┴────────────────────────────────────┘
 ```
 
@@ -40,36 +40,43 @@ Trigger commands directly in your Antigravity chat by typing `/`:
 
 ### Installing Skills into Antigravity IDE:
 
-#### Windows (PowerShell):
-```powershell
-.\scripts\install-skills.ps1
-```
+#### Option A: 1-Click from Command Palette
+Press `Ctrl+Shift+P` / `Cmd+Shift+P` and choose:
+> `Token Saver: 1-Click Install Antigravity Skills (/rtk-*)`
 
-#### Linux / macOS (Bash):
-```bash
-chmod +x scripts/install-skills.sh
-./scripts/install-skills.sh
-```
+#### Option B: Terminal Script
+- **Windows (PowerShell)**: `.\scripts\install-skills.ps1`
+- **Linux / macOS (Bash)**: `./scripts/install-skills.sh`
 
 ---
 
-## 🧩 Way 2: OpenVSX / VS Code Extension Plugin
+## 🧩 Way 2: Interactive Webview Dashboard & Extension
 
 The extension provides full graphical and automated control for Antigravity IDE, VS Code, Cursor, and OpenVSX-compatible editors.
 
-### Features:
-1. **Status Bar Widget**:
-   - `⚡ RTK: ON` — Active and saving tokens on terminal outputs.
-   - `⚪ RTK: OFF` — Idle.
-   - Click the status bar item at any time to toggle modes.
-2. **Commands in Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`)**:
+### 🌟 Key Features:
+1. **Interactive Glassmorphic Dashboard**:
+   - Live Token Savings Counter with animated visual meters.
+   - Compression Efficiency Gauge (%) and Estimated Dollar Savings ($).
+   - Per-tool visual savings charts (`git`, `cargo`, `npm`, `pytest`, `vitest`, `rg`, `ls`, etc.).
+   - Action center with 1-click Antigravity skill sync, GitHub release update check, and proxy latency test.
+   - Diagnostics panel displaying local binary path, version, and target scopes.
+2. **Upstream GitHub RTK Core Sync & Updater**:
+   - Automatic non-intrusive update checks against official GitHub releases (`https://github.com/rtk-ai/rtk`).
+   - 1-click update trigger for Windows (`winget`), macOS (`brew`), and Linux (`curl`).
+3. **Dynamic Live Status Bar**:
+   - Shows real-time savings: `⚡ RTK: 48.2k saved (72%)` or `⚪ RTK: OFF`.
+   - Rich hover tooltips with cost savings and quick access to the dashboard.
+4. **Commands in Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`)**:
+   - `Token Saver: Open Interactive Dashboard`
    - `Token Saver: Toggle RTK Token Saving Mode`
    - `Token Saver: Enable RTK Token Saving`
    - `Token Saver: Disable RTK Token Saving`
+   - `Token Saver: Check for RTK Core Updates (GitHub)`
+   - `Token Saver: 1-Click Install Antigravity Skills (/rtk-*)`
+   - `Token Saver: Sync Global Antigravity Rules (~/.gemini)`
    - `Token Saver: Show Token Savings Scoreboard (rtk gain)`
    - `Token Saver: Install RTK CLI Tool`
-3. **Automatic Workspace Rule Sync**:
-   Automatically writes and updates `.agents/rules/antigravity-rtk-rules.md` in your project when enabled.
 
 ---
 
@@ -113,7 +120,7 @@ To package and publish to OpenVSX:
 
 3. **Publish to Open VSX**:
    ```bash
-   npx ovsx publish token-saver-rtk-antigravity-1.0.0.vsix -p <YOUR_OPENVSX_ACCESS_TOKEN>
+   npx ovsx publish token-saver-rtk-antigravity-1.1.0.vsix -p <YOUR_OPENVSX_ACCESS_TOKEN>
    ```
 
 ---

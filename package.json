@@ -1,8 +1,8 @@
-﻿{
+{
   "name": "token-saver-rtk-antigravity",
   "displayName": "Token Saver (RTK) for Antigravity IDE",
   "description": "Smart token optimization and CLI output compression proxy for Antigravity IDE using RTK (Rust Token Killer).",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "publisher": "terenceooi",
   "author": {
     "name": "Terence",
@@ -42,9 +42,16 @@
   "contributes": {
     "commands": [
       {
+        "command": "tokenSaver.openDashboard",
+        "title": "Open Interactive Dashboard",
+        "category": "Token Saver",
+        "icon": "$(dashboard)"
+      },
+      {
         "command": "tokenSaver.toggle",
         "title": "Toggle RTK Token Saving Mode",
-        "category": "Token Saver"
+        "category": "Token Saver",
+        "icon": "$(zap)"
       },
       {
         "command": "tokenSaver.enable",
@@ -54,6 +61,21 @@
       {
         "command": "tokenSaver.disable",
         "title": "Disable RTK Token Saving",
+        "category": "Token Saver"
+      },
+      {
+        "command": "tokenSaver.checkUpdates",
+        "title": "Check for RTK Core Updates (GitHub)",
+        "category": "Token Saver"
+      },
+      {
+        "command": "tokenSaver.installSkills",
+        "title": "1-Click Install Antigravity Skills (/rtk-*)",
+        "category": "Token Saver"
+      },
+      {
+        "command": "tokenSaver.syncGlobalRules",
+        "title": "Sync Global Antigravity Rules (~/.gemini)",
         "category": "Token Saver"
       },
       {
@@ -75,10 +97,35 @@
           "default": true,
           "description": "Automatically enable RTK token compression when opening a project in Antigravity IDE."
         },
-        "tokenSaver.autoSyncWorkspaceRules": {
+        "tokenSaver.targetScope": {
+          "type": "string",
+          "enum": [
+            "global",
+            "workspace",
+            "all"
+          ],
+          "default": "global",
+          "description": "Scope for rule synchronization: 'global' (~/.gemini/config), 'workspace' (.agents), or 'all'."
+        },
+        "tokenSaver.checkForUpdatesOnStartup": {
           "type": "boolean",
           "default": true,
-          "description": "Automatically synchronize .agents/rules/antigravity-rtk-rules.md in the current workspace."
+          "description": "Automatically check for newer RTK releases from upstream GitHub repository on startup."
+        },
+        "tokenSaver.tokenPricePerMillion": {
+          "type": "number",
+          "default": 3.00,
+          "description": "Estimated token pricing per 1,000,000 tokens in USD (used to calculate dollar cost savings)."
+        },
+        "tokenSaver.statusMetricDisplay": {
+          "type": "string",
+          "enum": [
+            "compact",
+            "verbose",
+            "iconOnly"
+          ],
+          "default": "compact",
+          "description": "Formatting of live metrics in the status bar item."
         }
       }
     }
