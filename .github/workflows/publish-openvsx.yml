@@ -9,6 +9,8 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     env:
       OVSX_PAT: ${{ secrets.OVSX_PAT }}
     steps:
