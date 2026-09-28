@@ -1,4 +1,4 @@
-﻿---
+---
 name: rtk-gain
 description: >
   Display the RTK (Rust Token Killer) token savings scoreboard and metrics dashboard.

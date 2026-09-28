@@ -24,8 +24,54 @@
                     <span id="statusText">Checking...</span>
                 </div>
                 <button class="btn btn-primary" id="toggleModeBtn">Toggle</button>
+
+                <!-- Refresh Button with Auto-Refresh Dropdown -->
+                <div class="refresh-dropdown-group" id="refreshDropdownGroup">
+                    <button class="btn btn-ghost btn-refresh-action" id="refreshBtn" title="Click to Refresh Metrics">
+                        <span class="refresh-icon" id="refreshIcon">🔄</span>
+                        <span class="refresh-timer-badge" id="refreshTimerBadge" style="display: none;">1m</span>
+                    </button>
+                    <button class="btn btn-ghost btn-refresh-dropdown" id="refreshMenuBtn" title="Auto-Refresh Timer Options" aria-label="Auto-Refresh Interval Options">
+                        <span class="dropdown-chevron">▼</span>
+                    </button>
+                    <div class="refresh-dropdown-menu" id="refreshDropdownMenu">
+                        <div class="dropdown-menu-header">
+                            <span>⏱️ Auto-Refresh Interval</span>
+                        </div>
+                        <div class="refresh-custom-input-box">
+                            <label for="customMinuteInput" class="custom-input-label">Refresh Every (Minutes):</label>
+                            <div class="custom-input-row">
+                                <input type="number" id="customMinuteInput" min="0.5" max="1440" step="0.5" placeholder="e.g. 1" class="minute-input" />
+                                <span class="input-unit">min</span>
+                                <button class="btn btn-sm btn-primary" id="applyMinuteBtn">Set</button>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-menu-item active" data-minutes="0">
+                            <span class="menu-item-check">✓</span>
+                            <span class="menu-item-text">Off (Manual Only)</span>
+                        </button>
+                        <button class="dropdown-menu-item" data-minutes="1">
+                            <span class="menu-item-check"></span>
+                            <span class="menu-item-text">⏱️ Every 1 minute</span>
+                        </button>
+                        <button class="dropdown-menu-item" data-minutes="2">
+                            <span class="menu-item-check"></span>
+                            <span class="menu-item-text">⏱️ Every 2 minutes</span>
+                        </button>
+                        <button class="dropdown-menu-item" data-minutes="5">
+                            <span class="menu-item-check"></span>
+                            <span class="menu-item-text">⏱️ Every 5 minutes</span>
+                        </button>
+                        <button class="dropdown-menu-item" data-minutes="10">
+                            <span class="menu-item-check"></span>
+                            <span class="menu-item-text">⏱️ Every 10 minutes</span>
+                        </button>
+                    </div>
+                </div>
+
                 <button class="btn btn-ghost" id="popOutBtn" title="Pop Out to Editor Tab">⤢</button>
-                <button class="btn btn-ghost" id="refreshBtn" title="Refresh Metrics">🔄</button>
+                <button class="btn btn-ghost" id="minimizeBtn" title="Minimize / Compact Dashboard">🗕</button>
             </div>
         </header>
 
@@ -66,41 +112,51 @@
                     <span class="metric-icon">🤖</span>
                 </div>
                 <div class="metric-value" id="activeTargetsVal">0 Synced</div>
-                <div class="metric-footer" id="skillsScopeVal">All AI Agents</div>
+                <div class="metric-footer" id="skillsScopeVal">Current IDE</div>
             </div>
         </section>
 
         <!-- Main Content Area -->
-        <div class="content-split">
+        <div class="content-split" id="contentSplit">
             <!-- Left: AI Agent Ecosystem + Command Breakdown -->
             <div class="content-main">
                 <!-- AI Agent & IDE Ecosystem Matrix -->
-                <section class="panel-card ide-ecosystem-section">
-                    <div class="panel-header">
-                        <div>
-                            <h2>🤖 Multi-IDE Sync Hub</h2>
-                            <p class="panel-subtitle">Synchronize RTK rules across AI coding assistants</p>
+                <section class="panel-card ide-ecosystem-section" id="sectionIdeSync">
+                    <div class="panel-header collapsible" data-target="bodyIdeSync">
+                        <div class="panel-header-left">
+                            <span class="collapse-chevron">▾</span>
+                            <div>
+                                <h2 id="ideSyncTitle">🤖 IDE Rules & Skills Hub</h2>
+                                <p class="panel-subtitle" id="ideSyncSubtitle">Auto-detected active IDE integration</p>
+                            </div>
                         </div>
-                        <button class="btn btn-sm btn-primary" id="syncAllIdesBtn">⚡ Sync All</button>
+                        <button class="btn btn-sm btn-primary" id="syncAllIdesBtn">⚡ Sync Rule</button>
                     </div>
                     
-                    <div class="ide-grid" id="ideGridContainer">
-                        <!-- Dynamic IDE cards injected by JS -->
+                    <div class="panel-body" id="bodyIdeSync">
+                        <div class="ide-grid" id="ideGridContainer">
+                            <!-- Dynamic IDE cards injected by JS -->
+                        </div>
                     </div>
                 </section>
 
                 <!-- Command Savings Breakdown -->
-                <section class="panel-card chart-section">
-                    <div class="panel-header">
-                        <h2>📊 Savings Breakdown</h2>
+                <section class="panel-card chart-section" id="sectionSavings">
+                    <div class="panel-header collapsible" data-target="bodySavings">
+                        <div class="panel-header-left">
+                            <span class="collapse-chevron">▾</span>
+                            <h2>📊 Savings Breakdown</h2>
+                        </div>
                         <span class="panel-tag">Live Breakdown</span>
                     </div>
-                    <div class="chart-container" id="chartContainer">
-                        <!-- Dynamic Bars injected by JS -->
-                    </div>
-                    <div class="raw-output-box" id="rawOutputBox">
-                        <div class="raw-output-header">Terminal Scoreboard Snippet</div>
-                        <pre id="rawOutputText">Loading RTK statistics...</pre>
+                    <div class="panel-body" id="bodySavings">
+                        <div class="chart-container" id="chartContainer">
+                            <!-- Dynamic Bars injected by JS -->
+                        </div>
+                        <div class="raw-output-box" id="rawOutputBox">
+                            <div class="raw-output-header">Terminal Scoreboard Snippet</div>
+                            <pre id="rawOutputText">Loading RTK statistics...</pre>
+                        </div>
                     </div>
                 </section>
             </div>
@@ -108,70 +164,103 @@
             <!-- Right: Action Center & System Health -->
             <div class="action-sidebar">
                 <!-- Action Center -->
-                <section class="panel-card">
-                    <div class="panel-header">
-                        <h2>⚡ Quick Actions</h2>
+                <section class="panel-card" id="sectionActions">
+                    <div class="panel-header collapsible" data-target="bodyActions">
+                        <div class="panel-header-left">
+                            <span class="collapse-chevron">▾</span>
+                            <h2>⚡ Quick Actions</h2>
+                        </div>
                     </div>
-                    <div class="action-buttons-list">
-                        <button class="btn btn-action" id="syncSkillsBtn">
-                            <span class="btn-icon">🧠</span>
-                            <div class="btn-text-block">
-                                <span class="btn-label">1-Click Antigravity Skills</span>
-                                <span class="btn-sub">Install /rtk-* chat commands</span>
-                            </div>
-                        </button>
+                    <div class="panel-body" id="bodyActions">
+                        <div class="action-buttons-list">
+                            <button class="btn btn-action" id="syncSkillsBtn" title="Install or re-sync Antigravity / AI Agent chat skills">
+                                <div class="btn-action-left">
+                                    <span class="btn-icon">🧠</span>
+                                    <div class="btn-text-block">
+                                        <span class="btn-label">1-Click Antigravity Skills</span>
+                                        <span class="btn-sub" id="skillsSubText">Install /rtk-* chat commands</span>
+                                    </div>
+                                </div>
+                                <span class="action-status-badge" id="skillsStatusBadge">
+                                    <span class="badge-icon">✓</span>
+                                    <span class="badge-text">Active</span>
+                                </span>
+                            </button>
 
-                        <button class="btn btn-action" id="checkUpdatesBtn">
-                            <span class="btn-icon">🚀</span>
-                            <div class="btn-text-block">
-                                <span class="btn-label">Sync Upstream GitHub RTK</span>
-                                <span class="btn-sub">Check & update rtk-ai/rtk</span>
+                            <div class="action-row-split">
+                                <button class="btn btn-action action-btn-main" id="checkUpdatesBtn" title="Check upstream GitHub repository (rtk-ai/rtk) for updates">
+                                    <div class="btn-action-left">
+                                        <span class="btn-icon">🚀</span>
+                                        <div class="btn-text-block">
+                                            <span class="btn-label" id="checkUpdatesLabel">Sync Upstream GitHub RTK</span>
+                                            <span class="btn-sub" id="checkUpdatesSub">Check & update rtk-ai/rtk</span>
+                                        </div>
+                                    </div>
+                                </button>
+                                <div class="action-side-toggle" id="weeklySyncWrapper" title="Weekly Auto Sync: automatically check for new RTK releases once a week">
+                                    <label class="weekly-toggle-label" for="weeklySyncCheckbox">
+                                        <span class="weekly-toggle-text">Weekly Auto</span>
+                                        <div class="custom-toggle">
+                                            <input type="checkbox" id="weeklySyncCheckbox" checked>
+                                            <span class="custom-toggle-slider"></span>
+                                        </div>
+                                    </label>
+                                </div>
                             </div>
-                        </button>
 
-                        <button class="btn btn-action" id="openTerminalBtn">
-                            <span class="btn-icon">🖥️</span>
-                            <div class="btn-text-block">
-                                <span class="btn-label">Terminal Scoreboard</span>
-                                <span class="btn-sub">Run rtk gain interactively</span>
-                            </div>
-                        </button>
+                            <button class="btn btn-action" id="openTerminalBtn" title="Open terminal to run rtk gain interactively">
+                                <div class="btn-action-left">
+                                    <span class="btn-icon">🖥️</span>
+                                    <div class="btn-text-block">
+                                        <span class="btn-label">Terminal Scoreboard</span>
+                                        <span class="btn-sub">Run rtk gain interactively</span>
+                                    </div>
+                                </div>
+                            </button>
 
-                        <button class="btn btn-action" id="testLatencyBtn">
-                            <span class="btn-icon">⏱️</span>
-                            <div class="btn-text-block">
-                                <span class="btn-label">Test Proxy Latency</span>
-                                <span class="btn-sub" id="latencySubText">Measure overhead ms</span>
-                            </div>
-                        </button>
+                            <button class="btn btn-action" id="testLatencyBtn" title="Test RTK proxy response time and latency">
+                                <div class="btn-action-left">
+                                    <span class="btn-icon">⏱️</span>
+                                    <div class="btn-text-block">
+                                        <span class="btn-label">Test Proxy Latency</span>
+                                        <span class="btn-sub" id="latencySubText">Measure overhead ms</span>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
                     </div>
                 </section>
 
                 <!-- System Health Diagnostics -->
-                <section class="panel-card">
-                    <div class="panel-header">
-                        <h2>🛠️ System Health</h2>
+                <section class="panel-card" id="sectionHealth">
+                    <div class="panel-header collapsible" data-target="bodyHealth">
+                        <div class="panel-header-left">
+                            <span class="collapse-chevron">▾</span>
+                            <h2>🛠️ System Health</h2>
+                        </div>
                     </div>
-                    <div class="diagnostics-list">
-                        <div class="diag-row">
-                            <span class="diag-key">RTK CLI:</span>
-                            <span class="diag-val" id="diagCliStatus">Checking...</span>
-                        </div>
-                        <div class="diag-row">
-                            <span class="diag-key">Version:</span>
-                            <span class="diag-val" id="diagVersion">--</span>
-                        </div>
-                        <div class="diag-row">
-                            <span class="diag-key">Location:</span>
-                            <span class="diag-val font-mono" id="diagBinaryPath">--</span>
-                        </div>
-                        <div class="diag-row">
-                            <span class="diag-key">Scope:</span>
-                            <span class="diag-val" id="diagScope">All Supported IDEs</span>
-                        </div>
-                        <div class="diag-row">
-                            <span class="diag-key">Active:</span>
-                            <span class="diag-val" id="diagActiveTargets">--</span>
+                    <div class="panel-body" id="bodyHealth">
+                        <div class="diagnostics-list">
+                            <div class="diag-row">
+                                <span class="diag-key">RTK CLI:</span>
+                                <span class="diag-val" id="diagCliStatus">Checking...</span>
+                            </div>
+                            <div class="diag-row">
+                                <span class="diag-key">Version:</span>
+                                <span class="diag-val" id="diagVersion">--</span>
+                            </div>
+                            <div class="diag-row">
+                                <span class="diag-key">Location:</span>
+                                <span class="diag-val font-mono" id="diagBinaryPath">--</span>
+                            </div>
+                            <div class="diag-row">
+                                <span class="diag-key">Scope:</span>
+                                <span class="diag-val" id="diagScope">All Supported IDEs</span>
+                            </div>
+                            <div class="diag-row">
+                                <span class="diag-key">Active:</span>
+                                <span class="diag-val" id="diagActiveTargets">--</span>
+                            </div>
                         </div>
                     </div>
                 </section>

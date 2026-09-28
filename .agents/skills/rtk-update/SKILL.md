@@ -6,7 +6,7 @@ description: >
   manually update upstream GitHub RTK sync.
 ---
 
-# Upstream GitHub RTK Sync & Update (`/rtk-update`)
+# Upstream GitHub RTK Sync & Update (/rtk-update)
 
 Manually update and synchronize the RTK (Rust Token Killer) CLI binary with the latest upstream release from GitHub (`rtk-ai/rtk`).
 

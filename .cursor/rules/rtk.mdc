@@ -6,7 +6,7 @@ alwaysApply: true
 
 # RTK (Rust Token Killer) Automation
 
-Always prefix terminal and CLI execution commands with \tk\ (e.g. \tk git status\, \tk cargo test\, \tk npm test\, \tk pytest\, \tk vitest\, \tk ls\, \tk rg\).
+Always prefix terminal and CLI execution commands with `rtk` (e.g. `rtk git status`, `rtk cargo test`, `rtk npm test`, `rtk pytest`, `rtk vitest`, `rtk ls`, `rtk rg`).
 - Output is compressed to save tokens while preserving critical errors and signal.
-- In multi-command chains, prefix each sub-command: \tk git add . && rtk git commit -m "update"\.
-- Use \tk gain\ to review token savings metrics.
+- In multi-command chains, prefix each sub-command: `rtk git add . && rtk git commit -m "update"`.
+- Use `rtk gain` to review token savings metrics.

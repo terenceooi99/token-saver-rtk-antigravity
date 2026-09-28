@@ -261,7 +261,9 @@ Always prefix terminal and CLI execution commands with \`rtk\` (e.g. \`rtk git s
         const targetMap = this.getTargetPaths();
 
         let selectedTargets = [];
-        if (targetScope === 'all') {
+        if (targetScope === 'current') {
+            selectedTargets = this.detectCurrentIde().targetIds;
+        } else if (targetScope === 'all') {
             selectedTargets = Object.keys(targetMap);
         } else if (targetScope === 'global') {
             selectedTargets = ['antigravity_global'];
@@ -383,38 +385,153 @@ Always prefix terminal and CLI execution commands with \`rtk\` (e.g. \`rtk git s
     }
 
     static checkSkillsInstalled(targetScope = 'all') {
-        if (targetScope === 'all') {
-            const globalOk = this.checkSkillsInstalled('global');
-            const wsRoot = this.getWorkspaceRoot();
-            if (wsRoot) {
-                const wsOk = this.checkSkillsInstalled('workspace');
-                return globalOk || wsOk;
+        const checkDir = (baseDir) => {
+            if (!baseDir || !fs.existsSync(baseDir)) return [];
+            const found = [];
+            for (const skill of Object.keys(SKILLS_MAP)) {
+                const skillFile = path.join(baseDir, skill, 'SKILL.md');
+                if (fs.existsSync(skillFile)) {
+                    found.push(skill);
+                }
             }
-            return globalOk;
+            return found;
+        };
+
+        const globalFound = checkDir(this.getGlobalSkillsPath());
+        const wsFound = checkDir(this.getWorkspaceSkillsPath());
+        const allFound = [...new Set([...globalFound, ...wsFound])];
+        const totalExpected = Object.keys(SKILLS_MAP).length;
+
+        if (targetScope === 'global') {
+            return {
+                installed: globalFound.length > 0,
+                count: globalFound.length,
+                total: totalExpected,
+                skills: globalFound,
+                isComplete: globalFound.length >= totalExpected
+            };
         }
 
-        const baseDir = targetScope === 'workspace' 
-            ? this.getWorkspaceSkillsPath() 
-            : this.getGlobalSkillsPath();
-
-        if (!baseDir || !fs.existsSync(baseDir)) {
-            return false;
+        if (targetScope === 'workspace') {
+            return {
+                installed: wsFound.length > 0,
+                count: wsFound.length,
+                total: totalExpected,
+                skills: wsFound,
+                isComplete: wsFound.length >= totalExpected
+            };
         }
 
-        return Object.keys(SKILLS_MAP).every(skill => {
-            const skillFile = path.join(baseDir, skill, 'SKILL.md');
-            return fs.existsSync(skillFile);
-        });
+        return {
+            installed: allFound.length > 0,
+            count: allFound.length,
+            total: totalExpected,
+            skills: allFound,
+            isComplete: allFound.length >= totalExpected,
+            hasGlobal: globalFound.length > 0,
+            hasWorkspace: wsFound.length > 0
+        };
     }
 
     /**
-     * Get detailed status of all supported IDE targets
+     * Auto-detect the currently active IDE host environment
      */
-    static getIdeStatus() {
+    static detectCurrentIde() {
+        const appName = (vscode.env.appName || '').toLowerCase();
+        const uriScheme = (vscode.env.uriScheme || '').toLowerCase();
+        const execPath = (process.execPath || '').toLowerCase();
+        const appRoot = (vscode.env.appRoot || '').toLowerCase();
+
+        // 1. Antigravity IDE detection
+        if (
+            appName.includes('antigravity') ||
+            uriScheme.includes('antigravity') ||
+            execPath.includes('antigravity') ||
+            appRoot.includes('antigravity') ||
+            fs.existsSync(path.join(os.homedir(), '.gemini', 'antigravity-ide')) ||
+            fs.existsSync(path.join(os.homedir(), '.gemini', 'config'))
+        ) {
+            return {
+                id: 'antigravity',
+                displayName: 'Antigravity IDE',
+                shortName: 'Antigravity',
+                targetIds: ['antigravity_global', 'antigravity_workspace']
+            };
+        }
+
+        // 2. Cursor IDE detection
+        if (
+            appName.includes('cursor') ||
+            uriScheme.includes('cursor') ||
+            execPath.includes('cursor') ||
+            appRoot.includes('cursor')
+        ) {
+            return {
+                id: 'cursor',
+                displayName: 'Cursor IDE',
+                shortName: 'Cursor',
+                targetIds: ['cursor']
+            };
+        }
+
+        // 3. Windsurf IDE detection
+        if (
+            appName.includes('windsurf') ||
+            uriScheme.includes('windsurf') ||
+            execPath.includes('windsurf') ||
+            appRoot.includes('windsurf')
+        ) {
+            return {
+                id: 'windsurf',
+                displayName: 'Windsurf IDE',
+                shortName: 'Windsurf',
+                targetIds: ['windsurf']
+            };
+        }
+
+        // 4. Cline / Roo Code detection
+        if (appName.includes('cline') || appName.includes('roo')) {
+            return {
+                id: 'cline',
+                displayName: 'Cline & Roo Code',
+                shortName: 'Cline',
+                targetIds: ['cline']
+            };
+        }
+
+        // 5. Claude Code detection
+        if (appName.includes('claude')) {
+            return {
+                id: 'claude',
+                displayName: 'Claude Code',
+                shortName: 'Claude',
+                targetIds: ['claude']
+            };
+        }
+
+        // 6. Default to Visual Studio Code (GitHub Copilot)
+        const currentName = vscode.env.appName || 'Visual Studio Code';
+        return {
+            id: 'vscode',
+            displayName: currentName,
+            shortName: 'VS Code',
+            targetIds: ['copilot']
+        };
+    }
+
+    /**
+     * Get detailed status of all supported IDE targets (filtered to current host by default)
+     */
+    static getIdeStatus(onlyCurrent = true) {
+        const detected = this.detectCurrentIde();
         const targetMap = this.getTargetPaths();
         const root = this.getWorkspaceRoot();
 
-        return IDE_TARGETS.map(target => {
+        const targetList = onlyCurrent
+            ? IDE_TARGETS.filter(target => detected.targetIds.includes(target.id))
+            : IDE_TARGETS;
+
+        const results = targetList.map(target => {
             const filePaths = targetMap[target.id] || [];
             let isSynced = false;
             let fileFound = null;
@@ -439,6 +556,9 @@ Always prefix terminal and CLI execution commands with \`rtk\` (e.g. \`rtk git s
                 available: target.type === 'global' || Boolean(root)
             };
         });
+
+        results.detectedIde = detected;
+        return results;
     }
 }
 

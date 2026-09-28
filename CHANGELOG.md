@@ -2,11 +2,18 @@
 
 All notable changes to the **Token Saver (RTK)** project will be documented in this file.
 
-## [1.3.1] - 2026-09-28
-### Added
-- **Official Extension Marketplace Icon**:
-  - Integrated high-resolution `resources/icon.png` in `package.json` for Open VSX and VS Code Extensions listing.
-  - Hardened automated release pipeline and PowerShell regex isolation (`${1}`).
+## [1.3.2] - 2026-09-28
+### Added & Improved
+- **Custom Minute-Based Auto-Refresh Input**:
+  - Replaced fixed-only timer intervals with a flexible minute input (`min`) allowing users to type custom refresh intervals (e.g. `1`, `2`, `5`, `10` minutes or fractions like `0.5`).
+  - Added Enter key / Set button support, unit display, and one-click quick presets in minutes.
+  - Corrected dropdown layering with elevated stacking contexts and viewport width clamping.
+- **Auto-Detected Host IDE & Focused Sync Hub**:
+  - Automatically detects the current IDE host environment (`Antigravity IDE`, `Cursor IDE`, `Windsurf IDE`, `VS Code (GitHub Copilot)`, `Cline / Roo Code`, `Claude Code`).
+  - IDE Rules Hub dynamically focuses on the detected IDE host and displays only the active host's target options (e.g. Global & Workspace for Antigravity, `.cursorrules`/`.mdc` for Cursor, `.windsurfrules` for Windsurf).
+  - Single-click sync button dynamically adapts to `⚡ Sync Rule` / `⚡ Sync All` for the detected IDE.
+- **Sidebar Boundary & Overflow Hardening**:
+  - Added flex-shrink constraints (`min-width: 0`) and text ellipsis truncation across IDE cards, badges, and headers for flawless rendering at default sidebar widths.
 
 ## [1.3.0] - 2026-09-28
 ### Added

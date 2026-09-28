@@ -22,6 +22,24 @@ async function refreshStatus(context) {
     }
 }
 
+async function checkWeeklyAutoSync(context) {
+    const config = vscode.workspace.getConfiguration('tokenSaver');
+    const weeklyEnabled = context.globalState.get('tokenSaver.weeklyAutoSync', config.get('weeklyAutoSync', true));
+    if (!weeklyEnabled) return;
+
+    const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+    const lastSync = context.globalState.get('tokenSaver.lastWeeklySyncTime', 0);
+    const now = Date.now();
+
+    if (now - lastSync > ONE_WEEK_MS) {
+        await context.globalState.update('tokenSaver.lastWeeklySyncTime', now);
+        if (outputChannel) {
+            outputChannel.appendLine('[Token Saver] Running scheduled weekly upstream GitHub RTK sync check...');
+        }
+        await RtkUpdater.checkForUpdates(true);
+    }
+}
+
 async function activate(context) {
     outputChannel = vscode.window.createOutputChannel('Token Saver (RTK)');
     statusBar = new StatusBarManager();
@@ -85,9 +103,15 @@ async function activate(context) {
         }, 4000);
     }
 
-    // Periodic metrics refresher for live status bar
+    // Check weekly auto sync
+    setTimeout(() => {
+        checkWeeklyAutoSync(context);
+    }, 6000);
+
+    // Periodic metrics refresher & weekly auto sync check
     metricsInterval = setInterval(() => {
         refreshStatus(context);
+        checkWeeklyAutoSync(context);
     }, 30000);
 
     // Commands
@@ -129,12 +153,14 @@ async function activate(context) {
 
     const syncAllIdeRulesCmd = vscode.commands.registerCommand('tokenSaver.syncAllIdeRules', async () => {
         try {
-            const results = SkillInstaller.syncRules(isEnabled, 'all');
+            const detected = SkillInstaller.detectCurrentIde();
+            const results = SkillInstaller.syncRules(isEnabled, 'current');
             vscode.window.showInformationMessage(
-                `🚀 Synced RTK automation rules across ${results.length} targets: VS Code (Copilot), Cursor, Windsurf, Cline, Claude Code, AGENTS.md, & Antigravity!`
+                `🚀 Synced RTK automation rules for ${detected.displayName} (${results.length} target${results.length > 1 ? 's' : ''})!`
             );
+            await refreshStatus(context);
         } catch (err) {
-            vscode.window.showErrorMessage(`Failed to sync multi-IDE rules: ${err.message}`);
+            vscode.window.showErrorMessage(`Failed to sync IDE rules: ${err.message}`);
         }
     });
 

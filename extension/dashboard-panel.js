@@ -53,8 +53,10 @@ class DashboardPanel {
                     case 'refresh':
                         await this.sendLatestData();
                         break;
+                    case 'minimize':
                     case 'popOut':
-                        // Already in editor tab, no-op or reveal
+                        vscode.commands.executeCommand('tokenSaver.sidebarView.focus');
+                        this.dispose();
                         break;
                     case 'toggleMode':
                         vscode.commands.executeCommand('tokenSaver.toggle');
@@ -83,6 +85,22 @@ class DashboardPanel {
                             type: 'updateCheckResult',
                             data: updateResult
                         });
+                        break;
+                    case 'toggleWeeklyAutoSync':
+                        const isWeekly = message.enabled !== undefined ? message.enabled : true;
+                        await this.context.globalState.update('tokenSaver.weeklyAutoSync', isWeekly);
+                        try {
+                            const cfg = vscode.workspace.getConfiguration('tokenSaver');
+                            await cfg.update('weeklyAutoSync', isWeekly, vscode.ConfigurationTarget.Global);
+                        } catch (e) {
+                            // ignore config update error
+                        }
+                        vscode.window.showInformationMessage(
+                            isWeekly 
+                                ? '⚡ Weekly auto-sync for upstream GitHub RTK is now ENABLED.' 
+                                : '⚪ Weekly auto-sync for upstream GitHub RTK is now DISABLED.'
+                        );
+                        this.sendLatestData();
                         break;
                     case 'updateRtk':
                         vscode.commands.executeCommand('tokenSaver.updateRtk');
@@ -114,6 +132,7 @@ class DashboardPanel {
     async sendLatestData() {
         const config = vscode.workspace.getConfiguration('tokenSaver');
         const isEnabled = this.context.globalState.get('tokenSaver.enabled', config.get('enableOnStartup', true));
+        const weeklyAutoSync = this.context.globalState.get('tokenSaver.weeklyAutoSync', config.get('weeklyAutoSync', true));
         const check = await RtkService.checkInstalled();
         const metrics = await RtkService.getParsedMetrics();
         const skillsInstalled = SkillInstaller.checkSkillsInstalled('all');
@@ -123,13 +142,16 @@ class DashboardPanel {
             type: 'stateUpdate',
             data: {
                 isEnabled,
+                weeklyAutoSync,
                 installed: check.installed,
                 version: check.version || 'Not installed',
                 binaryPath: check.path || 'Not detected',
                 metrics,
                 skillsInstalled,
                 scope: config.get('targetScope', 'all'),
-                ideStatus
+                ideStatus,
+                detectedIde: ideStatus.detectedIde,
+                isSidebar: false
             }
         });
     }
