@@ -2,7 +2,7 @@
   "name": "token-saver-rtk-ide",
   "displayName": "Token Saver (RTK) for VS Code & Agentic IDEs",
   "description": "Smart token optimization and CLI output compression proxy using RTK (Rust Token Killer) for VS Code (GitHub Copilot), Antigravity IDE, Cursor, Windsurf, Cline, Roo Code, Claude Code, and AGENTS.md.",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "publisher": "terenceooi",
   "author": {
     "name": "Terence",
@@ -17,6 +17,7 @@
     "url": "https://github.com/terenceooi99/token-saver-rtk-ide/issues"
   },
   "license": "MIT",
+  "icon": "resources/icon.png",
   "keywords": [
     "vscode",
     "copilot",
@@ -47,12 +48,45 @@
     "onStartupFinished"
   ],
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "tokenSaver",
+          "title": "RTK Token Saver",
+          "icon": "resources/activity-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "tokenSaver": [
+        {
+          "type": "webview",
+          "id": "tokenSaver.sidebarView",
+          "name": "Token Optimization",
+          "icon": "resources/activity-icon.svg"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "tokenSaver.openDashboard",
+          "when": "view == tokenSaver.sidebarView",
+          "group": "navigation@1"
+        },
+        {
+          "command": "tokenSaver.toggle",
+          "when": "view == tokenSaver.sidebarView",
+          "group": "navigation@2"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "tokenSaver.openDashboard",
-        "title": "Open Interactive Dashboard",
+        "title": "Pop Out to Editor Tab",
         "category": "Token Saver",
-        "icon": "$(dashboard)"
+        "icon": "$(screen-full)"
       },
       {
         "command": "tokenSaver.toggle",

@@ -53,6 +53,9 @@ class DashboardPanel {
                     case 'refresh':
                         await this.sendLatestData();
                         break;
+                    case 'popOut':
+                        // Already in editor tab, no-op or reveal
+                        break;
                     case 'toggleMode':
                         vscode.commands.executeCommand('tokenSaver.toggle');
                         setTimeout(() => this.sendLatestData(), 300);

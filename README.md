@@ -65,15 +65,18 @@
 
 ---
 
-## 🧩 Way 2: Interactive Webview Dashboard & Multi-IDE Hub
+## 🧩 Way 2: Primary Sidebar & Webview Dashboard (Multi-IDE Hub)
 
-The extension provides full graphical and automated control for **VS Code**, **Cursor**, **Windsurf**, **Antigravity**, and all OpenVSX-compatible editors.
+The extension provides full graphical and automated control directly from your **Primary Sidebar** and editor for **VS Code**, **Cursor**, **Windsurf**, **Antigravity**, and all OpenVSX-compatible editors.
 
 ### 🌟 Key Features:
-1. **Multi-IDE & AI Agent Synchronization Hub**:
+1. **Primary Sidebar Interactive Dashboard**:
+   - Click the **RTK Meter icon** on the Activity Bar / Primary Side Bar to instantly view and manage RTK optimization in a compact, sleek view.
+   - Includes a **Pop Out to Editor Tab** button (`⤢`) to expand into a full-width dashboard at any time.
+2. **Multi-IDE & AI Agent Synchronization Hub**:
    - 1-Click sync to `.github/copilot-instructions.md`, `.cursorrules`, `.windsurfrules`, `.clinerules`, `CLAUDE.md`, `AGENTS.md`, and `~/.gemini/config/`.
    - **Safe Delimiter System**: Preserves existing project instructions using `<!-- RTK_TOKEN_SAVER_START -->` blocks.
-2. **Interactive Glassmorphic Dashboard**:
+3. **Interactive Glassmorphic Dashboard**:
    - Live Token Savings Counter with animated visual meters.
    - Compression Efficiency Gauge (%) and Estimated Dollar Savings ($).
    - Per-tool visual savings charts (`git`, `cargo`, `npm`, `pytest`, `vitest`, `rg`, `ls`, etc.).

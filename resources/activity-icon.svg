@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Outer gauge arc -->
+  <path d="M4.5 16.5A8.5 8.5 0 1 1 19.5 16.5" />
+  <!-- Gauge needle pointing to optimized/high efficiency level -->
+  <line x1="12" y1="12" x2="16" y2="8" stroke-width="2" />
+  <circle cx="12" cy="12" r="1.75" fill="currentColor" />
+  <!-- Small gauge tick marks -->
+  <line x1="12" y1="4.5" x2="12" y2="6" />
+  <line x1="6.5" y1="7" x2="7.5" y2="8" />
+  <line x1="17.5" y1="7" x2="16.5" y2="8" />
+</svg>

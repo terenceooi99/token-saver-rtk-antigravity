@@ -4,10 +4,12 @@ const RtkService = require('./rtk-service');
 const RtkUpdater = require('./rtk-updater');
 const SkillInstaller = require('./skill-installer');
 const DashboardPanel = require('./dashboard-panel');
+const SidebarProvider = require('./sidebar-provider');
 
 let statusBar;
 let outputChannel;
 let metricsInterval;
+let sidebarProvider;
 
 async function refreshStatus(context) {
     const config = vscode.workspace.getConfiguration('tokenSaver');
@@ -15,13 +17,29 @@ async function refreshStatus(context) {
     const check = await RtkService.checkInstalled();
     const metrics = isEnabled ? await RtkService.getParsedMetrics() : null;
     statusBar.update(isEnabled, check.version, metrics);
+    if (sidebarProvider) {
+        sidebarProvider.sendLatestData();
+    }
 }
 
 async function activate(context) {
     outputChannel = vscode.window.createOutputChannel('Token Saver (RTK)');
     statusBar = new StatusBarManager();
+    sidebarProvider = new SidebarProvider(context.extensionUri, context);
+
     context.subscriptions.push(statusBar);
     context.subscriptions.push(outputChannel);
+    context.subscriptions.push(
+        vscode.window.registerWebviewViewProvider(
+            SidebarProvider.viewType,
+            sidebarProvider,
+            {
+                webviewOptions: {
+                    retainContextWhenHidden: true
+                }
+            }
+        )
+    );
 
     const config = vscode.workspace.getConfiguration('tokenSaver');
     let isEnabled = context.globalState.get('tokenSaver.enabled', config.get('enableOnStartup', true));

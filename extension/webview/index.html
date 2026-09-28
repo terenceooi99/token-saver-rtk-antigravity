@@ -8,14 +8,14 @@
     <link rel="stylesheet" href="{{styleUri}}">
 </head>
 <body>
-    <div class="dashboard-container">
+    <div class="dashboard-container" id="dashboardContainer">
         <!-- Header -->
         <header class="dashboard-header">
             <div class="brand">
                 <div class="brand-icon">⚡</div>
-                <div>
+                <div class="brand-text">
                     <h1>Token Saver <span class="badge-rtk">RTK</span></h1>
-                    <p class="subtitle">Universal Token Optimization Proxy for VS Code & Agentic IDEs</p>
+                    <p class="subtitle">Universal Token Optimization Proxy</p>
                 </div>
             </div>
             <div class="header-actions">
@@ -23,7 +23,8 @@
                     <span class="status-dot"></span>
                     <span id="statusText">Checking...</span>
                 </div>
-                <button class="btn btn-primary" id="toggleModeBtn">Toggle Mode</button>
+                <button class="btn btn-primary" id="toggleModeBtn">Toggle</button>
+                <button class="btn btn-ghost" id="popOutBtn" title="Pop Out to Editor Tab">⤢</button>
                 <button class="btn btn-ghost" id="refreshBtn" title="Refresh Metrics">🔄</button>
             </div>
         </header>
@@ -36,12 +37,12 @@
                     <span class="metric-icon">🔥</span>
                 </div>
                 <div class="metric-value" id="totalSavedVal">0</div>
-                <div class="metric-footer" id="savedRatioVal">Calculating savings...</div>
+                <div class="metric-footer" id="savedRatioVal">Calculating...</div>
             </div>
 
             <div class="metric-card card-glow-green">
                 <div class="metric-header">
-                    <span class="metric-title">Compression Efficiency</span>
+                    <span class="metric-title">Efficiency</span>
                     <span class="metric-icon">📉</span>
                 </div>
                 <div class="metric-value" id="efficiencyVal">0%</div>
@@ -52,7 +53,7 @@
 
             <div class="metric-card card-glow-purple">
                 <div class="metric-header">
-                    <span class="metric-title">Estimated Cost Saved</span>
+                    <span class="metric-title">Cost Saved</span>
                     <span class="metric-icon">💰</span>
                 </div>
                 <div class="metric-value" id="costSavedVal">$0.00</div>
@@ -61,11 +62,11 @@
 
             <div class="metric-card card-glow-amber">
                 <div class="metric-header">
-                    <span class="metric-title">Active AI Agent Targets</span>
+                    <span class="metric-title">Active Targets</span>
                     <span class="metric-icon">🤖</span>
                 </div>
                 <div class="metric-value" id="activeTargetsVal">0 Synced</div>
-                <div class="metric-footer" id="skillsScopeVal">VS Code • Cursor • Windsurf • Antigravity</div>
+                <div class="metric-footer" id="skillsScopeVal">All AI Agents</div>
             </div>
         </section>
 
@@ -77,10 +78,10 @@
                 <section class="panel-card ide-ecosystem-section">
                     <div class="panel-header">
                         <div>
-                            <h2>🤖 Multi-IDE & AI Agent Sync Hub</h2>
-                            <p class="panel-subtitle">Automatically synchronize RTK command rules into any AI coding assistant or IDE</p>
+                            <h2>🤖 Multi-IDE Sync Hub</h2>
+                            <p class="panel-subtitle">Synchronize RTK rules across AI coding assistants</p>
                         </div>
-                        <button class="btn btn-sm btn-primary" id="syncAllIdesBtn">⚡ Sync All Targets</button>
+                        <button class="btn btn-sm btn-primary" id="syncAllIdesBtn">⚡ Sync All</button>
                     </div>
                     
                     <div class="ide-grid" id="ideGridContainer">
@@ -91,8 +92,8 @@
                 <!-- Command Savings Breakdown -->
                 <section class="panel-card chart-section">
                     <div class="panel-header">
-                        <h2>📊 Command Savings Breakdown</h2>
-                        <span class="panel-tag">Live Filter Breakdown</span>
+                        <h2>📊 Savings Breakdown</h2>
+                        <span class="panel-tag">Live Breakdown</span>
                     </div>
                     <div class="chart-container" id="chartContainer">
                         <!-- Dynamic Bars injected by JS -->
@@ -116,7 +117,7 @@
                             <span class="btn-icon">🧠</span>
                             <div class="btn-text-block">
                                 <span class="btn-label">1-Click Antigravity Skills</span>
-                                <span class="btn-sub">Install /rtk-savedtokenon, /rtk-gain & /rtk-update</span>
+                                <span class="btn-sub">Install /rtk-* chat commands</span>
                             </div>
                         </button>
 
@@ -124,14 +125,14 @@
                             <span class="btn-icon">🚀</span>
                             <div class="btn-text-block">
                                 <span class="btn-label">Sync Upstream GitHub RTK</span>
-                                <span class="btn-sub">Check & update rtk-ai/rtk (/rtk-update)</span>
+                                <span class="btn-sub">Check & update rtk-ai/rtk</span>
                             </div>
                         </button>
 
                         <button class="btn btn-action" id="openTerminalBtn">
                             <span class="btn-icon">🖥️</span>
                             <div class="btn-text-block">
-                                <span class="btn-label">Open Terminal Scoreboard</span>
+                                <span class="btn-label">Terminal Scoreboard</span>
                                 <span class="btn-sub">Run rtk gain interactively</span>
                             </div>
                         </button>
@@ -149,27 +150,27 @@
                 <!-- System Health Diagnostics -->
                 <section class="panel-card">
                     <div class="panel-header">
-                        <h2>🛠️ System Health & Diagnostics</h2>
+                        <h2>🛠️ System Health</h2>
                     </div>
                     <div class="diagnostics-list">
                         <div class="diag-row">
-                            <span class="diag-key">RTK CLI Status:</span>
+                            <span class="diag-key">RTK CLI:</span>
                             <span class="diag-val" id="diagCliStatus">Checking...</span>
                         </div>
                         <div class="diag-row">
-                            <span class="diag-key">Installed Version:</span>
+                            <span class="diag-key">Version:</span>
                             <span class="diag-val" id="diagVersion">--</span>
                         </div>
                         <div class="diag-row">
-                            <span class="diag-key">Binary Location:</span>
+                            <span class="diag-key">Location:</span>
                             <span class="diag-val font-mono" id="diagBinaryPath">--</span>
                         </div>
                         <div class="diag-row">
-                            <span class="diag-key">Config Target Scope:</span>
+                            <span class="diag-key">Scope:</span>
                             <span class="diag-val" id="diagScope">All Supported IDEs</span>
                         </div>
                         <div class="diag-row">
-                            <span class="diag-key">Active Sync Targets:</span>
+                            <span class="diag-key">Active:</span>
                             <span class="diag-val" id="diagActiveTargets">--</span>
                         </div>
                     </div>
@@ -179,10 +180,10 @@
 
         <!-- Footer -->
         <footer class="dashboard-footer">
-            <span>⚡ Token Saver (RTK) • Universal Agentic AI Token Optimizer</span>
+            <span>⚡ Token Saver (RTK)</span>
             <span class="footer-links">
-                <a href="https://github.com/rtk-ai/rtk" target="_blank">Upstream RTK</a> • 
-                <a href="https://github.com/terenceooi99/token-saver-rtk-ide" target="_blank">Plugin GitHub</a>
+                <a href="https://github.com/rtk-ai/rtk" target="_blank">RTK Core</a> • 
+                <a href="https://github.com/terenceooi99/token-saver-rtk-ide" target="_blank">GitHub</a>
             </span>
         </footer>
     </div>

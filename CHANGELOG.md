@@ -2,6 +2,15 @@
 
 All notable changes to the **Token Saver (RTK)** project will be documented in this file.
 
+## [1.3.0] - 2026-09-28
+### Added
+- **Primary Sidebar Interactive Dashboard**:
+  - Integrated a dedicated Activity Bar container with a minimalist meter/gauge icon (`resources/activity-icon.svg`) under the title **"RTK Token Saver"**.
+  - Clicking the icon opens the **"Token Optimization"** interactive dashboard directly inside the Primary Sidebar.
+  - Implemented `SidebarProvider` (`vscode.WebviewViewProvider`) with on-demand visibility-aware data loading and instant interaction response.
+  - Added a **"Pop Out to Editor Tab"** (`⤢`) header toolbar and in-view button allowing seamless switching between compact sidebar view and full-width editor tab.
+  - Fully responsive glassmorphic UI adapting effortlessly between narrow sidebar widths and wide editor panels.
+
 ## [1.2.1] - 2026-09-28
 ### Added
 - **Simultaneous Dual-Mode Activation Out-of-the-Box**:

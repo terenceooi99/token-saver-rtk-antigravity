@@ -5,6 +5,7 @@ const vscode = acquireVsCodeApi();
 const statusPill = document.getElementById('statusPill');
 const statusText = document.getElementById('statusText');
 const toggleModeBtn = document.getElementById('toggleModeBtn');
+const popOutBtn = document.getElementById('popOutBtn');
 const refreshBtn = document.getElementById('refreshBtn');
 
 const totalSavedVal = document.getElementById('totalSavedVal');
@@ -48,6 +49,12 @@ const IDE_ICONS = {
 toggleModeBtn.addEventListener('click', () => {
     vscode.postMessage({ command: 'toggleMode' });
 });
+
+if (popOutBtn) {
+    popOutBtn.addEventListener('click', () => {
+        vscode.postMessage({ command: 'popOut' });
+    });
+}
 
 refreshBtn.addEventListener('click', () => {
     refreshBtn.style.transform = 'rotate(360deg)';
