@@ -24,5 +24,5 @@ When `/publishtokensavernow` is triggered:
 3. **Verify Pipeline Status**:
    - Confirm the new git tag `v<version>` was pushed to `origin main`.
    - Provide the user with direct monitoring links:
-     - 🚀 **GitHub Actions Pipeline**: `https://github.com/terenceooi99/token-saver-rtk-antigravity/actions`
-     - 📦 **Open VSX Extension Page**: `https://open-vsx.org/extension/terenceooi/token-saver-rtk-antigravity`
+     - 🚀 **GitHub Actions Pipeline**: `https://github.com/terenceooi99/token-saver-rtk-ide/actions`
+     - 📦 **Open VSX Extension Page**: `https://open-vsx.org/extension/terenceooi/token-saver-rtk-ide`

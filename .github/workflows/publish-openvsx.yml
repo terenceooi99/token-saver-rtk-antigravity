@@ -23,17 +23,17 @@ jobs:
           node-version: 20
 
       - name: Package VSIX
-        run: npx @vscode/vsce package --out token-saver-rtk-antigravity.vsix
+        run: npx @vscode/vsce package --out token-saver-rtk-ide.vsix
 
       - name: Publish to Open VSX
         if: env.OVSX_PAT != ''
         continue-on-error: true
-        run: npx ovsx publish token-saver-rtk-antigravity.vsix -p "$OVSX_PAT"
+        run: npx ovsx publish token-saver-rtk-ide.vsix -p "$OVSX_PAT"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: token-saver-rtk-antigravity.vsix
+          files: token-saver-rtk-ide.vsix
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

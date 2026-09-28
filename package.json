@@ -1,5 +1,5 @@
 {
-  "name": "token-saver-rtk-antigravity",
+  "name": "token-saver-rtk-ide",
   "displayName": "Token Saver (RTK) for VS Code & Agentic IDEs",
   "description": "Smart token optimization and CLI output compression proxy using RTK (Rust Token Killer) for VS Code (GitHub Copilot), Antigravity IDE, Cursor, Windsurf, Cline, Roo Code, Claude Code, and AGENTS.md.",
   "version": "1.2.0",
@@ -10,11 +10,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/terenceooi99/token-saver-rtk-antigravity"
+    "url": "https://github.com/terenceooi99/token-saver-rtk-ide"
   },
-  "homepage": "https://github.com/terenceooi99/token-saver-rtk-antigravity#readme",
+  "homepage": "https://github.com/terenceooi99/token-saver-rtk-ide#readme",
   "bugs": {
-    "url": "https://github.com/terenceooi99/token-saver-rtk-antigravity/issues"
+    "url": "https://github.com/terenceooi99/token-saver-rtk-ide/issues"
   },
   "license": "MIT",
   "keywords": [

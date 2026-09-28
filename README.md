@@ -5,7 +5,7 @@
 [![VS Code](https://img.shields.io/badge/VS%20Code-Compatible-007ACC.svg)](https://code.visualstudio.com)
 [![Cursor](https://img.shields.io/badge/Cursor%20IDE-Compatible-black.svg)](https://cursor.com)
 [![Windsurf](https://img.shields.io/badge/Windsurf%20IDE-Compatible-00E5FF.svg)](https://codeium.com/windsurf)
-[![Antigravity](https://img.shields.io/badge/Antigravity%20IDE-Compatible-purple.svg)](https://github.com/terenceooi99/token-saver-rtk-antigravity)
+[![Antigravity](https://img.shields.io/badge/Antigravity%20IDE-Compatible-purple.svg)](https://github.com/terenceooi99/token-saver-rtk-ide)
 
 **Token Saver (RTK)** is a universal token optimization suite and CLI output compression proxy using [RTK (Rust Token Killer)](https://www.rtk-ai.app). It slashes AI context window token consumption by **60% - 90%** during terminal command execution (`git`, `cargo`, `npm`, `pnpm`, `pytest`, `vitest`, `rg`, `ls`, `tree`, etc.) across **all major Agentic AI IDEs and coding assistants**.
 
@@ -148,7 +148,7 @@ You can also synchronize rules directly from terminal:
 
 3. **Publish to Open VSX**:
    ```bash
-   npx ovsx publish token-saver-rtk-antigravity-1.2.0.vsix -p <YOUR_OPENVSX_ACCESS_TOKEN>
+   npx ovsx publish token-saver-rtk-ide-1.2.0.vsix -p <YOUR_OPENVSX_ACCESS_TOKEN>
    ```
 
 ---
@@ -156,7 +156,7 @@ You can also synchronize rules directly from terminal:
 ## 👤 Author & Maintainer
 
 - **Terence** — [terenceooi1688@gmail.com](mailto:terenceooi1688@gmail.com)
-- **GitHub**: [terenceooi99/token-saver-rtk-antigravity](https://github.com/terenceooi99/token-saver-rtk-antigravity)
+- **GitHub**: [terenceooi99/token-saver-rtk-ide](https://github.com/terenceooi99/token-saver-rtk-ide)
 
 ---
 

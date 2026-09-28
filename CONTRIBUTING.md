@@ -11,7 +11,7 @@ We welcome contributions of all kinds: bug fixes, new IDE/agent integrations, pe
 Before diving in, here is a quick overview of how the codebase is structured:
 
 ```
-token-saver-rtk-antigravity/
+token-saver-rtk-ide/
 ├── extension/                 # VS Code & OpenVSX Extension Core
 │   ├── extension.js           # Extension entry point & command registrations
 │   ├── rtk-service.js         # RTK CLI telemetry, execution proxy & metrics parser
@@ -42,8 +42,8 @@ token-saver-rtk-antigravity/
 
 ### 2. Clone & Install
 ```bash
-git clone https://github.com/terenceooi99/token-saver-rtk-antigravity.git
-cd token-saver-rtk-antigravity
+git clone https://github.com/terenceooi99/token-saver-rtk-ide.git
+cd token-saver-rtk-ide
 npm install
 ```
 
@@ -106,5 +106,5 @@ npx @vscode/vsce package
 ## 📬 Contact & Questions
 
 Have questions, ideas, or feedback?
-- Open an issue on [GitHub Issues](https://github.com/terenceooi99/token-saver-rtk-antigravity/issues)
+- Open an issue on [GitHub Issues](https://github.com/terenceooi99/token-saver-rtk-ide/issues)
 - Email: [terenceooi1688@gmail.com](mailto:terenceooi1688@gmail.com)
