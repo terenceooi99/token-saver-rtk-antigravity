@@ -1,4 +1,4 @@
-name: Publish to Open VSX & GitHub Releases
+﻿name: Publish to Open VSX & GitHub Releases
 
 on:
   push:
@@ -20,7 +20,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Package VSIX
         run: npx @vscode/vsce package --out token-saver-rtk-ide.vsix
