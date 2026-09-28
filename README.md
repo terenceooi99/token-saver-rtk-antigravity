@@ -35,9 +35,10 @@
 │ (In-Chat / Manual Skill Control)  │ (GUI Status Bar & Webview Panel)   │
 ├───────────────────────────────────┼────────────────────────────────────┤
 │ • Type / in chat for instant menu │ • Multi-IDE & Agent Sync Hub       │
-│ • /rtk-savedtokenon (Enable)      │ • Live Status Bar: 48k saved (72%) │
-│ • /rtk-savedtokenoff (Disable)    │ • Interactive Webview Dashboard    │
-│ • /rtk-gain (View Scoreboard)     │ • Upstream GitHub RTK auto-sync    │
+│ • /rtk-update (GitHub Sync)       │ • Live Status Bar: 48k saved (72%) │
+│ • /rtk-savedtokenon (Enable)      │ • Interactive Webview Dashboard    │
+│ • /rtk-savedtokenoff (Disable)    │ • Upstream GitHub RTK auto-sync    │
+│ • /rtk-gain (View Scoreboard)     │ • 1-Click /rtk-* Skills Installer  │
 └───────────────────────────────────┴────────────────────────────────────┘
 ```
 
@@ -89,6 +90,7 @@ The extension provides full graphical and automated control for **VS Code**, **C
    - `Token Saver: Enable RTK Token Saving`
    - `Token Saver: Disable RTK Token Saving`
    - `Token Saver: Check for RTK Core Updates (GitHub)`
+   - `Token Saver: Update RTK CLI (Sync Upstream GitHub Release)`
    - `Token Saver: 1-Click Install Antigravity Skills (/rtk-*)`
    - `Token Saver: Sync Global Antigravity Rules (~/.gemini)`
    - `Token Saver: Show Token Savings Scoreboard (rtk gain)`
