@@ -2,6 +2,13 @@
 
 All notable changes to the **Token Saver (RTK)** project will be documented in this file.
 
+## [1.2.1] - 2026-09-28
+### Added
+- **Simultaneous Dual-Mode Activation Out-of-the-Box**:
+  - Automatically installs and configures both **Way 1 (Chat / Slash Commands: `/rtk-update`, `/rtk-savedtokenon`, `/rtk-savedtokenoff`, `/rtk-gain`)** and **Way 2 (Status Bar, Interactive Dashboard, & Multi-IDE Rule Sync)** simultaneously upon extension installation and startup.
+  - Added `tokenSaver.autoInstallSkills` configuration option (default `true`) ensuring zero-friction setup for users in all supported AI agent ecosystems.
+  - Multi-target skill installer now deploys to both global (`~/.gemini/config/skills/`) and workspace (`.agents/skills/`) roots.
+
 ## [1.2.0] - 2026-09-28
 ### Added
 - **Universal Multi-IDE & AI Agent Support**:

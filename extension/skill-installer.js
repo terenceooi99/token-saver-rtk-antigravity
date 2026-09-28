@@ -294,14 +294,18 @@ Always prefix terminal and CLI execution commands with \`rtk\` (e.g. \`rtk git s
     /**
      * Install skills for Antigravity / Agentic systems
      */
-    static installSkills(targetScope = 'global') {
+    static installSkills(targetScope = 'all') {
+        if (targetScope === 'all') {
+            return this.installAllSkills();
+        }
+
         const installed = [];
         const baseDir = targetScope === 'workspace' 
             ? this.getWorkspaceSkillsPath() 
             : this.getGlobalSkillsPath();
 
         if (!baseDir) {
-            throw new Error('No target workspace directory available.');
+            throw new Error('No target directory available for scope: ' + targetScope);
         }
 
         for (const [skillName, skillContent] of Object.entries(SKILLS_MAP)) {
@@ -314,14 +318,81 @@ Always prefix terminal and CLI execution commands with \`rtk\` (e.g. \`rtk git s
             installed.push(skillName);
         }
 
-        return {
+        return [{
             scope: targetScope,
             destination: baseDir,
             installedSkills: installed
-        };
+        }];
     }
 
-    static checkSkillsInstalled(targetScope = 'global') {
+    /**
+     * Install skills across all available scopes (both global ~/.gemini/config/skills and workspace .agents/skills)
+     */
+    static installAllSkills() {
+        const results = [];
+        
+        // 1. Global Antigravity Config
+        try {
+            const globalDir = this.getGlobalSkillsPath();
+            if (globalDir) {
+                const installed = [];
+                for (const [skillName, skillContent] of Object.entries(SKILLS_MAP)) {
+                    const skillFolder = path.join(globalDir, skillName);
+                    if (!fs.existsSync(skillFolder)) {
+                        fs.mkdirSync(skillFolder, { recursive: true });
+                    }
+                    const skillFilePath = path.join(skillFolder, 'SKILL.md');
+                    fs.writeFileSync(skillFilePath, skillContent, 'utf8');
+                    installed.push(skillName);
+                }
+                results.push({
+                    scope: 'global',
+                    destination: globalDir,
+                    installedSkills: installed
+                });
+            }
+        } catch (err) {
+            console.warn('Failed to install global skills:', err);
+        }
+
+        // 2. Workspace Config (.agents/skills)
+        const wsDir = this.getWorkspaceSkillsPath();
+        if (wsDir) {
+            try {
+                const installed = [];
+                for (const [skillName, skillContent] of Object.entries(SKILLS_MAP)) {
+                    const skillFolder = path.join(wsDir, skillName);
+                    if (!fs.existsSync(skillFolder)) {
+                        fs.mkdirSync(skillFolder, { recursive: true });
+                    }
+                    const skillFilePath = path.join(skillFolder, 'SKILL.md');
+                    fs.writeFileSync(skillFilePath, skillContent, 'utf8');
+                    installed.push(skillName);
+                }
+                results.push({
+                    scope: 'workspace',
+                    destination: wsDir,
+                    installedSkills: installed
+                });
+            } catch (err) {
+                console.warn('Failed to install workspace skills:', err);
+            }
+        }
+
+        return results;
+    }
+
+    static checkSkillsInstalled(targetScope = 'all') {
+        if (targetScope === 'all') {
+            const globalOk = this.checkSkillsInstalled('global');
+            const wsRoot = this.getWorkspaceRoot();
+            if (wsRoot) {
+                const wsOk = this.checkSkillsInstalled('workspace');
+                return globalOk || wsOk;
+            }
+            return globalOk;
+        }
+
         const baseDir = targetScope === 'workspace' 
             ? this.getWorkspaceSkillsPath() 
             : this.getGlobalSkillsPath();

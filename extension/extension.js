@@ -26,6 +26,7 @@ async function activate(context) {
     const config = vscode.workspace.getConfiguration('tokenSaver');
     let isEnabled = context.globalState.get('tokenSaver.enabled', config.get('enableOnStartup', true));
     const targetScope = config.get('targetScope', 'all');
+    const autoInstallSkills = config.get('autoInstallSkills', true);
 
     // Initial check of RTK binary
     const check = await RtkService.checkInstalled();
@@ -46,7 +47,16 @@ async function activate(context) {
         });
     }
 
-    // Initial multi-IDE rules sync & status bar update
+    // Auto-install skills (Way 1: Chat / Slash Commands) & sync Multi-IDE rules (Way 2: Dashboard & Status Bar)
+    // Ensures Way 1 & Way 2 are both available simultaneously out-of-the-box upon plugin installation
+    if (autoInstallSkills) {
+        try {
+            SkillInstaller.installAllSkills();
+        } catch (err) {
+            outputChannel.appendLine(`Notice: Skill auto-installer: ${err.message}`);
+        }
+    }
+
     SkillInstaller.syncRules(isEnabled, targetScope);
     await refreshStatus(context);
 
@@ -142,10 +152,10 @@ async function activate(context) {
 
     const installSkillsCmd = vscode.commands.registerCommand('tokenSaver.installSkills', async () => {
         try {
-            const scope = config.get('targetScope', 'global');
-            const result = SkillInstaller.installSkills(scope === 'workspace' ? 'workspace' : 'global');
+            const results = SkillInstaller.installAllSkills();
+            const dests = results.map(r => r.destination).join(' and ');
             vscode.window.showInformationMessage(
-                `🧠 Successfully installed Antigravity & AI Agent skills (/rtk-savedtokenon, /rtk-savedtokenoff, /rtk-gain, /rtk-update) to ${result.destination}!`
+                `🧠 Successfully installed Antigravity & AI Agent skills (/rtk-savedtokenon, /rtk-savedtokenoff, /rtk-gain, /rtk-update) to: ${dests}!`
             );
         } catch (err) {
             vscode.window.showErrorMessage(`Failed to install skills: ${err.message}`);

@@ -25,20 +25,23 @@
 
 ---
 
-## 🎯 Dual-Mode Architecture & Interactive Dashboard
+## 🎯 Dual-Mode Simultaneous Architecture & Interactive Dashboard
+
+> ⚡ **Zero-Setup Out-of-the-Box**: Immediately after installing this plugin, **Way 1 (Chat / Slash Commands)** and **Way 2 (GUI Status Bar & Webview Dashboard)** are **both automatically active and available simultaneously**.
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
-│                      TOKEN SAVER (RTK) MODES                           │
+│             TOKEN SAVER (RTK) SIMULTANEOUS DUAL-MODE ARCHITECTURE      │
 ├───────────────────────────────────┬────────────────────────────────────┤
 │ WAY 1: Chat / Slash Commands      │ WAY 2: Extension & Dashboard       │
-│ (In-Chat / Manual Skill Control)  │ (GUI Status Bar & Webview Panel)   │
+│ (In-Chat / Direct Agent Control)  │ (GUI Status Bar & Webview Panel)   │
 ├───────────────────────────────────┼────────────────────────────────────┤
-│ • Type / in chat for instant menu │ • Multi-IDE & Agent Sync Hub       │
-│ • /rtk-update (GitHub Sync)       │ • Live Status Bar: 48k saved (72%) │
-│ • /rtk-savedtokenon (Enable)      │ • Interactive Webview Dashboard    │
-│ • /rtk-savedtokenoff (Disable)    │ • Upstream GitHub RTK auto-sync    │
-│ • /rtk-gain (View Scoreboard)     │ • 1-Click /rtk-* Skills Installer  │
+│ • Ready immediately upon install  │ • Live Status Bar: 48k saved (72%) │
+│ • Type / in chat for instant menu │ • Interactive Webview Dashboard    │
+│ • /rtk-update (GitHub Sync)       │ • Multi-IDE & Agent Sync Hub       │
+│ • /rtk-savedtokenon (Enable)      │ • Upstream GitHub RTK auto-sync    │
+│ • /rtk-savedtokenoff (Disable)    │ • Automatic rules synchronization  │
+│ • /rtk-gain (View Scoreboard)     │ • Real-time token savings gauge    │
 └───────────────────────────────────┴────────────────────────────────────┘
 ```
 
@@ -46,7 +49,7 @@
 
 ## 🚀 Way 1: Chat & Slash Commands (Antigravity & Agent Skills)
 
-Trigger commands directly in your AI assistant chat by typing `/`:
+**Automatically configured upon plugin install!** Trigger commands directly in your AI assistant chat simply by typing `/`:
 
 | Slash Command | Action |
 | :--- | :--- |
@@ -55,7 +58,7 @@ Trigger commands directly in your AI assistant chat by typing `/`:
 | **`/rtk-savedtokenoff`** | **Disables RTK mode**. Reverts to standard unproxied command execution. |
 | **`/rtk-gain`** | **Displays the live token savings scoreboard** and efficiency metrics. |
 
-### Installing Skills into your IDE / Global Profile:
+*(Optional Manual Re-install)*:
 - **Command Palette**: `Token Saver: 1-Click Install Antigravity Skills (/rtk-*)`
 - **Windows (PowerShell)**: `.\scripts\install-skills.ps1`
 - **Linux / macOS (Bash)**: `./scripts/install-skills.sh`

@@ -113,7 +113,7 @@ class DashboardPanel {
         const isEnabled = this.context.globalState.get('tokenSaver.enabled', config.get('enableOnStartup', true));
         const check = await RtkService.checkInstalled();
         const metrics = await RtkService.getParsedMetrics();
-        const skillsInstalled = SkillInstaller.checkSkillsInstalled('global');
+        const skillsInstalled = SkillInstaller.checkSkillsInstalled('all');
         const ideStatus = SkillInstaller.getIdeStatus();
 
         this.panel.webview.postMessage({

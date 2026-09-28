@@ -120,6 +120,11 @@
           "default": true,
           "description": "Automatically enable RTK token compression when opening a project."
         },
+        "tokenSaver.autoInstallSkills": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically install Antigravity & Agent chat skills (/rtk-*) on startup so Way 1 (Chat Commands) and Way 2 (Dashboard & Status Bar) are both available simultaneously."
+        },
         "tokenSaver.targetScope": {
           "type": "string",
           "enum": [
