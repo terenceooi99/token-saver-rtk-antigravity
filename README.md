@@ -155,7 +155,7 @@ You can also synchronize rules directly from terminal:
 
 ## 👤 Author & Maintainer
 
-- **Terence** — [terenceooi99@gmail.com](mailto:terenceooi99@gmail.com)
+- **Terence** — [terenceooi1688@gmail.com](mailto:terenceooi1688@gmail.com)
 - **GitHub**: [terenceooi99/token-saver-rtk-antigravity](https://github.com/terenceooi99/token-saver-rtk-antigravity)
 
 ---
