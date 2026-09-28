@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
 Automates version bumping, tagging, and triggering Open VSX + GitHub Releases deployment for Token Saver (RTK).
 #>
@@ -48,26 +48,26 @@ if ($CustomVersion -ne "") {
 Write-Host "Target new version: v$newVersion" -ForegroundColor Green
 
 # Update version in package.json
-$updatedJson = $jsonContent -replace '("version":\s*")[^"]+(")', "`$1$newVersion`$2"
-Set-Content -Path $packageJsonPath -Value $updatedJson -NoNewline
+$updatedJson = $jsonContent -replace '("version":\s*")[^"]+(")', ('$1' + $newVersion + '$2')
+[System.IO.File]::WriteAllText($packageJsonPath, $updatedJson, [System.Text.Encoding]::UTF8)
 Write-Host " [OK] Updated package.json version to $newVersion" -ForegroundColor Green
 
 # Git commit, tag, and push
 Set-Location $projectRoot
 
 Write-Host "Staging and committing release v$newVersion..." -ForegroundColor Yellow
-git add package.json README.md CHANGELOG.md .github/workflows/publish-openvsx.yml
-git commit -m "chore(release): v$newVersion [skip ci]" --allow-empty
-git tag "v$newVersion"
+git add package.json README.md CHANGELOG.md .github/workflows/publish-openvsx.yml scripts/publish-tokensaver.ps1
+git commit -m "chore(release): v$newVersion" --allow-empty
+git tag -a "v$newVersion" -m "Release v$newVersion" -f
 
 Write-Host "Pushing commit and tag v$newVersion to origin main..." -ForegroundColor Yellow
 git push origin main
-git push origin "v$newVersion"
+git push origin "v$newVersion" -f
 
 Write-Host "`n Successfully published release tag v$newVersion!" -ForegroundColor Green
 Write-Host "=================================================================" -ForegroundColor Cyan
-Write-Host " 🚀 GitHub Actions Workflow Triggered:" -ForegroundColor Cyan
+Write-Host " GitHub Actions Workflow Triggered:" -ForegroundColor Cyan
 Write-Host "    https://github.com/terenceooi99/token-saver-rtk-ide/actions" -ForegroundColor White
-Write-Host " 📦 Open VSX Extension Listing:" -ForegroundColor Cyan
+Write-Host " Open VSX Extension Listing:" -ForegroundColor Cyan
 Write-Host "    https://open-vsx.org/extension/terenceooi/token-saver-rtk-ide" -ForegroundColor White
 Write-Host "=================================================================" -ForegroundColor Cyan
