@@ -32,3 +32,10 @@ When `/publishtokensavernow` is triggered:
    - When tagging a commit for CI-based publishing (Open VSX / GitHub Releases), the commit message must NOT contain `[skip ci]` or `[ci skip]`, otherwise GitHub Actions completely ignores the tag push.
 2. **Always write JSON without UTF-8 BOM**:
    - In PowerShell scripts, use `New-Object System.Text.UTF8Encoding $false` when writing `package.json` to prevent inserting Byte Order Marks (`0xEF 0xBB 0xBF`) that cause Node.js and `@vscode/vsce` JSON parser errors.
+3. **PowerShell Regex Capture Group Isolation (`${1}`)**:
+   - In PowerShell `-replace` expressions modifying `package.json`, always use `${1}` (e.g. `'${1}' + $newVersion + '$2'`) rather than `$1` to prevent digits at the start of `$newVersion` (e.g., `1.3.0`) from being parsed as capture group `$11`.
+4. **VS Code Root Icon vs View Icon Requirements**:
+   - Root `package.json` `"icon"` must always be a PNG (`resources/icon.png`, minimum 128x128 square). SVGs are disallowed at root.
+   - `contributes.viewsContainers` and `contributes.views` should use SVG vector icons (`resources/activity-icon.svg`) for theme tinting and scaling.
+5. **Full Workspace Staging (`git add -A`)**:
+   - Release commits must stage all workspace changes (`git add -A`) before tagging so newly added providers, resources, and webview assets are included in the published package.
