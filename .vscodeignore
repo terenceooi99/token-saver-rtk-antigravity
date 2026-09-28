@@ -1,0 +1,7 @@
+﻿.git/**
+.github/**
+.agents/**
+scripts/**
+*.log
+.DS_Store
+Thumbs.db

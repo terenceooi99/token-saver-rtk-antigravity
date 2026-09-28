@@ -1,0 +1,90 @@
+﻿{
+  "name": "token-saver-rtk-antigravity",
+  "displayName": "Token Saver (RTK) for Antigravity IDE",
+  "description": "Smart token optimization and CLI output compression proxy for Antigravity IDE using RTK (Rust Token Killer).",
+  "version": "1.0.0",
+  "publisher": "terenceooi",
+  "author": {
+    "name": "Terence",
+    "email": "terenceooi99@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/terenceooi99/token-saver-rtk-antigravity"
+  },
+  "homepage": "https://github.com/terenceooi99/token-saver-rtk-antigravity#readme",
+  "bugs": {
+    "url": "https://github.com/terenceooi99/token-saver-rtk-antigravity/issues"
+  },
+  "license": "MIT",
+  "keywords": [
+    "antigravity",
+    "rtk",
+    "token-saver",
+    "token-killer",
+    "ai",
+    "llm",
+    "compression",
+    "context-window"
+  ],
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "AI",
+    "Other",
+    "Programming Languages"
+  ],
+  "main": "./extension/extension.js",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "tokenSaver.toggle",
+        "title": "Toggle RTK Token Saving Mode",
+        "category": "Token Saver"
+      },
+      {
+        "command": "tokenSaver.enable",
+        "title": "Enable RTK Token Saving",
+        "category": "Token Saver"
+      },
+      {
+        "command": "tokenSaver.disable",
+        "title": "Disable RTK Token Saving",
+        "category": "Token Saver"
+      },
+      {
+        "command": "tokenSaver.showSavings",
+        "title": "Show Token Savings Scoreboard (rtk gain)",
+        "category": "Token Saver"
+      },
+      {
+        "command": "tokenSaver.installCli",
+        "title": "Install RTK CLI Tool",
+        "category": "Token Saver"
+      }
+    ],
+    "configuration": {
+      "title": "Token Saver (RTK)",
+      "properties": {
+        "tokenSaver.enableOnStartup": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically enable RTK token compression when opening a project in Antigravity IDE."
+        },
+        "tokenSaver.autoSyncWorkspaceRules": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically synchronize .agents/rules/antigravity-rtk-rules.md in the current workspace."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "package": "npx @vscode/vsce package",
+    "publish-ovsx": "npx ovsx publish"
+  }
+}
