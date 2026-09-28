@@ -1,9 +1,5 @@
 const vscode = require('vscode');
-const path = require('path');
-const fs = require('fs');
-const RtkService = require('./rtk-service');
-const RtkUpdater = require('./rtk-updater');
-const SkillInstaller = require('./skill-installer');
+const WebviewHelper = require('./webview-helper');
 
 class DashboardPanel {
     static currentPanel = undefined;
@@ -42,87 +38,23 @@ class DashboardPanel {
         this.context = context;
         this.disposables = [];
 
-        this.updateWebviewContent();
-
+        this.panel.webview.html = WebviewHelper.getHtml(this.extensionUri, this.panel.webview);
         this.panel.onDidDispose(() => this.dispose(), null, this.disposables);
 
         this.panel.webview.onDidReceiveMessage(
             async (message) => {
-                switch (message.command) {
-                    case 'ready':
-                    case 'refresh':
-                        await this.sendLatestData();
-                        break;
-                    case 'minimize':
-                    case 'popOut':
-                        vscode.commands.executeCommand('tokenSaver.sidebarView.focus');
-                        this.dispose();
-                        break;
-                    case 'toggleMode':
-                        vscode.commands.executeCommand('tokenSaver.toggle');
-                        setTimeout(() => this.sendLatestData(), 300);
-                        break;
-                    case 'syncAllIdeRules':
-                        vscode.commands.executeCommand('tokenSaver.syncAllIdeRules');
-                        setTimeout(() => this.sendLatestData(), 400);
-                        break;
-                    case 'syncSingleTarget':
-                        if (message.targetId) {
-                            SkillInstaller.syncRules(true, [message.targetId]);
-                            vscode.window.showInformationMessage(`⚡ Synced RTK rule for ${message.targetId}`);
-                            setTimeout(() => this.sendLatestData(), 300);
-                        }
-                        break;
-                    case 'toggleTarget':
-                        if (message.targetId) {
-                            SkillInstaller.syncRules(!message.currentlySynced, [message.targetId]);
-                            setTimeout(() => this.sendLatestData(), 300);
-                        }
-                        break;
-                    case 'checkUpdates':
-                        const updateResult = await RtkUpdater.checkForUpdates(false);
-                        this.panel.webview.postMessage({
-                            type: 'updateCheckResult',
-                            data: updateResult
-                        });
-                        break;
-                    case 'toggleWeeklyAutoSync':
-                        const isWeekly = message.enabled !== undefined ? message.enabled : true;
-                        await this.context.globalState.update('tokenSaver.weeklyAutoSync', isWeekly);
-                        try {
-                            const cfg = vscode.workspace.getConfiguration('tokenSaver');
-                            await cfg.update('weeklyAutoSync', isWeekly, vscode.ConfigurationTarget.Global);
-                        } catch (e) {
-                            // ignore config update error
-                        }
-                        vscode.window.showInformationMessage(
-                            isWeekly 
-                                ? '⚡ Weekly auto-sync for upstream GitHub RTK is now ENABLED.' 
-                                : '⚪ Weekly auto-sync for upstream GitHub RTK is now DISABLED.'
-                        );
-                        this.sendLatestData();
-                        break;
-                    case 'updateRtk':
-                        vscode.commands.executeCommand('tokenSaver.updateRtk');
-                        break;
-                    case 'installCli':
-                        vscode.commands.executeCommand('tokenSaver.installCli');
-                        break;
-                    case 'installSkills':
-                        vscode.commands.executeCommand('tokenSaver.installSkills');
-                        setTimeout(() => this.sendLatestData(), 500);
-                        break;
-                    case 'testLatency':
-                        const latency = await RtkService.testLatency();
-                        this.panel.webview.postMessage({
-                            type: 'latencyResult',
-                            data: latency
-                        });
-                        break;
-                    case 'openScoreboardTerminal':
-                        vscode.commands.executeCommand('tokenSaver.showSavings');
-                        break;
+                if (message.command === 'popOut' || message.command === 'minimize') {
+                    vscode.commands.executeCommand('tokenSaver.sidebarView.focus');
+                    this.dispose();
+                    return;
                 }
+                await WebviewHelper.handleMessage(
+                    message,
+                    this.panel.webview,
+                    this.context,
+                    false,
+                    () => this.sendLatestData()
+                );
             },
             null,
             this.disposables
@@ -130,47 +62,8 @@ class DashboardPanel {
     }
 
     async sendLatestData() {
-        const config = vscode.workspace.getConfiguration('tokenSaver');
-        const isEnabled = this.context.globalState.get('tokenSaver.enabled', config.get('enableOnStartup', true));
-        const weeklyAutoSync = this.context.globalState.get('tokenSaver.weeklyAutoSync', config.get('weeklyAutoSync', true));
-        const check = await RtkService.checkInstalled();
-        const metrics = await RtkService.getParsedMetrics();
-        const skillsInstalled = SkillInstaller.checkSkillsInstalled('all');
-        const ideStatus = SkillInstaller.getIdeStatus();
-
-        this.panel.webview.postMessage({
-            type: 'stateUpdate',
-            data: {
-                isEnabled,
-                weeklyAutoSync,
-                installed: check.installed,
-                version: check.version || 'Not installed',
-                binaryPath: check.path || 'Not detected',
-                metrics,
-                skillsInstalled,
-                scope: config.get('targetScope', 'all'),
-                ideStatus,
-                detectedIde: ideStatus.detectedIde,
-                isSidebar: false
-            }
-        });
-    }
-
-    updateWebviewContent() {
-        const webview = this.panel.webview;
-        const webviewDir = vscode.Uri.joinPath(this.extensionUri, 'extension', 'webview');
-
-        const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(webviewDir, 'dashboard.css'));
-        const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(webviewDir, 'dashboard.js'));
-
-        const htmlPath = path.join(this.extensionUri.fsPath, 'extension', 'webview', 'index.html');
-        let html = fs.readFileSync(htmlPath, 'utf8');
-
-        html = html.replace(/{{styleUri}}/g, styleUri.toString());
-        html = html.replace(/{{scriptUri}}/g, scriptUri.toString());
-        html = html.replace(/{{cspSource}}/g, webview.cspSource);
-
-        this.panel.webview.html = html;
+        const data = await WebviewHelper.getLatestStateData(this.context, false);
+        this.panel.webview.postMessage({ type: 'stateUpdate', data });
     }
 
     dispose() {
@@ -186,3 +79,4 @@ class DashboardPanel {
 }
 
 module.exports = DashboardPanel;
+

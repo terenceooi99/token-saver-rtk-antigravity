@@ -62,31 +62,14 @@ class RtkUpdater {
         });
     }
 
-    static parseVersion(versionStr) {
-        if (!versionStr) return null;
-        const match = versionStr.match(/(\d+)\.(\d+)\.(\d+)/);
-        if (!match) return null;
-        return {
-            major: parseInt(match[1], 10),
-            minor: parseInt(match[2], 10),
-            patch: parseInt(match[3], 10),
-            raw: match[0]
-        };
-    }
-
     static isNewer(latestStr, currentStr) {
-        const latest = this.parseVersion(latestStr);
-        const current = this.parseVersion(currentStr);
+        const clean = s => (s || '').replace(/^[^\d]*/, '').trim();
+        const latest = clean(latestStr);
+        const current = clean(currentStr);
         if (!latest || !current) return false;
-
-        if (latest.major > current.major) return true;
-        if (latest.major < current.major) return false;
-
-        if (latest.minor > current.minor) return true;
-        if (latest.minor < current.minor) return false;
-
-        return latest.patch > current.patch;
+        return latest.localeCompare(current, undefined, { numeric: true, sensitivity: 'base' }) > 0;
     }
+
 
     static async checkForUpdates(silent = false) {
         try {

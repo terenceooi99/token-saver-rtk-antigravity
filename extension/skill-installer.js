@@ -293,6 +293,20 @@ Always prefix terminal and CLI execution commands with \`rtk\` (e.g. \`rtk git s
         return results;
     }
 
+    static writeSkillsToDir(baseDir) {
+        if (!baseDir) return [];
+        const installed = [];
+        for (const [skillName, skillContent] of Object.entries(SKILLS_MAP)) {
+            const skillFolder = path.join(baseDir, skillName);
+            if (!fs.existsSync(skillFolder)) {
+                fs.mkdirSync(skillFolder, { recursive: true });
+            }
+            fs.writeFileSync(path.join(skillFolder, 'SKILL.md'), skillContent, 'utf8');
+            installed.push(skillName);
+        }
+        return installed;
+    }
+
     /**
      * Install skills for Antigravity / Agentic systems
      */
@@ -301,7 +315,6 @@ Always prefix terminal and CLI execution commands with \`rtk\` (e.g. \`rtk git s
             return this.installAllSkills();
         }
 
-        const installed = [];
         const baseDir = targetScope === 'workspace' 
             ? this.getWorkspaceSkillsPath() 
             : this.getGlobalSkillsPath();
@@ -310,16 +323,7 @@ Always prefix terminal and CLI execution commands with \`rtk\` (e.g. \`rtk git s
             throw new Error('No target directory available for scope: ' + targetScope);
         }
 
-        for (const [skillName, skillContent] of Object.entries(SKILLS_MAP)) {
-            const skillFolder = path.join(baseDir, skillName);
-            if (!fs.existsSync(skillFolder)) {
-                fs.mkdirSync(skillFolder, { recursive: true });
-            }
-            const skillFilePath = path.join(skillFolder, 'SKILL.md');
-            fs.writeFileSync(skillFilePath, skillContent, 'utf8');
-            installed.push(skillName);
-        }
-
+        const installed = this.writeSkillsToDir(baseDir);
         return [{
             scope: targetScope,
             destination: baseDir,
@@ -337,16 +341,7 @@ Always prefix terminal and CLI execution commands with \`rtk\` (e.g. \`rtk git s
         try {
             const globalDir = this.getGlobalSkillsPath();
             if (globalDir) {
-                const installed = [];
-                for (const [skillName, skillContent] of Object.entries(SKILLS_MAP)) {
-                    const skillFolder = path.join(globalDir, skillName);
-                    if (!fs.existsSync(skillFolder)) {
-                        fs.mkdirSync(skillFolder, { recursive: true });
-                    }
-                    const skillFilePath = path.join(skillFolder, 'SKILL.md');
-                    fs.writeFileSync(skillFilePath, skillContent, 'utf8');
-                    installed.push(skillName);
-                }
+                const installed = this.writeSkillsToDir(globalDir);
                 results.push({
                     scope: 'global',
                     destination: globalDir,
@@ -361,16 +356,7 @@ Always prefix terminal and CLI execution commands with \`rtk\` (e.g. \`rtk git s
         const wsDir = this.getWorkspaceSkillsPath();
         if (wsDir) {
             try {
-                const installed = [];
-                for (const [skillName, skillContent] of Object.entries(SKILLS_MAP)) {
-                    const skillFolder = path.join(wsDir, skillName);
-                    if (!fs.existsSync(skillFolder)) {
-                        fs.mkdirSync(skillFolder, { recursive: true });
-                    }
-                    const skillFilePath = path.join(skillFolder, 'SKILL.md');
-                    fs.writeFileSync(skillFilePath, skillContent, 'utf8');
-                    installed.push(skillName);
-                }
+                const installed = this.writeSkillsToDir(wsDir);
                 results.push({
                     scope: 'workspace',
                     destination: wsDir,

@@ -119,35 +119,31 @@ async function activate(context) {
         DashboardPanel.createOrShow(context.extensionUri, context);
     });
 
-    const toggleCmd = vscode.commands.registerCommand('tokenSaver.toggle', async () => {
-        isEnabled = !isEnabled;
+    async function setTokenSaverState(targetEnabled) {
+        isEnabled = targetEnabled;
         await context.globalState.update('tokenSaver.enabled', isEnabled);
         const scope = vscode.workspace.getConfiguration('tokenSaver').get('targetScope', 'all');
         const results = SkillInstaller.syncRules(isEnabled, scope);
         await refreshStatus(context);
+        return results;
+    }
 
-        if (isEnabled) {
-            vscode.window.showInformationMessage(`⚡ Token Saver (RTK) is now ENABLED across ${results.length} AI agent target(s).`);
-        } else {
-            vscode.window.showInformationMessage('⚪ Token Saver (RTK) is now DISABLED.');
-        }
+    const toggleCmd = vscode.commands.registerCommand('tokenSaver.toggle', async () => {
+        const results = await setTokenSaverState(!isEnabled);
+        vscode.window.showInformationMessage(
+            isEnabled
+                ? `⚡ Token Saver (RTK) is now ENABLED across ${results.length} AI agent target(s).`
+                : '⚪ Token Saver (RTK) is now DISABLED.'
+        );
     });
 
     const enableCmd = vscode.commands.registerCommand('tokenSaver.enable', async () => {
-        isEnabled = true;
-        await context.globalState.update('tokenSaver.enabled', true);
-        const scope = vscode.workspace.getConfiguration('tokenSaver').get('targetScope', 'all');
-        SkillInstaller.syncRules(true, scope);
-        await refreshStatus(context);
+        await setTokenSaverState(true);
         vscode.window.showInformationMessage('⚡ Token Saver (RTK) ENABLED across all configured AI Agent targets.');
     });
 
     const disableCmd = vscode.commands.registerCommand('tokenSaver.disable', async () => {
-        isEnabled = false;
-        await context.globalState.update('tokenSaver.enabled', false);
-        const scope = vscode.workspace.getConfiguration('tokenSaver').get('targetScope', 'all');
-        SkillInstaller.syncRules(false, scope);
-        await refreshStatus(context);
+        await setTokenSaverState(false);
         vscode.window.showInformationMessage('⚪ Token Saver (RTK) DISABLED.');
     });
 
