@@ -2,6 +2,11 @@
 
 All notable changes to the **Token Saver (RTK)** project will be documented in this file.
 
+## [1.3.1] - 2026-09-28
+### Added
+- **Marketplace Icon**: Integrated official 128x128 PNG extension icon (`resources/icon.png`) for Open VSX and VS Code Marketplace.
+- **Publish Pipeline Guardrails**: Hardened regex version parsing and workspace staging in release automation scripts.
+
 ## [1.3.0] - 2026-09-28
 ### Added
 - **Primary Sidebar Interactive Dashboard**:
