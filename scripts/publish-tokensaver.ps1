@@ -48,7 +48,7 @@ if ($CustomVersion -ne "") {
 Write-Host "Target new version: v$newVersion" -ForegroundColor Green
 
 # Update version in package.json without UTF-8 BOM
-$updatedJson = $jsonContent -replace '("version":\s*")[^"]+(")', ('$1' + $newVersion + '$2')
+$updatedJson = $jsonContent -replace '("version":\s*")[^"]+(")', ('${1}' + $newVersion + '$2')
 $utf8NoBom = New-Object System.Text.UTF8Encoding $false
 [System.IO.File]::WriteAllText($packageJsonPath, $updatedJson, $utf8NoBom)
 Write-Host " [OK] Updated package.json version to $newVersion (UTF-8 No-BOM)" -ForegroundColor Green
