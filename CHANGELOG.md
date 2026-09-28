@@ -2,6 +2,12 @@
 
 All notable changes to the **Token Saver (RTK)** project will be documented in this file.
 
+## [1.3.1] - 2026-09-28
+### Added
+- **Official Extension Marketplace Icon**:
+  - Integrated high-resolution `resources/icon.png` in `package.json` for Open VSX and VS Code Extensions listing.
+  - Hardened automated release pipeline and PowerShell regex isolation (`${1}`).
+
 ## [1.3.0] - 2026-09-28
 ### Added
 - **Primary Sidebar Interactive Dashboard**:
