@@ -2,6 +2,19 @@
 
 All notable changes to the **Token Saver (RTK)** project will be documented in this file.
 
+## [1.4.0] - 2026-09-29
+### Added & Improved
+- **Unified Modular Architecture**:
+  - Centralized shared webview message handling, state synchronization, and HTML rendering into `extension/webview-helper.js`.
+  - Streamlined both `SidebarProvider` (Activity Bar view) and `DashboardPanel` (Editor Tab) to use shared lifecycle logic.
+- **Enhanced Glassmorphism UI & Styling**:
+  - Polished responsive dashboard stylesheet (`dashboard.css`) with sleek dark mode, micro-animations, and fluid sidebar-to-editor adaptability.
+  - Added dedicated Activity Bar vector icon (`resources/activity-icon.svg`) and high-resolution extension marketplace icon (`resources/icon.png`).
+- **Interactive Multi-IDE Ecosystem Matrix**:
+  - Seamless auto-detection and 1-click rule synchronization across VS Code (GitHub Copilot), Cursor (`.cursorrules` & `.mdc`), Windsurf (`.windsurfrules`), Cline/Roo Code (`.clinerules`), Claude Code (`CLAUDE.md`), Antigravity IDE, and `AGENTS.md`.
+- **Flexible Auto-Refresh & Diagnostics**:
+  - Custom minute-based auto-refresh timer with instant presets and live status bar telemetry.
+
 ## [1.3.2] - 2026-09-28
 ### Added & Improved
 - **Custom Minute-Based Auto-Refresh Input**:
