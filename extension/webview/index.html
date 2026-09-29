@@ -219,14 +219,20 @@
                                 <p class="panel-subtitle">Ponytail YAGNI philosophy, terse agent rules, & minimal diffs</p>
                             </div>
                         </div>
-                        <span class="panel-tag tag-cyan" id="ponytailActiveBadge">Full Mode</span>
+                        <div class="header-tags-group">
+                            <a href="https://github.com/DietrichGebert/ponytail" target="_blank" class="repo-badge-link" title="Upstream GitHub: DietrichGebert/ponytail">GitHub: DietrichGebert/ponytail ↗</a>
+                            <span class="panel-tag tag-cyan" id="ponytailActiveBadge">Full Mode</span>
+                        </div>
                     </div>
 
                     <div class="panel-body" id="bodyOutputOpt">
-                        <!-- Ponytail Intensity Control -->
+                        <!-- Ponytail Intensity Control & GitHub Sync -->
                         <div class="opt-row">
                             <div class="opt-info">
-                                <span class="opt-title">Ponytail YAGNI Mode:</span>
+                                <div class="opt-title-line">
+                                    <span class="opt-title">Ponytail YAGNI Mode:</span>
+                                    <button class="btn-mini-sync" id="ponytailInlineSyncBtn" title="Fetch & sync latest Ponytail skills from GitHub to global IDE">🔄 Sync from GitHub</button>
+                                </div>
                                 <span class="opt-desc">Directs AI to prioritize stdlib, shortest diffs, and max 3-line explanations (no essays)</span>
                             </div>
                             <div class="mode-segment-group" id="ponytailSegmentGroup">
@@ -334,13 +340,28 @@
                                 </span>
                             </button>
 
+                            <!-- Dedicated Ponytail GitHub Sync Button -->
+                            <button class="btn btn-action btn-action-ponytail" id="syncPonytailBtn" title="Fetch & Synchronize Ponytail YAGNI skills directly from GitHub (DietrichGebert/ponytail) to global IDE">
+                                <div class="btn-action-left">
+                                    <span class="btn-icon">🥋</span>
+                                    <div class="btn-text-block">
+                                        <span class="btn-label" id="syncPonytailLabel">Sync Ponytail GitHub</span>
+                                        <span class="btn-sub" id="syncPonytailSub">Fetch DietrichGebert/ponytail to IDE</span>
+                                    </div>
+                                </div>
+                                <span class="action-status-badge" id="ponytailActionBadge">
+                                    <span class="badge-icon">✓</span>
+                                    <span class="badge-text">Ready</span>
+                                </span>
+                            </button>
+
                             <div class="action-row-split">
-                                <button class="btn btn-action action-btn-main" id="checkUpdatesBtn" title="Check upstream GitHub repositories (rtk-ai/rtk & headroomlabs-ai/headroom) for updates">
+                                <button class="btn btn-action action-btn-main" id="checkUpdatesBtn" title="Check upstream GitHub repositories (rtk-ai/rtk, headroomlabs-ai/headroom & DietrichGebert/ponytail) for updates">
                                     <div class="btn-action-left">
                                         <span class="btn-icon">🚀</span>
                                         <div class="btn-text-block">
                                             <span class="btn-label" id="checkUpdatesLabel">Sync Upstream GitHub</span>
-                                            <span class="btn-sub" id="checkUpdatesSub">Check & update rtk & headroom</span>
+                                            <span class="btn-sub" id="checkUpdatesSub">Check rtk, headroom & ponytail</span>
                                         </div>
                                     </div>
                                 </button>
@@ -409,6 +430,16 @@
                                 </div>
                             </div>
                             <div class="diag-row">
+                                <span class="diag-key">Ponytail (GitHub):</span>
+                                <div class="diag-val-wrapper">
+                                    <span class="diag-val" id="diagPonytailStatus">Checking...</span>
+                                    <span class="diag-action-btns" id="ponytailDiagActions" style="display: none;">
+                                        <button class="btn-diag-mini btn-diag-ai" id="ponytailDiagAiBtn" title="Copy AI install prompt for Ponytail">🤖 Ask AI</button>
+                                        <button class="btn-diag-mini btn-diag-sync" id="ponytailDiagSyncBtn" title="Fetch Ponytail from GitHub to Global IDE">🥋 Sync</button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="diag-row">
                                 <span class="diag-key">Version:</span>
                                 <span class="diag-val" id="diagVersion">--</span>
                             </div>
@@ -432,9 +463,11 @@
 
         <!-- Footer -->
         <footer class="dashboard-footer">
-            <span>⚡ Token Saver (RTK)</span>
+            <span>⚡ Token Saver (RTK & Headroom)</span>
             <span class="footer-links">
                 <a href="https://github.com/rtk-ai/rtk" target="_blank">RTK Core</a> • 
+                <a href="https://github.com/headroomlabs-ai/headroom" target="_blank">Headroom</a> • 
+                <a href="https://github.com/DietrichGebert/ponytail" target="_blank">Ponytail (YAGNI)</a> • 
                 <a href="https://github.com/terenceooi99/token-saver-rtk-ide" target="_blank">GitHub</a> • 
                 <a href="https://wise.com/pay/me/terenceooit" target="_blank" class="tip-link" id="wiseTipLink" title="Tip me @ Wise">☕ Tip me @ Wise</a>
             </span>

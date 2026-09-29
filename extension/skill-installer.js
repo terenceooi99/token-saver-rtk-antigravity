@@ -130,6 +130,134 @@ You are a lazy senior developer. Lazy means efficient, not careless. The best co
 ## Output
 Code first. At most 3 short lines: what was skipped, when to add it. No essays, no feature tours, no design notes.
 `,
+    'ponytail-audit': `---
+name: ponytail-audit
+description: >
+  Whole-repo audit for over-engineering. Like ponytail-review, but scans the
+  entire codebase instead of a diff: a ranked list of what to delete, simplify,
+  or replace with stdlib/native equivalents. Use when the user says "audit this
+  codebase", "audit for over-engineering", "what can I delete from this repo",
+  "find bloat", "ponytail-audit", or "/ponytail-audit". One-shot report, does
+  not apply fixes.
+---
+
+ponytail-review, repo-wide. Scan the whole tree instead of a diff. Rank
+findings biggest cut first.
+
+## Tags
+- \`delete:\` dead code, unused flexibility, speculative feature. Replacement: nothing.
+- \`stdlib:\` hand-rolled thing the standard library ships. Name the function.
+- \`native:\` dependency or code doing what the platform already does. Name the feature.
+- \`yagni:\` abstraction with one implementation, config nobody sets, layer with one caller.
+- \`shrink:\` same logic, fewer lines. Show the shorter form.
+
+## Output
+One line per finding, ranked: \`<tag> <what to cut>. <replacement>. [path]\`.
+End with \`net: -<N> lines, -<M> deps possible.\` Nothing to cut: \`Lean already. Ship.\`
+`,
+    'ponytail-debt': `---
+name: ponytail-debt
+description: >
+  Harvest every \`ponytail:\` comment in the codebase into a debt ledger, so the
+  deliberate shortcuts and deferrals ponytail leaves behind get tracked instead
+  of rotting into "later means never". Use when the user says "ponytail debt",
+  "/ponytail-debt", "what did ponytail defer", "list the shortcuts", "ponytail
+  ledger", or "what did we mark to do later". One-shot report, changes nothing.
+---
+
+Every deliberate ponytail shortcut is marked with a \`ponytail:\` comment naming
+its ceiling and upgrade path. This collects them into one ledger so a deferral
+can't quietly become permanent.
+
+## Scan
+Grep the repo for comment markers, skipping \`node_modules\`, \`.git\`, and build output:
+\`grep -rnE '(#|//) ?ponytail:' .\`
+
+## Output
+One row per marker, grouped by file:
+\`<file>:<line>, <what was simplified>. ceiling: <the limit named>. upgrade: <the trigger to revisit>.\`
+`,
+    'ponytail-gain': `---
+name: ponytail-gain
+description: >
+  Show ponytail's measured impact as a compact scoreboard: less code, less
+  cost, more speed, from the benchmark medians. One-shot display, not a
+  persistent mode, and not a per-repo number. Trigger: /ponytail-gain,
+  "ponytail gain", "what does ponytail save", "show ponytail impact",
+  "ponytail scoreboard".
+---
+
+# Ponytail Gain
+
+Display this scoreboard when invoked. One-shot: do NOT change mode, write flag
+files, or persist anything.
+
+## Scoreboard
+\`\`\`
+  ponytail gain                     benchmark median · 5 tasks · 3 models
+
+  Lines of code   no-skill  ████████████████████  100%
+                  ponytail  ██▌·················    6–20%   ▼ 80–94%
+  Cost            no-skill  ████████████████████  100%
+                  ponytail  █████▌··············   23–53%  ▼ 47–77%
+  Speed           ponytail  ▸ 3–6× faster
+
+  This repo:  /ponytail-debt  (shortcuts you deferred)
+              /ponytail-audit (what's still cuttable)
+\`\`\`
+`,
+    'ponytail-help': `---
+name: ponytail-help
+description: >
+  Quick-reference card for all ponytail modes, skills, and commands.
+  One-shot display, not a persistent mode. Trigger: /ponytail-help,
+  "ponytail help", "what ponytail commands", "how do I use ponytail".
+---
+
+# Ponytail Help
+
+Display this reference card when invoked. One-shot.
+
+## Levels
+| Level | Trigger | What change |
+|---|---|---|
+| **Lite** | \`/ponytail lite\` | Build what's asked, name the lazier alternative in one line. |
+| **Full** | \`/ponytail\` | The ladder enforced: YAGNI → stdlib → native → one line → minimum. Default. |
+| **Ultra** | \`/ponytail ultra\` | YAGNI extremist. Deletion before addition. Challenges requirements before building. |
+
+## Skills
+- **ponytail** (\`/ponytail\`): Lazy mode itself. Simplest solution that works.
+- **ponytail-review** (\`/ponytail-review\`): Over-engineering review.
+- **ponytail-audit** (\`/ponytail-audit\`): Whole-repo over-engineering audit.
+- **ponytail-debt** (\`/ponytail-debt\`): Tracked shortcut debt ledger.
+- **ponytail-gain** (\`/ponytail-gain\`): Benchmark impact scoreboard.
+- **ponytail-help** (\`/ponytail-help\`): Reference card.
+`,
+    'ponytail-review': `---
+name: ponytail-review
+description: >
+  Code review focused exclusively on over-engineering. Finds what to delete:
+  reinvented standard library, unneeded dependencies, speculative abstractions,
+  dead flexibility. One line per finding: location, what to cut, what replaces
+  it. Use when the user says "review for over-engineering", "what can we
+  delete", "is this over-engineered", "simplify review", or invokes
+  /ponytail-review. Complements correctness-focused review, this one only
+  hunts complexity.
+---
+
+Review diffs for unnecessary complexity. One line per finding: location, what
+to cut, what replaces it. The diff's best outcome is getting shorter.
+
+## Format
+\`L<line>: <tag> <what>. <replacement>.\`
+
+Tags:
+- \`delete:\` dead code, unused flexibility, speculative feature.
+- \`stdlib:\` hand-rolled thing the standard library ships.
+- \`native:\` dependency or code doing what the platform already does.
+- \`yagni:\` abstraction with one implementation, layer with one caller.
+- \`shrink:\` same logic, fewer lines.
+`,
     'rtk-outline': `---
 name: rtk-outline
 description: >

@@ -116,14 +116,20 @@
       },
       {
         "command": "tokenSaver.checkUpdates",
-        "title": "Check for Upstream GitHub Updates (RTK & Headroom)",
+        "title": "Check for Upstream GitHub Updates (RTK, Headroom & Ponytail)",
         "category": "Token Saver"
       },
       {
         "command": "tokenSaver.updateRtk",
-        "title": "Update from Upstream GitHub (RTK & Headroom)",
+        "title": "Update from Upstream GitHub (RTK, Headroom & Ponytail)",
         "category": "Token Saver",
         "icon": "$(cloud-download)"
+      },
+      {
+        "command": "tokenSaver.syncPonytail",
+        "title": "Fetch & Sync Ponytail from GitHub (Global IDE)",
+        "category": "Token Saver",
+        "icon": "$(sync)"
       },
       {
         "command": "tokenSaver.toggleHeadroom",
@@ -133,7 +139,7 @@
       },
       {
         "command": "tokenSaver.installSkills",
-        "title": "1-Click Install Antigravity Skills (/rtk-*)",
+        "title": "1-Click Install Antigravity Skills (/rtk-* & /ponytail)",
         "category": "Token Saver"
       },
       {
@@ -153,7 +159,7 @@
       },
       {
         "command": "tokenSaver.copyAiInstallPrompt",
-        "title": "Copy AI Agent Install Prompt (RTK & Headroom)",
+        "title": "Copy AI Agent Install Prompt (RTK, Headroom & Ponytail)",
         "category": "Token Saver",
         "icon": "$(copy)"
       },
@@ -183,7 +189,7 @@
       }
     ],
     "configuration": {
-      "title": "Token Saver (RTK & Headroom)",
+      "title": "Token Saver (RTK, Headroom & Ponytail)",
       "properties": {
         "tokenSaver.enableOnStartup": {
           "type": "boolean",
@@ -198,7 +204,7 @@
         "tokenSaver.autoInstallSkills": {
           "type": "boolean",
           "default": true,
-          "description": "Automatically install Antigravity & Agent chat skills (/rtk-*) on startup so Way 1 (Chat Commands) and Way 2 (Dashboard & Status Bar) are both available simultaneously."
+          "description": "Automatically install Antigravity & Agent chat skills (/rtk-* & /ponytail) on startup so Way 1 (Chat Commands) and Way 2 (Dashboard & Status Bar) are both available simultaneously."
         },
         "tokenSaver.targetScope": {
           "type": "string",
@@ -219,12 +225,12 @@
         "tokenSaver.checkForUpdatesOnStartup": {
           "type": "boolean",
           "default": true,
-          "description": "Automatically check for newer RTK & Headroom releases from upstream GitHub repositories on startup."
+          "description": "Automatically check for newer RTK, Headroom, and Ponytail updates from upstream GitHub repositories on startup."
         },
         "tokenSaver.weeklyAutoSync": {
           "type": "boolean",
           "default": true,
-          "description": "Automatically check and synchronize with upstream GitHub releases (RTK & Headroom) on a weekly schedule."
+          "description": "Automatically check and synchronize with upstream GitHub releases (RTK, Headroom & Ponytail) on a weekly schedule."
         },
         "tokenSaver.tokenPricePerMillion": {
           "type": "number",

@@ -1,4 +1,4 @@
-# ⚡ Token Saver (RTK & Headroom) for VS Code & Agentic IDEs
+# ⚡ Token Saver (RTK, Headroom & Ponytail) for VS Code & Agentic IDEs
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![OpenVSX](https://img.shields.io/badge/Open%20VSX-available-blue.svg)](https://open-vsx.org/extension/terenceooi/token-saver-rtk-ide)
@@ -7,7 +7,7 @@
 [![Windsurf](https://img.shields.io/badge/Windsurf%20IDE-Compatible-00E5FF.svg)](https://codeium.com/windsurf)
 [![Antigravity](https://img.shields.io/badge/Antigravity%20IDE-Compatible-purple.svg)](https://github.com/terenceooi99/token-saver-rtk-ide)
 
-**Token Saver (RTK & Headroom)** is an all-in-one token optimization suite and CLI output compression proxy. Powered by [RTK (Rust Token Killer)](https://www.rtk-ai.app), [Headroom context compression](https://github.com/headroomlabs-ai/headroom), and [Ponytail YAGNI mode](https://github.com/terenceooi99/token-saver-rtk-ide), it slashes AI context window token consumption by **60% - 90%** during terminal command execution (`git`, `cargo`, `npm`, `pnpm`, `pytest`, `vitest`, `rg`, `ls`, `tree`, etc.) and code generation across **all major Agentic AI IDEs and coding assistants**.
+**Token Saver (RTK, Headroom & Ponytail)** is an all-in-one token optimization suite and CLI output compression proxy. Powered by [RTK (Rust Token Killer)](https://www.rtk-ai.app), [Headroom context compression](https://github.com/headroomlabs-ai/headroom), and [Ponytail YAGNI mode](https://github.com/DietrichGebert/ponytail), it slashes AI context window token consumption by **60% - 90%** during terminal command execution (`git`, `cargo`, `npm`, `pnpm`, `pytest`, `vitest`, `rg`, `ls`, `tree`, etc.) and code generation across **all major Agentic AI IDEs and coding assistants**.
 
 ---
 
@@ -67,13 +67,18 @@
 | **`/rtk-doctor`** | **Runs health checks & diagnostics** for RTK, Headroom, and environment configs. |
 | **`/rtk-sync`** | **1-Click syncs RTK & Headroom rules** across all AI agent files. |
 | **`/rtk-run <cmd>`** | **Runs arbitrary shell command** through RTK output compression proxy. |
-| **`/rtk-update`** | **Checks and updates RTK & Headroom CLI** from upstream GitHub releases. |
+| **`/rtk-update`** | **Checks and updates RTK, Headroom & Ponytail** from upstream GitHub releases. |
 | **`/ponytail`** | **Configures Ponytail YAGNI mode** for concise code diffs & terse generation. |
+| **`/ponytail-audit`** | **Whole-repo audit for over-engineering** and speculative code. |
+| **`/ponytail-debt`** | **Tracks shortcut debt ledger** marked with `ponytail:` comments. |
+| **`/ponytail-gain`** | **Displays measured-impact scoreboard** from benchmarks. |
+| **`/ponytail-help`** | **Displays Ponytail reference card** and intensity levels. |
+| **`/ponytail-review`** | **Reviews diffs exclusively for over-engineering**. |
 | **`/publishtokensaverlocal`** | **Builds local `.vsix`** for immediate internal IDE testing. |
 | **`/publishtokensavernow`** | **Automates release tagging and publishing** to Open VSX & GitHub Releases. |
 
 *(Optional Manual Re-install)*:
-- **Command Palette**: `Token Saver: 1-Click Install Antigravity Skills (/rtk-*)`
+- **Command Palette**: `Token Saver: 1-Click Install Antigravity Skills (/rtk-* & /ponytail)`
 - **Windows (PowerShell)**: `.\scripts\install-skills.ps1`
 - **Linux / macOS (Bash)**: `./scripts/install-skills.sh`
 
@@ -94,11 +99,11 @@ The extension provides full graphical and automated control directly from your *
    - Live Token Savings Counter with animated visual meters.
    - Compression Efficiency Gauge (%) and Estimated Dollar Savings ($).
    - Per-tool visual savings charts (`git`, `cargo`, `npm`, `pytest`, `vitest`, `rg`, `ls`, etc.).
-   - Action center with 1-click skill sync, GitHub release update check, and proxy latency test.
+   - Action center with 1-click skill sync, Ponytail GitHub sync, GitHub release update check, and proxy latency test.
    - Diagnostics panel displaying local binary path, version, and active target counts.
-4. **Upstream GitHub RTK & Headroom Core Sync**:
-   - Automatic non-intrusive update checks against official GitHub releases (`rtk-ai/rtk` & `headroomlabs-ai/headroom`).
-   - 1-click update trigger for Windows (`winget`), macOS (`brew`), and Linux (`curl`).
+4. **Upstream GitHub 3-Way Core Sync (RTK, Headroom & Ponytail)**:
+   - Automatic non-intrusive update checks against official GitHub releases (`rtk-ai/rtk`, `headroomlabs-ai/headroom`, & `DietrichGebert/ponytail`).
+   - 1-click update trigger for Windows (`winget`), macOS (`brew`), and Linux (`curl`), plus GitHub skill fetch for Ponytail.
 5. **Dynamic Live Status Bar**:
    - Shows real-time savings: `⚡ RTK: 48.2k saved (72%)` or `⚪ RTK: OFF`.
    - Rich hover tooltips with cost savings and quick access to the dashboard.
@@ -109,17 +114,18 @@ The extension provides full graphical and automated control directly from your *
    - `Token Saver: Toggle RTK Token Saving Mode`
    - `Token Saver: Enable RTK Token Saving`
    - `Token Saver: Disable RTK Token Saving`
-   - `Token Saver: Check for Upstream GitHub Updates (RTK & Headroom)`
-   - `Token Saver: Update from Upstream GitHub (RTK & Headroom)`
+   - `Token Saver: Check for Upstream GitHub Updates (RTK, Headroom & Ponytail)`
+   - `Token Saver: Update from Upstream GitHub (RTK, Headroom & Ponytail)`
+   - `Token Saver: Fetch & Sync Ponytail from GitHub (Global IDE)`
    - `Token Saver: Toggle Headroom Context Compression`
    - `Token Saver: Configure Ponytail Mode (YAGNI & Output Token Saver)`
    - `Token Saver: Run Compact Diff (rtk git diff -U1)`
    - `Token Saver: Generate AST / Symbol Outline for Current File`
-   - `Token Saver: 1-Click Install Antigravity Skills (/rtk-*)`
+   - `Token Saver: 1-Click Install Antigravity Skills (/rtk-* & /ponytail)`
    - `Token Saver: Sync Global Antigravity Rules (~/.gemini)`
    - `Token Saver: Show Token Savings Scoreboard (rtk gain)`
    - `Token Saver: Install RTK CLI Tool`
-   - `Token Saver: Copy AI Agent Install Prompt (RTK & Headroom)`
+   - `Token Saver: Copy AI Agent Install Prompt (RTK, Headroom & Ponytail)`
    - `Token Saver: Copy Raw Shell Install Commands`
 
 ---

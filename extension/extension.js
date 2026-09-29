@@ -64,22 +64,31 @@ async function activate(context) {
     const targetScope = config.get('targetScope', 'all');
     const autoInstallSkills = config.get('autoInstallSkills', true);
 
-    // Initial check of RTK & Headroom binaries
+    // Initial check of RTK, Headroom & Ponytail engines
     const check = await RtkService.checkInstalled();
     const headroomCheck = await RtkService.checkHeadroomInstalled();
-    if (!check.installed || !headroomCheck.installed) {
+    const ponytailCheck = await RtkService.checkPonytailInstalled();
+
+    if (!check.installed || !headroomCheck.installed || !ponytailCheck.installed) {
         const missing = [];
         if (!check.installed) missing.push('RTK CLI');
-        if (!headroomCheck.installed) missing.push('Headroom');
+        if (!headroomCheck.installed) missing.push('Headroom CCR');
+        if (!ponytailCheck.installed) missing.push('Ponytail YAGNI (GitHub)');
+
+        const options = ['🤖 Ask AI (Copy Prompt)'];
+        if (!ponytailCheck.installed) {
+            options.push('🥋 Sync Ponytail GitHub');
+        }
+        options.push('⚡ Auto-Run in Terminal', 'Open Setup Hub');
 
         vscode.window.showWarningMessage(
-            `⚡ Token Saver: ${missing.join(' & ')} not detected on PATH. Choose how you would like to install:`,
-            '🤖 Ask AI (Copy Prompt)',
-            '⚡ Auto-Run in Terminal',
-            'Open Setup Hub'
+            `⚡ Token Saver: ${missing.join(' & ')} not detected. Choose how you would like to fetch from GitHub / install:`,
+            ...options
         ).then(choice => {
             if (choice === '🤖 Ask AI (Copy Prompt)') {
                 vscode.commands.executeCommand('tokenSaver.copyAiInstallPrompt');
+            } else if (choice === '🥋 Sync Ponytail GitHub') {
+                vscode.commands.executeCommand('tokenSaver.syncPonytail');
             } else if (choice === '⚡ Auto-Run in Terminal') {
                 vscode.commands.executeCommand('tokenSaver.installCli');
             } else if (choice === 'Open Setup Hub') {
@@ -257,14 +266,20 @@ async function activate(context) {
         const isMac = process.platform === 'darwin';
         const check = await RtkService.checkInstalled();
         const headroomCheck = await RtkService.checkHeadroomInstalled();
+        const ponytailCheck = await RtkService.checkPonytailInstalled();
 
-        const prompt = RtkService.generateAiInstallPrompt(isWindows, isMac, !check.installed, !headroomCheck.installed);
+        const prompt = RtkService.generateAiInstallPrompt(isWindows, isMac, !check.installed, !headroomCheck.installed, !ponytailCheck.installed);
         await vscode.env.clipboard.writeText(prompt);
 
         vscode.window.showInformationMessage(
-            '🤖 AI Agent setup prompt copied to clipboard! Paste it into your AI assistant chat (Antigravity, Cursor, Windsurf, Claude Code, Cline) to install automatically.',
+            '🤖 AI Agent setup prompt copied to clipboard! Paste it into your AI assistant chat (Antigravity, Cursor, Windsurf, Claude Code, Cline) to install & fetch tools automatically.',
             'Open Chat'
         );
+    });
+
+    const syncPonytailCmd = vscode.commands.registerCommand('tokenSaver.syncPonytail', async () => {
+        await RtkUpdater.performPonytailSync();
+        await refreshStatus(context);
     });
 
     const copyInstallCommandsCmd = vscode.commands.registerCommand('tokenSaver.copyInstallCommands', async () => {
@@ -343,6 +358,7 @@ async function activate(context) {
         selectIdeTargetsCmd,
         checkUpdatesCmd,
         updateRtkCmd,
+        syncPonytailCmd,
         installSkillsCmd,
         syncGlobalRulesCmd,
         showSavingsCmd,

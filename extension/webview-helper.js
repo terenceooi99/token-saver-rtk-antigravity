@@ -28,6 +28,7 @@ class WebviewHelper {
         const headroomEnabled = config.get('headroomEnabled', true);
         const check = await RtkService.checkInstalled();
         const headroomCheck = await RtkService.checkHeadroomInstalled();
+        const ponytailCheck = await RtkService.checkPonytailInstalled();
         const metrics = await RtkService.getParsedMetrics();
         const skillsInstalled = SkillInstaller.checkSkillsInstalled('all');
         const ideStatus = SkillInstaller.getIdeStatus();
@@ -39,6 +40,9 @@ class WebviewHelper {
             headroomEnabled,
             headroomInstalled: headroomCheck.installed,
             headroomVersion: headroomCheck.version || 'Not installed',
+            ponytailInstalled: ponytailCheck.installed,
+            ponytailVersion: ponytailCheck.version || 'Not synced',
+            ponytailSkillsCount: ponytailCheck.skillsCount || 0,
             ponytailMode: config.get('ponytailMode', 'full'),
             terseAgentMode: config.get('terseAgentMode', true),
             compactDiffContext: config.get('compactDiffContext', true),
@@ -123,6 +127,14 @@ class WebviewHelper {
                 break;
             case 'updateRtk':
                 vscode.commands.executeCommand('tokenSaver.updateRtk');
+                break;
+            case 'syncPonytail':
+                await vscode.commands.executeCommand('tokenSaver.syncPonytail');
+                triggerRefresh(500);
+                break;
+            case 'updateAllUpstream':
+                RtkUpdater.performAllUpdates();
+                triggerRefresh(500);
                 break;
             case 'installCli':
                 vscode.commands.executeCommand('tokenSaver.installCli');

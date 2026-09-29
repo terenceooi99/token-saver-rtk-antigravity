@@ -1,6 +1,7 @@
 const https = require('https');
 const vscode = require('vscode');
 const RtkService = require('./rtk-service');
+const SkillInstaller = require('./skill-installer');
 
 class RtkUpdater {
     static fetchGitHubJson(repoPath) {
@@ -83,6 +84,20 @@ class RtkUpdater {
             };
         }
 
+        // Fallback to main branch commit for repository tracking (e.g. prompt/rules repos)
+        const commitRes = await this.fetchGitHubJson(`/repos/${repo}/commits/main`);
+        if (commitRes.success && commitRes.data) {
+            const shortSha = (commitRes.data.sha || '').substring(0, 7);
+            return {
+                success: true,
+                tag: `main@${shortSha}`,
+                name: `main (${shortSha})`,
+                body: commitRes.data.commit ? commitRes.data.commit.message : '',
+                htmlUrl: `https://github.com/${repo}`,
+                publishedAt: commitRes.data.commit && commitRes.data.commit.author ? commitRes.data.commit.author.date : null
+            };
+        }
+
         return {
             success: false,
             error: res.error || 'No release tags found'
@@ -99,32 +114,39 @@ class RtkUpdater {
 
     static async checkForUpdates(silent = false) {
         try {
-            const [rtkCheck, headroomCheck, rtkRelease, headroomRelease] = await Promise.all([
+            const [rtkCheck, headroomCheck, ponytailCheck, rtkRelease, headroomRelease, ponytailRelease] = await Promise.all([
                 RtkService.checkInstalled(),
                 RtkService.checkHeadroomInstalled(),
+                RtkService.checkPonytailInstalled(),
                 this.getLatestRelease('rtk-ai/rtk'),
-                this.getLatestRelease('headroomlabs-ai/headroom')
+                this.getLatestRelease('headroomlabs-ai/headroom'),
+                this.getLatestRelease('DietrichGebert/ponytail')
             ]);
 
             const rtkHasUpdate = rtkRelease.success && rtkCheck.installed && this.isNewer(rtkRelease.tag, rtkCheck.version);
             const headroomHasUpdate = headroomRelease.success && headroomCheck.installed && this.isNewer(headroomRelease.tag, headroomCheck.version);
-            const hasAnyUpdate = rtkHasUpdate || headroomHasUpdate;
+            const ponytailHasUpdate = ponytailRelease.success && (!ponytailCheck.installed || (ponytailCheck.skillsCount && ponytailCheck.skillsCount < 6));
+            const hasAnyUpdate = rtkHasUpdate || headroomHasUpdate || ponytailHasUpdate;
 
             if (hasAnyUpdate) {
                 const updatesList = [];
                 if (rtkHasUpdate) updatesList.push(`RTK ${rtkRelease.tag}`);
                 if (headroomHasUpdate) updatesList.push(`Headroom ${headroomRelease.tag}`);
+                if (ponytailHasUpdate) updatesList.push(`Ponytail (${ponytailRelease.tag || 'Latest'})`);
 
                 const choice = await vscode.window.showInformationMessage(
                     `🚀 Upstream updates available: ${updatesList.join(' & ')}`,
-                    'Update All Now',
+                    'Update / Sync All',
+                    'Sync Ponytail GitHub',
                     'Update RTK',
                     'Update Headroom',
                     'Release Notes'
                 );
 
-                if (choice === 'Update All Now') {
+                if (choice === 'Update / Sync All') {
                     this.performAllUpdates();
+                } else if (choice === 'Sync Ponytail GitHub') {
+                    await this.performPonytailSync();
                 } else if (choice === 'Update RTK') {
                     this.performUpdate();
                 } else if (choice === 'Update Headroom') {
@@ -135,6 +157,9 @@ class RtkUpdater {
                     }
                     if (headroomHasUpdate && headroomRelease.htmlUrl) {
                         vscode.env.openExternal(vscode.Uri.parse(headroomRelease.htmlUrl));
+                    }
+                    if (ponytailRelease.htmlUrl) {
+                        vscode.env.openExternal(vscode.Uri.parse(ponytailRelease.htmlUrl));
                     }
                 }
             } else if (!silent) {
@@ -149,12 +174,20 @@ class RtkUpdater {
                 } else {
                     parts.push('Headroom: Not installed');
                 }
+                if (ponytailCheck.installed) {
+                    parts.push(`Ponytail: Active (${ponytailCheck.skillsCount || 6}/6 skills)`);
+                } else {
+                    parts.push('Ponytail: Not synced');
+                }
 
                 vscode.window.showInformationMessage(
                     `✨ Upstream GitHub Sync Status: ${parts.join(' | ')}`,
+                    'Sync Ponytail GitHub',
                     'Install/Update CLI Tools'
                 ).then(c => {
-                    if (c === 'Install/Update CLI Tools') {
+                    if (c === 'Sync Ponytail GitHub') {
+                        this.performPonytailSync();
+                    } else if (c === 'Install/Update CLI Tools') {
                         this.performAllUpdates();
                     }
                 });
@@ -173,6 +206,13 @@ class RtkUpdater {
                     release: headroomRelease,
                     installed: headroomCheck.installed,
                     currentVersion: headroomCheck.version
+                },
+                ponytail: {
+                    hasUpdate: ponytailHasUpdate,
+                    release: ponytailRelease,
+                    installed: ponytailCheck.installed,
+                    currentVersion: ponytailCheck.version || 'v1.0.0',
+                    skillsCount: ponytailCheck.skillsCount || 0
                 }
             };
         } catch (e) {
@@ -204,6 +244,26 @@ class RtkUpdater {
         RtkService.runInTerminal(cmd);
     }
 
+    static async performPonytailSync() {
+        try {
+            vscode.window.showInformationMessage('🔄 Fetching & synchronizing Ponytail from GitHub (DietrichGebert/ponytail)...');
+            const results = SkillInstaller.installAllSkills();
+            const config = vscode.workspace.getConfiguration('tokenSaver');
+            const isEnabled = config.get('enableOnStartup', true);
+            const scope = config.get('targetScope', 'all');
+            SkillInstaller.syncRules(isEnabled, scope);
+
+            const dests = results.map(r => r.destination).join(' and ');
+            vscode.window.showInformationMessage(
+                `🥋 Successfully fetched and synchronized Ponytail YAGNI suite (/ponytail, /ponytail-audit, /ponytail-debt, /ponytail-gain, /ponytail-help, /ponytail-review) from GitHub to global IDE: ${dests}!`
+            );
+            return { success: true, results };
+        } catch (err) {
+            vscode.window.showErrorMessage(`Failed to sync Ponytail from GitHub: ${err.message}`);
+            return { success: false, error: err.message };
+        }
+    }
+
     static performAllUpdates() {
         const isWindows = process.platform === 'win32';
         const isMac = process.platform === 'darwin';
@@ -219,10 +279,11 @@ class RtkUpdater {
 
         const fullCmd = `${rtkCmd} ; pip install --upgrade "headroom-ai[all]"`;
         RtkService.runInTerminal(fullCmd);
+        this.performPonytailSync();
     }
 
     static async manualUpdate() {
-        vscode.window.showInformationMessage('🔄 Checking & syncing upstream GitHub repositories (rtk-ai/rtk & headroomlabs-ai/headroom)...');
+        vscode.window.showInformationMessage('🔄 Checking & syncing upstream GitHub repositories (rtk-ai/rtk, headroomlabs-ai/headroom & DietrichGebert/ponytail)...');
         return this.checkForUpdates(false);
     }
 }

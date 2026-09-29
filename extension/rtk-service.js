@@ -2,6 +2,7 @@ const { exec, spawn } = require('child_process');
 const vscode = require('vscode');
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 
 class RtkService {
     static checkInstalled() {
@@ -38,6 +39,47 @@ class RtkService {
                     });
                 }
             });
+        });
+    }
+
+    static checkPonytailInstalled() {
+        return new Promise((resolve) => {
+            const home = os.homedir();
+            const globalSkillPath = path.join(home, '.gemini', 'config', 'skills', 'ponytail', 'SKILL.md');
+            const globalSkillsDir = path.join(home, '.gemini', 'config', 'skills');
+            const globalConfigDir = path.join(home, '.config', 'ponytail');
+            const appdataDir = process.env.APPDATA ? path.join(process.env.APPDATA, 'ponytail') : null;
+
+            let wsSkillPath = null;
+            const folders = vscode.workspace.workspaceFolders;
+            if (folders && folders.length > 0) {
+                wsSkillPath = path.join(folders[0].uri.fsPath, '.agents', 'skills', 'ponytail', 'SKILL.md');
+            }
+
+            const isInstalledGlobally = fs.existsSync(globalSkillPath);
+            const isInstalledInWorkspace = wsSkillPath && fs.existsSync(wsSkillPath);
+            const isInstalledInConfig = fs.existsSync(globalConfigDir) || (appdataDir && fs.existsSync(appdataDir));
+
+            if (isInstalledGlobally || isInstalledInWorkspace || isInstalledInConfig) {
+                // Count installed ponytail suite skills
+                let count = 0;
+                const ponytailSkills = ['ponytail', 'ponytail-audit', 'ponytail-debt', 'ponytail-gain', 'ponytail-help', 'ponytail-review'];
+                for (const sk of ponytailSkills) {
+                    if (fs.existsSync(path.join(globalSkillsDir, sk, 'SKILL.md')) ||
+                        (wsSkillPath && fs.existsSync(path.join(folders[0].uri.fsPath, '.agents', 'skills', sk, 'SKILL.md')))) {
+                        count++;
+                    }
+                }
+                const installedPath = isInstalledGlobally ? globalSkillPath : (wsSkillPath || globalConfigDir);
+                resolve({
+                    installed: true,
+                    version: `v1.0.0 (${count}/6 skills active)`,
+                    skillsCount: count,
+                    path: installedPath
+                });
+            } else {
+                resolve({ installed: false, version: null, skillsCount: 0, path: null });
+            }
         });
     }
 
@@ -294,17 +336,21 @@ class RtkService {
         }
 
         const headroomCmd = 'pip install "headroom-ai[all]" || pipx install headroom-ai || pip install headroom-ai';
+        const ponytailCmd = isWindows
+            ? 'git clone https://github.com/DietrichGebert/ponytail.git "$HOME/.config/ponytail" 2>$null || echo "Ponytail fetched"'
+            : 'git clone https://github.com/DietrichGebert/ponytail.git ~/.config/ponytail 2>/dev/null || echo "Ponytail fetched"';
         const verifyCmd = 'rtk --version ; headroom --version';
 
         return {
             rtkCmd,
             headroomCmd,
+            ponytailCmd,
             verifyCmd,
             combinedCmd: isWindows ? `${rtkCmd} ; ${headroomCmd}` : `${rtkCmd} && ${headroomCmd}`
         };
     }
 
-    static generateAiInstallPrompt(isWindows = (process.platform === 'win32'), isMac = (process.platform === 'darwin'), rtkMissing = true, headroomMissing = true) {
+    static generateAiInstallPrompt(isWindows = (process.platform === 'win32'), isMac = (process.platform === 'darwin'), rtkMissing = true, headroomMissing = true, ponytailMissing = true) {
         const osName = isWindows ? 'Windows (PowerShell / Command Prompt)' : (isMac ? 'macOS (Homebrew / Terminal)' : 'Linux (Bash / Terminal)');
         const cmds = this.getInstallCommands(isWindows, isMac);
 
@@ -321,16 +367,21 @@ class RtkService {
             stepIdx++;
         }
 
-        items.push(`${stepIdx}. **Verify Installations**:\n   Run: \`rtk --version\` and \`headroom --version\``);
+        if (ponytailMissing) {
+            items.push(`${stepIdx}. **Fetch & Install Ponytail YAGNI Token Saver (Upstream: DietrichGebert/ponytail)**:\n   Clone or fetch Ponytail from GitHub (\`https://github.com/DietrichGebert/ponytail\`) into the local machine's global IDE configuration directory (\`~/.gemini/config/skills/\`) and workspace (\`.agents/skills/\`). Ensure skills (\`/ponytail\`, \`/ponytail-audit\`, \`/ponytail-debt\`, \`/ponytail-gain\`, \`/ponytail-help\`, \`/ponytail-review\`) are installed.`);
+            stepIdx++;
+        }
+
+        items.push(`${stepIdx}. **Verify Installations**:\n   Run: \`rtk --version\` and \`headroom --version\`, and verify Ponytail skills are available in the IDE.`);
         stepIdx++;
-        items.push(`${stepIdx}. **Confirm Success**:\n   Report the installed version numbers back to me once done.`);
+        items.push(`${stepIdx}. **Confirm Success**:\n   Report the installed version numbers and active status back to me once done.`);
 
         const prompt = [
-            `Please help me install and configure the necessary CLI tools for Token Saver on this ${osName} machine:`,
+            `Please help me install, fetch, and configure the necessary token saving tools (RTK, Headroom, and Ponytail) for Token Saver on this ${osName} machine:`,
             '',
             items.join('\n\n'),
             '',
-            'Please execute these terminal commands now and verify they are available on PATH.'
+            'Please execute these terminal commands and skill setups now to make them globally available on the IDE.'
         ].join('\n');
 
         return prompt;

@@ -61,10 +61,21 @@ const compactDiffCheckbox = document.getElementById('compactDiffCheckbox');
 
 const diagCliStatus = document.getElementById('diagCliStatus');
 const diagHeadroomStatus = document.getElementById('diagHeadroomStatus');
+const diagPonytailStatus = document.getElementById('diagPonytailStatus');
 const diagVersion = document.getElementById('diagVersion');
 const diagBinaryPath = document.getElementById('diagBinaryPath');
 const diagScope = document.getElementById('diagScope');
 const diagActiveTargets = document.getElementById('diagActiveTargets');
+
+const syncPonytailBtn = document.getElementById('syncPonytailBtn');
+const syncPonytailLabel = document.getElementById('syncPonytailLabel');
+const syncPonytailSub = document.getElementById('syncPonytailSub');
+const ponytailActionBadge = document.getElementById('ponytailActionBadge');
+const ponytailInlineSyncBtn = document.getElementById('ponytailInlineSyncBtn');
+
+const ponytailDiagActions = document.getElementById('ponytailDiagActions');
+const ponytailDiagAiBtn = document.getElementById('ponytailDiagAiBtn');
+const ponytailDiagSyncBtn = document.getElementById('ponytailDiagSyncBtn');
 
 // Setup Hub Elements
 const setupBanner = document.getElementById('setupBanner');
@@ -607,6 +618,40 @@ if (headroomDiagRunBtn) {
     });
 }
 
+if (syncPonytailBtn) {
+    syncPonytailBtn.addEventListener('click', () => {
+        if (syncPonytailSub) syncPonytailSub.textContent = 'Fetching from GitHub...';
+        vscode.postMessage({ command: 'syncPonytail' });
+    });
+}
+
+if (ponytailInlineSyncBtn) {
+    ponytailInlineSyncBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        ponytailInlineSyncBtn.textContent = '🔄 Syncing...';
+        vscode.postMessage({ command: 'syncPonytail' });
+        setTimeout(() => { ponytailInlineSyncBtn.textContent = '🔄 Sync from GitHub'; }, 3000);
+    });
+}
+
+if (ponytailDiagAiBtn) {
+    ponytailDiagAiBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        vscode.postMessage({ command: 'copyAiInstallPrompt' });
+        ponytailDiagAiBtn.textContent = '✓ Copied';
+        setTimeout(() => { ponytailDiagAiBtn.textContent = '🤖 Ask AI'; }, 2500);
+    });
+}
+
+if (ponytailDiagSyncBtn) {
+    ponytailDiagSyncBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        ponytailDiagSyncBtn.textContent = '🥋 Syncing...';
+        vscode.postMessage({ command: 'syncPonytail' });
+        setTimeout(() => { ponytailDiagSyncBtn.textContent = '🥋 Sync'; }, 3000);
+    });
+}
+
 // Handle incoming messages from extension host
 window.addEventListener('message', (event) => {
     const message = event.data;
@@ -634,11 +679,14 @@ window.addEventListener('message', (event) => {
                 if (message.data.headroom && message.data.headroom.hasUpdate && message.data.headroom.release) {
                     parts.push(`Headroom ${message.data.headroom.release.tag}`);
                 }
+                if (message.data.ponytail && message.data.ponytail.hasUpdate) {
+                    parts.push(`Ponytail (${(message.data.ponytail.release && message.data.ponytail.release.tag) || 'GitHub'})`);
+                }
                 if (checkUpdatesLabel) {
                     checkUpdatesLabel.textContent = `Update: ${parts.join(' & ')}!`;
                 }
                 if (checkUpdatesSub) {
-                    checkUpdatesSub.textContent = 'Click to upgrade upstream tools';
+                    checkUpdatesSub.textContent = 'Click to upgrade & sync upstream tools';
                 }
             }
             break;
@@ -766,7 +814,8 @@ function renderDashboardState(data) {
     // Setup Hub Alert Banner Rendering
     const isRtkMissing = !installed;
     const isHeadroomMissing = !data.headroomInstalled;
-    const isAnyMissing = isRtkMissing || isHeadroomMissing;
+    const isPonytailMissing = !data.ponytailInstalled;
+    const isAnyMissing = isRtkMissing || isHeadroomMissing || isPonytailMissing;
 
     if (setupBanner) {
         if (isAnyMissing) {
@@ -779,16 +828,17 @@ function renderDashboardState(data) {
                 if (isHeadroomMissing) {
                     chips.push('<span class="missing-chip chip-amber">📦 Headroom Missing</span>');
                 }
+                if (isPonytailMissing) {
+                    chips.push('<span class="missing-chip chip-cyan">🥋 Ponytail GitHub Missing</span>');
+                }
                 setupMissingTags.innerHTML = chips.join('');
             }
             if (setupBannerDesc) {
-                if (isRtkMissing && isHeadroomMissing) {
-                    setupBannerDesc.textContent = 'Install RTK CLI (Rust Token Killer) and Headroom context compression to start saving 60-90% token consumption across AI agent interactions.';
-                } else if (isRtkMissing) {
-                    setupBannerDesc.textContent = 'Install RTK CLI (Rust Token Killer) to compress shell outputs and slash 60-90% prompt tokens.';
-                } else {
-                    setupBannerDesc.textContent = 'Install Headroom Context Compression (Python CLI) to enable deep JSON/CCR payload compression.';
-                }
+                const missingNames = [];
+                if (isRtkMissing) missingNames.push('RTK CLI');
+                if (isHeadroomMissing) missingNames.push('Headroom');
+                if (isPonytailMissing) missingNames.push('Ponytail YAGNI');
+                setupBannerDesc.textContent = `Fetch & install ${missingNames.join(' & ')} to slash 60–90% token consumption across AI agent interactions and terminal tasks.`;
             }
         } else {
             setupBanner.style.display = 'none';
@@ -815,6 +865,38 @@ function renderDashboardState(data) {
     }
     if (headroomDiagActions) {
         headroomDiagActions.style.display = data.headroomInstalled ? 'none' : 'inline-flex';
+    }
+
+    if (diagPonytailStatus) {
+        const pInstalled = data.ponytailInstalled;
+        if (pInstalled) {
+            diagPonytailStatus.textContent = `Active (${data.ponytailSkillsCount || 6}/6 skills)`;
+            diagPonytailStatus.style.color = 'var(--accent-green)';
+        } else {
+            diagPonytailStatus.textContent = 'Not Synced (Click to Fetch)';
+            diagPonytailStatus.style.color = 'var(--accent-amber)';
+        }
+    }
+    if (ponytailDiagActions) {
+        ponytailDiagActions.style.display = data.ponytailInstalled ? 'none' : 'inline-flex';
+    }
+
+    if (ponytailActionBadge) {
+        if (data.ponytailInstalled) {
+            ponytailActionBadge.className = 'action-status-badge synced';
+            ponytailActionBadge.innerHTML = '<span class="badge-icon">✓</span> <span class="badge-text">Synced</span>';
+            ponytailActionBadge.title = `Ponytail YAGNI suite active (${data.ponytailSkillsCount || 6}/6 skills)`;
+            if (syncPonytailSub) {
+                syncPonytailSub.textContent = '✓ DietrichGebert/ponytail synced (Global IDE)';
+            }
+        } else {
+            ponytailActionBadge.className = 'action-status-badge install';
+            ponytailActionBadge.innerHTML = '<span class="badge-text">+ Fetch</span>';
+            ponytailActionBadge.title = 'Click to fetch Ponytail skills from GitHub to global IDE';
+            if (syncPonytailSub) {
+                syncPonytailSub.textContent = 'Fetch DietrichGebert/ponytail to IDE';
+            }
+        }
     }
 
     diagVersion.textContent = version;
