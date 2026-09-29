@@ -2,6 +2,16 @@
 
 All notable changes to the **Token Saver (RTK)** project will be documented in this file.
 
+## [1.7.0] - 2026-09-29
+### Added & Improved
+- **Full Ponytail & YAGNI Skills Suite**:
+  - Expanded Ponytail ecosystem with dedicated AI agent skills: `/ponytail-audit` (repo-wide bloat & over-engineering audit), `/ponytail-review` (complexity & diff review), `/ponytail-debt` (shortcut & debt ledger tracker), `/ponytail-gain` (savings scoreboard), and `/ponytail-help` (command cheat sheet).
+- **Comprehensive Agentic Skills System**:
+  - Packaged 20 built-in skills for Antigravity, Claude Code, Cursor, Windsurf, Cline, and Roo Code covering RTK token elimination, Headroom context compression, and Ponytail brevity directives.
+  - Added `/publishtokensaverlocal` skill for 1-click local `.vsix` packaging and internal distribution.
+- **Enhanced Extension Webview & Automation**:
+  - Updated webview dashboard actions, command bindings, and automated release scripts.
+
 ## [1.6.1] - 2026-09-29
 ### Added & Improved
 - **Webview Dashboard Enhancements & Support**:

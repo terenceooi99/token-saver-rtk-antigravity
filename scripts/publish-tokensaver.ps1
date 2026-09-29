@@ -53,6 +53,13 @@ $utf8NoBom = New-Object System.Text.UTF8Encoding $false
 [System.IO.File]::WriteAllText($packageJsonPath, $updatedJson, $utf8NoBom)
 Write-Host " [OK] Updated package.json version to $newVersion (UTF-8 No-BOM)" -ForegroundColor Green
 
+# Package local VSIX
+$packageScript = Join-Path $scriptDir "package-vsix.ps1"
+if (Test-Path $packageScript) {
+    Write-Host "Compiling VSIX package..." -ForegroundColor Yellow
+    & $packageScript
+}
+
 # Git commit, tag, and push
 Set-Location $projectRoot
 
