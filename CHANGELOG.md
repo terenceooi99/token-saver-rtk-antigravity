@@ -2,6 +2,12 @@
 
 All notable changes to the **Token Saver (RTK)** project will be documented in this file.
 
+## [1.4.1] - 2026-09-29
+### Added & Improved
+- **Open VSX Marketplace Release Notes Synchronization**:
+  - Synchronized full multi-version changelog metadata into package archive for seamless display on Open VSX and VS Code marketplaces.
+  - Added release workflow validation to guarantee continuous changelog updates on every future version bump.
+
 ## [1.4.0] - 2026-09-29
 ### Added & Improved
 - **Unified Modular Architecture**:
