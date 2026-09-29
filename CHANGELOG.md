@@ -2,6 +2,15 @@
 
 All notable changes to the **Token Saver (RTK)** project will be documented in this file.
 
+## [1.6.1] - 2026-09-29
+### Added & Improved
+- **Webview Dashboard Enhancements & Support**:
+  - Integrated support tip link (`☕ Tip me @ Wise`) in the extension webview dashboard footer with custom styling.
+  - Added project donation/tip link in `README.md`.
+- **Release Automation & Documentation**:
+  - Enhanced `publishtokensavernow` skill with automated changelog pre-flight guardrails, UTF-8 No-BOM guarantees, and full workspace staging checks.
+  - Updated `CONTRIBUTING.md` architecture guide and development workflows.
+
 ## [1.6.0] - 2026-09-29
 ### Added & Improved
 - **Comprehensive Documentation & Ecosystem Overhaul**:
