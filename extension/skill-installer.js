@@ -188,6 +188,144 @@ description: >
 # Package Token Saver Locally (/publishtokensaverlocal)
 
 Compiles the extension locally into \`latestvsixfile/token-saver-rtk-ide.vsix\` and \`token-saver-rtk-ide-<version>.vsix\` without bumping git tags, pushing commits, or triggering GitHub Actions.
+`,
+    'rtk-doctor': `---
+name: rtk-doctor
+description: >
+  Quick health check and environment diagnostics for RTK and Headroom.
+  Activate when the user types /rtk-doctor, /rtk-health, /rtk-status, "rtk doctor",
+  "rtk check", or asks to verify if RTK and token saving are properly configured.
+---
+
+# RTK Health Check & Environment Diagnostics (/rtk-doctor)
+
+Diagnose and verify that the RTK token optimization pipeline is running at full capacity.
+
+## Verification Checklist
+
+1. **RTK CLI Binary:**
+   - Execute \`rtk --version\` in the terminal to verify the binary is installed and accessible on PATH.
+   - If missing, guide the user to run \`winget install rtk-ai.rtk\` (Windows) or \`brew install rtk\` (macOS/Linux).
+
+2. **Headroom Context Compression:**
+   - Check if Headroom is available via \`headroom --version\` or \`python -m headroom --version\`.
+
+3. **IDE Rules Configuration:**
+   - Check that \`AGENTS.md\`, \`.cursorrules\`, \`.windsurfrules\`, \`.clinerules\`, or \`CLAUDE.md\` contains the \`<!-- RTK_TOKEN_SAVER_START -->\` block.
+
+4. **Token Savings Check:**
+   - Run \`rtk gain\` to confirm active token recording telemetry.
+
+5. **Diagnostic Summary:**
+   - Report active engine status, savings metrics, and any recommended fixes concisely.
+`,
+    'rtk-sync': `---
+name: rtk-sync
+description: >
+  1-Click synchronization of RTK Token Saver rules across all AI agent and IDE config files.
+  Activate when the user types /rtk-sync, /sync-rules, "sync rtk rules", or asks to
+  update/propagate token saving rules to VS Code, Cursor, Windsurf, Cline, Roo Code, Claude, and Antigravity.
+---
+
+# 1-Click Multi-IDE Rule Sync (/rtk-sync)
+
+Synchronize and inject the latest RTK Token Saver optimization rules and Headroom CCR directives into all target AI configuration files in the workspace.
+
+## Target Config Files
+- **Antigravity / Generic:** \`AGENTS.md\` and \`~/.gemini/config/rules/AGENTS.md\`
+- **Cursor IDE:** \`.cursorrules\` and \`.cursor/rules/rtk.mdc\`
+- **Windsurf IDE:** \`.windsurfrules\`
+- **Cline / Roo Code:** \`.clinerules\`
+- **Claude Code:** \`CLAUDE.md\`
+- **VS Code GitHub Copilot:** \`.github/copilot-instructions.md\`
+
+## Actions
+1. Ensure the RTK Token Saver rule block is present and up-to-date with current compression directives.
+2. Ensure skills are installed in \`.agents/skills/\` and global config.
+3. Confirm sync completion across all detected targets.
+`,
+    'rtk-compress': `---
+name: rtk-compress
+description: >
+  Compress raw text, massive stack traces, huge JSON payloads, or verbose logs before sending into context.
+  Activate when the user types /rtk-compress, /headroom-compress, "compress logs", "compress json",
+  or asks to condense a large payload to save prompt tokens.
+argument-hint: "[text|json|log_file_path]"
+license: MIT
+---
+
+# RTK / Headroom Context Compression (/rtk-compress)
+
+Condense heavy textual data, build logs, stack traces, or deep JSON payloads to minimize LLM prompt token consumption while preserving critical semantic context.
+
+## Compression Strategies
+1. **JSON Payloads:** Strip null/empty fields, trim large redundant arrays to representative samples, and collapse metadata headers.
+2. **Build / Test Logs:** Retain only the failed assertions, error messages, root stack traces, and exit codes; strip repetitive passing progress bars.
+3. **Large Files / Dumps:** Use Headroom CCR (Compress-Cache-Retrieve) pattern or extract structural outline instead of full raw content.
+`,
+    'rtk-run': `---
+name: rtk-run
+description: >
+  Execute arbitrary terminal/shell commands through RTK output compression proxy.
+  Activate when the user types /rtk-run <cmd>, /rtk-exec <cmd>, "run compressed",
+  or asks to run a shell command with RTK token saving applied.
+argument-hint: "<command>"
+license: MIT
+---
+
+# RTK Compressed Command Runner (/rtk-run)
+
+Executes any shell or CLI command through the \`rtk\` compression filter, minimizing token footprint in the LLM response context.
+
+## Usage
+- Prefix the target command with \`rtk\`: \`rtk <command>\`
+- For commands without native RTK filters, RTK acts as a safe transparent proxy.
+- Example: \`/rtk-run git status\` executes \`rtk git status\`.
+- Example: \`/rtk-run npm test\` executes \`rtk npm test\`.
+- Example: \`/rtk-run cargo build\` executes \`rtk cargo build\`.
+`,
+    'rtk-roi': `---
+name: rtk-roi
+description: >
+  Calculate and display token savings, context efficiency, and estimated cost reduction (ROI) across LLM models.
+  Activate when the user types /rtk-roi, /rtk-savings, /rtk-cost, "rtk roi", "rtk savings",
+  or asks how much money/tokens RTK has saved.
+---
+
+# RTK Token & Cost Savings ROI (/rtk-roi)
+
+Calculates the financial and token efficiency impact of RTK command and context compression.
+
+## Metrics Breakdown
+1. Run \`rtk gain --history\` (or \`rtk gain\`) to retrieve raw total tokens saved and reduction percentage.
+2. Calculate estimated cost savings across popular model price points:
+   - **Claude 3.7 Sonnet / Opus:** ~$3.00 - $15.00 per MTok
+   - **GPT-4o:** ~$2.50 - $10.00 per MTok
+   - **Gemini 2.5 Flash / Pro:** ~$0.10 - $2.50 per MTok
+3. Display a concise ROI scorecard with total tokens saved, % compressed, and estimated dollars saved.
+`,
+    'rtk-tree': `---
+name: rtk-tree
+description: >
+  Generate a token-optimized project structure map and directory skeleton, filtering out vendor and cache bloat.
+  Activate when the user types /rtk-tree, /rtk-project-map, "project tree", "token tree",
+  or asks for a compact workspace overview.
+argument-hint: "[directory_path] [depth]"
+license: MIT
+---
+
+# RTK Token-Optimized Project Tree (/rtk-tree)
+
+Generates a concise, high-signal project skeleton while filtering out token-wasting noise.
+
+## Noise Filtered Automatically
+- \`node_modules\`, \`target\`, \`dist\`, \`build\`, \`out\`, \`.next\`, \`.nuxt\`, \`bin\`, \`obj\`
+- \`.git\`, \`.venv\`, \`__pycache__\`, \`.pytest_cache\`, \`.turbo\`, \`.gradle\`
+- \`package-lock.json\`, \`pnpm-lock.yaml\`, \`yarn.lock\`, \`Cargo.lock\`
+- Coverage reports, minified bundles, and media binaries
+
+## Execution
+Run \`rtk tree -L 2\` or \`rtk ls\` on the target directory, annotating key architectural directories and entry points with minimal tokens.
 `
 };
 
