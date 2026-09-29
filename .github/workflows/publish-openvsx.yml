@@ -1,4 +1,4 @@
-﻿name: Publish to Open VSX & GitHub Releases
+name: Publish to Open VSX & GitHub Releases
 
 on:
   push:
@@ -27,7 +27,6 @@ jobs:
 
       - name: Publish to Open VSX
         if: env.OVSX_PAT != ''
-        continue-on-error: true
         run: npx ovsx publish token-saver-rtk-ide.vsix -p "$OVSX_PAT"
 
       - name: Create GitHub Release
