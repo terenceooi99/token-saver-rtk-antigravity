@@ -101,6 +101,87 @@ Manually update and synchronize the RTK (Rust Token Killer) CLI binary with the 
 
 3. **Verify Installation:**
    Run \`rtk --version\` and \`rtk gain\` to confirm the binary is active, functioning, and displays the latest metrics scoreboard.
+`,
+    'ponytail': `---
+name: ponytail
+description: >
+  Forces the laziest solution that actually works, simplest, shortest, most
+  minimal. Channels a senior dev who has seen everything: question whether the
+  task needs to exist at all (YAGNI), reach for the standard library before
+  custom code, native platform features before dependencies, one line before
+  fifty. Supports intensity levels: lite, full (default), ultra. Use on ANY
+  coding task: writing, adding, refactoring, fixing, reviewing, or designing
+  code, and choosing libraries or dependencies. Also use whenever the user
+  says "ponytail", "be lazy", "lazy mode", "simplest solution", "minimal
+  solution", "yagni", "do less", or "shortest path", or complains about
+  over-engineering, bloat, boilerplate, or unnecessary dependencies. Do NOT
+  use for non-coding requests (general knowledge, prose, translation,
+  summaries, recipes).
+argument-hint: "[lite|full|ultra|off]"
+license: MIT
+---
+
+# Ponytail
+
+You are a lazy senior developer. Lazy means efficient, not careless. The best code is the code never written.
+
+## The Ladder
+1. **Does this need to exist at all?** Speculative need = skip it (YAGNI).
+2. **Already in this codebase?** Reuse existing helpers/types.
+3. **Stdlib does it?** Use it.
+4. **Native platform covers it?** Native features over packages.
+5. **Already-installed dependency solves it?** Never add a new one for what a few lines can do.
+6. **Can it be one line?** One line.
+7. **Only then:** the minimum code that works. Shortest working diff wins.
+
+## Output
+Code first. At most 3 short lines: what was skipped, when to add it. No essays, no feature tours, no design notes.
+`,
+    'rtk-outline': `---
+name: rtk-outline
+description: >
+  Generate a concise AST / symbol outline (classes, methods, signatures, exported symbols)
+  of a file or directory instead of reading whole files. Saves 80-95% context window tokens
+  during codebase exploration. Activate when the user types /rtk-outline, /rtk-map,
+  "outline file", "symbol outline", or asks to inspect file structure without full bodies.
+argument-hint: "[file_path|directory_path]"
+license: MIT
+---
+
+# RTK AST / Symbol Outliner (/rtk-outline)
+
+Generates a compact structural outline of code files or directories. By displaying only declarations, classes, function signatures, interfaces, and exported symbols, it provides 100% of architectural context using less than 10% of the token cost.
+
+- Inspect symbol outlines before reading full files.
+- Extracts classes, functions, exports, and types with exact line numbers.
+`,
+    'rtk-diff': `---
+name: rtk-diff
+description: >
+  Inspect git diffs with compact single-line context (-U1) through RTK output compression.
+  Saves 50-70% of diff tokens compared to default multi-line diff outputs. Activate when
+  the user types /rtk-diff, "compact diff", "minimal diff", or asks to review diffs efficiently.
+argument-hint: "[staged|branch|file_path]"
+license: MIT
+---
+
+# RTK Compact Diff (/rtk-diff)
+
+Inspects git diffs using compact 1-line context (\`-U1\`) filtered through the RTK Rust Token Killer proxy.
+- Run \`rtk git diff -U1\` to review unstaged changes with minimal context tokens.
+- Run \`rtk git diff --cached -U1\` for staged reviews.
+`,
+    'publishtokensavernow': `---
+name: publishtokensavernow
+description: >
+  Automates bumping version, tagging, and publishing Token Saver (RTK) extension to Open VSX and GitHub Releases.
+  Activate when the user types /publishtokensavernow, "publish tokensaver now", "publish to openvsx", or asks to
+  publish a new release of this extension.
+---
+
+# Publish Token Saver Now (/publishtokensavernow)
+
+Run publishing workflow for Token Saver (RTK) extension to Open VSX and create a corresponding GitHub Release.
 `
 };
 
@@ -169,23 +250,66 @@ class SkillInstaller {
         };
     }
 
+    static getCombinedRuleText() {
+        let ponytailMode = 'full';
+        let terseMode = true;
+        let compactDiff = true;
+
+        try {
+            const config = vscode.workspace.getConfiguration('tokenSaver');
+            ponytailMode = config.get('ponytailMode', 'full');
+            terseMode = config.get('terseAgentMode', true);
+            compactDiff = config.get('compactDiffContext', true);
+        } catch (e) {
+            // Use defaults if config is inaccessible
+        }
+
+        let text = CORE_RULE_TEXT;
+
+        if (ponytailMode !== 'off') {
+            text += `\n\n## Output & Generation Token Saver Rule (Ponytail Mode: ${ponytailMode.toUpperCase()})\n`;
+            text += `- **YAGNI & Shortest Diff:** Only write code that must exist. Reach for standard library before custom code or new dependencies. Shortest working diff wins.\n`;
+            text += `- **Terse Responses:** Code first. At most 3 short lines of explanation: what was skipped, when to add it. No essays, no unsolicited design tours, no feature walkthroughs.\n`;
+            if (ponytailMode === 'ultra') {
+                text += `- **Ultra Mode:** Deletion over addition. Question speculative needs immediately and ship minimal one-liners.\n`;
+            }
+        }
+
+        if (terseMode) {
+            text += `\n## Terse Agent Directives\n`;
+            text += `- Eliminate pleasantries, greetings, and conversational filler. Provide direct answers and actionable code.\n`;
+            text += `- Avoid reprinting unchanged code blocks. Use targeted search/replace blocks or concise snippets.\n`;
+        }
+
+        if (compactDiff) {
+            text += `\n## Context Optimization (Compact Diffs & Outlines)\n`;
+            text += `- Inspect git changes using compact single-line diffs: \`rtk git diff -U1\` instead of wide multi-line context.\n`;
+            text += `- When exploring codebases, inspect function signatures / AST outlines (/rtk-outline) before reading entire files into context.\n`;
+        }
+
+        return text;
+    }
+
     static formatWrappedRule(headerTitle = 'RTK Token Saver Rule') {
-        return `${RTK_BLOCK_START}\n# ${headerTitle}\n\n${CORE_RULE_TEXT}\n${RTK_BLOCK_END}\n`;
+        return `${RTK_BLOCK_START}\n# ${headerTitle}\n\n${this.getCombinedRuleText()}\n${RTK_BLOCK_END}\n`;
     }
 
     static formatCursorMdc() {
         return `---
-description: Automatically routes terminal execution commands through RTK (Rust Token Killer) to minimize context window consumption.
+description: Automatically routes terminal execution commands through RTK and enforces Ponytail terse token-saving rules.
 globs: *
 alwaysApply: true
 ---
 
-# RTK (Rust Token Killer) Automation
+# RTK (Rust Token Killer) & Ponytail Token Saver Automation
 
 Always prefix terminal and CLI execution commands with \`rtk\` (e.g. \`rtk git status\`, \`rtk cargo test\`, \`rtk npm test\`, \`rtk pytest\`, \`rtk vitest\`, \`rtk ls\`, \`rtk rg\`).
 - Output is compressed to save tokens while preserving critical errors and signal.
 - In multi-command chains, prefix each sub-command: \`rtk git add . && rtk git commit -m "update"\`.
 - Use \`rtk gain\` to review token savings metrics.
+- Enforce Ponytail YAGNI: shortest working diff, standard library first, max 3 lines explanation, zero fluff.
+- Use \`rtk git diff -U1\` for compact single-line context diffs.
+- Inspect AST symbol outlines (/rtk-outline) before reading entire files.
 `;
     }
 
@@ -232,7 +356,7 @@ Always prefix terminal and CLI execution commands with \`rtk\` (e.g. \`rtk git s
         }
 
         if (filePath.endsWith('antigravity-rtk-rules.md')) {
-            fs.writeFileSync(filePath, `# RTK (Rust Token Killer) Automation Rule\n\n${CORE_RULE_TEXT}\n`, 'utf8');
+            fs.writeFileSync(filePath, `# RTK (Rust Token Killer) Automation Rule\n\n${this.getCombinedRuleText()}\n`, 'utf8');
             return { path: filePath, action: 'written' };
         }
 

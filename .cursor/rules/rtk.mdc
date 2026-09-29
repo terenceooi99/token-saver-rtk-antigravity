@@ -1,12 +1,15 @@
 ---
-description: Automatically routes terminal execution commands through RTK (Rust Token Killer) to minimize context window consumption.
+description: Automatically routes terminal execution commands through RTK and enforces Ponytail terse token-saving rules.
 globs: *
 alwaysApply: true
 ---
 
-# RTK (Rust Token Killer) Automation
+# RTK (Rust Token Killer) & Ponytail Token Saver Automation
 
 Always prefix terminal and CLI execution commands with `rtk` (e.g. `rtk git status`, `rtk cargo test`, `rtk npm test`, `rtk pytest`, `rtk vitest`, `rtk ls`, `rtk rg`).
 - Output is compressed to save tokens while preserving critical errors and signal.
 - In multi-command chains, prefix each sub-command: `rtk git add . && rtk git commit -m "update"`.
 - Use `rtk gain` to review token savings metrics.
+- Enforce Ponytail YAGNI: shortest working diff, standard library first, max 3 lines explanation, zero fluff.
+- Use `rtk git diff -U1` for compact single-line context diffs.
+- Inspect AST symbol outlines (/rtk-outline) before reading entire files.

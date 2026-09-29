@@ -51,6 +51,13 @@ const openTerminalBtn = document.getElementById('openTerminalBtn');
 const testLatencyBtn = document.getElementById('testLatencyBtn');
 const latencySubText = document.getElementById('latencySubText');
 
+const ponytailActiveBadge = document.getElementById('ponytailActiveBadge');
+const ponytailSegmentGroup = document.getElementById('ponytailSegmentGroup');
+const terseAgentCheckbox = document.getElementById('terseAgentCheckbox');
+const compactDiffCheckbox = document.getElementById('compactDiffCheckbox');
+const runOutlineBtn = document.getElementById('runOutlineBtn');
+const runDiffBtn = document.getElementById('runDiffBtn');
+
 const diagCliStatus = document.getElementById('diagCliStatus');
 const diagVersion = document.getElementById('diagVersion');
 const diagBinaryPath = document.getElementById('diagBinaryPath');
@@ -474,6 +481,40 @@ testLatencyBtn.addEventListener('click', () => {
     vscode.postMessage({ command: 'testLatency' });
 });
 
+if (ponytailSegmentGroup) {
+    const btns = ponytailSegmentGroup.querySelectorAll('.segment-btn');
+    btns.forEach(b => {
+        b.addEventListener('click', () => {
+            const mode = b.dataset.mode;
+            vscode.postMessage({ command: 'setPonytailMode', mode });
+        });
+    });
+}
+
+if (terseAgentCheckbox) {
+    terseAgentCheckbox.addEventListener('change', () => {
+        vscode.postMessage({ command: 'toggleTerseMode', enabled: terseAgentCheckbox.checked });
+    });
+}
+
+if (compactDiffCheckbox) {
+    compactDiffCheckbox.addEventListener('change', () => {
+        vscode.postMessage({ command: 'toggleCompactDiff', enabled: compactDiffCheckbox.checked });
+    });
+}
+
+if (runOutlineBtn) {
+    runOutlineBtn.addEventListener('click', () => {
+        vscode.postMessage({ command: 'runFileOutline' });
+    });
+}
+
+if (runDiffBtn) {
+    runDiffBtn.addEventListener('click', () => {
+        vscode.postMessage({ command: 'runCompactDiff' });
+    });
+}
+
 // Handle incoming messages from extension host
 window.addEventListener('message', (event) => {
     const message = event.data;
@@ -645,6 +686,25 @@ function renderDashboardState(data) {
     // Weekly Auto Sync Option State
     if (weeklySyncCheckbox && data.weeklyAutoSync !== undefined) {
         weeklySyncCheckbox.checked = Boolean(data.weeklyAutoSync);
+    }
+
+    // Output & Context Token Optimization
+    const pMode = data.ponytailMode || 'full';
+    if (ponytailActiveBadge) {
+        ponytailActiveBadge.textContent = `${pMode.toUpperCase()} Mode`;
+        ponytailActiveBadge.className = pMode === 'off' ? 'panel-tag' : 'panel-tag tag-cyan';
+    }
+    if (ponytailSegmentGroup) {
+        const btns = ponytailSegmentGroup.querySelectorAll('.segment-btn');
+        btns.forEach(b => {
+            b.classList.toggle('active', b.dataset.mode === pMode);
+        });
+    }
+    if (terseAgentCheckbox && data.terseAgentMode !== undefined) {
+        terseAgentCheckbox.checked = Boolean(data.terseAgentMode);
+    }
+    if (compactDiffCheckbox && data.compactDiffContext !== undefined) {
+        compactDiffCheckbox.checked = Boolean(data.compactDiffContext);
     }
 }
 

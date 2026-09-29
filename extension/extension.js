@@ -114,10 +114,16 @@ async function activate(context) {
         checkWeeklyAutoSync(context);
     }, 30000);
 
-    // Listen to configuration changes (e.g. tokenPricePerMillion, statusMetricDisplay)
+    // Listen to configuration changes (e.g. tokenPricePerMillion, statusMetricDisplay, ponytailMode)
     context.subscriptions.push(
         vscode.workspace.onDidChangeConfiguration(async (e) => {
             if (e.affectsConfiguration('tokenSaver')) {
+                if (e.affectsConfiguration('tokenSaver.ponytailMode') ||
+                    e.affectsConfiguration('tokenSaver.terseAgentMode') ||
+                    e.affectsConfiguration('tokenSaver.compactDiffContext')) {
+                    const scope = vscode.workspace.getConfiguration('tokenSaver').get('targetScope', 'all');
+                    SkillInstaller.syncRules(isEnabled, scope);
+                }
                 await refreshStatus(context);
             }
         })
@@ -204,7 +210,7 @@ async function activate(context) {
             const results = SkillInstaller.installAllSkills();
             const dests = results.map(r => r.destination).join(' and ');
             vscode.window.showInformationMessage(
-                `🧠 Successfully installed Antigravity & AI Agent skills (/rtk-savedtokenon, /rtk-savedtokenoff, /rtk-gain, /rtk-update) to: ${dests}!`
+                `🧠 Successfully installed Antigravity & AI Agent skills (/ponytail, /rtk-outline, /rtk-diff, /rtk-gain, /rtk-savedtokenon) to: ${dests}!`
             );
         } catch (err) {
             vscode.window.showErrorMessage(`Failed to install skills: ${err.message}`);
@@ -248,6 +254,50 @@ async function activate(context) {
         RtkService.runInTerminal(installCmd);
     });
 
+    const setPonytailModeCmd = vscode.commands.registerCommand('tokenSaver.setPonytailMode', async (modeArg) => {
+        let chosenMode = modeArg;
+        if (!chosenMode) {
+            const currentMode = vscode.workspace.getConfiguration('tokenSaver').get('ponytailMode', 'full');
+            const picks = [
+                { label: 'Full (Default)', description: 'YAGNI ladder, stdlib first, max 3 lines explanation, zero fluff', value: 'full' },
+                { label: 'Lite', description: 'Informative suggestions with laziest alternative noted', value: 'lite' },
+                { label: 'Ultra', description: 'Extremist YAGNI, immediate challenge of speculative code, one-liners', value: 'ultra' },
+                { label: 'Off', description: 'Disable Ponytail generation optimization', value: 'off' }
+            ];
+            const sel = await vscode.window.showQuickPick(picks, { placeHolder: `Current Ponytail mode: ${currentMode.toUpperCase()}` });
+            if (!sel) return;
+            chosenMode = sel.value;
+        }
+
+        const cfg = vscode.workspace.getConfiguration('tokenSaver');
+        await cfg.update('ponytailMode', chosenMode, vscode.ConfigurationTarget.Global);
+        const scope = cfg.get('targetScope', 'all');
+        SkillInstaller.syncRules(isEnabled, scope);
+        vscode.window.showInformationMessage(`🥋 Ponytail Token Saver mode set to: ${chosenMode.toUpperCase()}`);
+        await refreshStatus(context);
+    });
+
+    const runCompactDiffCmd = vscode.commands.registerCommand('tokenSaver.runCompactDiff', async () => {
+        outputChannel.clear();
+        outputChannel.show(true);
+        outputChannel.appendLine('[Token Saver] Running compact diff (-U1 single-line context)...\n');
+        const diffText = await RtkService.getCompactDiffRaw();
+        outputChannel.appendLine(diffText);
+    });
+
+    const generateAstOutlineCmd = vscode.commands.registerCommand('tokenSaver.generateAstOutline', async () => {
+        const editor = vscode.window.activeTextEditor;
+        if (!editor || !editor.document) {
+            vscode.window.showWarningMessage('Please open a code file to generate its AST/Symbol outline.');
+            return;
+        }
+        const filePath = editor.document.uri.fsPath;
+        const outline = RtkService.generateFileOutline(filePath);
+        outputChannel.clear();
+        outputChannel.show(true);
+        outputChannel.appendLine(outline);
+    });
+
     context.subscriptions.push(
         openDashboardCmd,
         toggleCmd,
@@ -260,7 +310,10 @@ async function activate(context) {
         installSkillsCmd,
         syncGlobalRulesCmd,
         showSavingsCmd,
-        installCliCmd
+        installCliCmd,
+        setPonytailModeCmd,
+        runCompactDiffCmd,
+        generateAstOutlineCmd
     );
 }
 

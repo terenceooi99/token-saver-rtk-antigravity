@@ -2,7 +2,7 @@
   "name": "token-saver-rtk-ide",
   "displayName": "Token Saver (RTK) for VS Code & Agentic IDEs",
   "description": "Smart token optimization and CLI output compression proxy using RTK (Rust Token Killer) for VS Code (GitHub Copilot), Antigravity IDE, Cursor, Windsurf, Cline, Roo Code, Claude Code, and AGENTS.md.",
-  "version": "1.4.1",
+  "version": "1.5.1",
   "publisher": "terenceooi",
   "author": {
     "name": "Terence",
@@ -144,6 +144,24 @@
         "command": "tokenSaver.installCli",
         "title": "Install RTK CLI Tool",
         "category": "Token Saver"
+      },
+      {
+        "command": "tokenSaver.setPonytailMode",
+        "title": "Configure Ponytail Mode (YAGNI & Output Token Saver)",
+        "category": "Token Saver",
+        "icon": "$(zap)"
+      },
+      {
+        "command": "tokenSaver.runCompactDiff",
+        "title": "Run Compact Diff (rtk git diff -U1)",
+        "category": "Token Saver",
+        "icon": "$(diff)"
+      },
+      {
+        "command": "tokenSaver.generateAstOutline",
+        "title": "Generate AST / Symbol Outline for Current File",
+        "category": "Token Saver",
+        "icon": "$(symbol-structure)"
       }
     ],
     "configuration": {
@@ -199,6 +217,27 @@
           ],
           "default": "compact",
           "description": "Formatting of live metrics in the status bar item."
+        },
+        "tokenSaver.ponytailMode": {
+          "type": "string",
+          "enum": [
+            "full",
+            "lite",
+            "ultra",
+            "off"
+          ],
+          "default": "full",
+          "description": "Ponytail YAGNI & Output Token Saver mode: 'full' (standard library first, shortest working diff, max 3 lines explanation), 'lite', 'ultra', or 'off'."
+        },
+        "tokenSaver.terseAgentMode": {
+          "type": "boolean",
+          "default": true,
+          "description": "Direct agents to drop conversational pleasantries and filler text to maximize output token savings."
+        },
+        "tokenSaver.compactDiffContext": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enforce single-line context (-U1) for git diffs to eliminate redundant surrounding lines."
         }
       }
     }

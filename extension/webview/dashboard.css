@@ -1356,6 +1356,96 @@ pre {
     grid-template-columns: 1fr;
 }
 
+/* Output & Context Token Optimization */
+.output-optimization-section {
+    border-color: rgba(34, 211, 238, 0.2);
+}
+
+.output-optimization-section:hover {
+    border-color: rgba(34, 211, 238, 0.4);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 16px rgba(34, 211, 238, 0.1);
+}
+
+.opt-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-md);
+    margin-bottom: 8px;
+    gap: 12px;
+    transition: var(--transition);
+}
+
+.opt-row:last-child {
+    margin-bottom: 0;
+}
+
+.opt-row:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(34, 211, 238, 0.2);
+}
+
+.opt-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    flex: 1;
+}
+
+.opt-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.opt-desc {
+    font-size: 10.5px;
+    color: var(--text-muted);
+    line-height: 1.3;
+}
+
+/* Mode Segmented Button Group */
+.mode-segment-group {
+    display: flex;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-md);
+    padding: 2px;
+    gap: 2px;
+}
+
+.segment-btn {
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.segment-btn:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.segment-btn.active {
+    background: var(--accent-cyan);
+    color: #0b0f19;
+    box-shadow: 0 0 10px rgba(34, 211, 238, 0.4);
+}
+
+.tag-cyan {
+    background: rgba(34, 211, 238, 0.15);
+    color: var(--accent-cyan);
+    border: 1px solid rgba(34, 211, 238, 0.3);
+}
+
 @media (max-width: 768px) {
     body {
         padding: 8px;

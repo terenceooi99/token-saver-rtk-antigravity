@@ -34,6 +34,9 @@ class WebviewHelper {
             isEnabled,
             weeklyAutoSync,
             tokenPricePerMillion,
+            ponytailMode: config.get('ponytailMode', 'full'),
+            terseAgentMode: config.get('terseAgentMode', true),
+            compactDiffContext: config.get('compactDiffContext', true),
             installed: check.installed,
             version: check.version || 'Not installed',
             binaryPath: check.path || 'Not detected',
@@ -146,6 +149,42 @@ class WebviewHelper {
                     vscode.window.showInformationMessage(`💰 Token cost estimate rate updated to $${roundedPrice.toFixed(2)} / 1M tokens.`);
                     if (onStateRequest) await onStateRequest();
                 }
+                break;
+            case 'setPonytailMode':
+                if (message.mode) {
+                    await vscode.commands.executeCommand('tokenSaver.setPonytailMode', message.mode);
+                    triggerRefresh(300);
+                }
+                break;
+            case 'toggleTerseMode':
+                const newTerse = message.enabled !== undefined ? message.enabled : true;
+                try {
+                    const cfg = vscode.workspace.getConfiguration('tokenSaver');
+                    await cfg.update('terseAgentMode', newTerse, vscode.ConfigurationTarget.Global);
+                    const scope = cfg.get('targetScope', 'all');
+                    SkillInstaller.syncRules(context.globalState.get('tokenSaver.enabled', true), scope);
+                } catch (e) {
+                    // ignore
+                }
+                triggerRefresh(300);
+                break;
+            case 'toggleCompactDiff':
+                const newCompact = message.enabled !== undefined ? message.enabled : true;
+                try {
+                    const cfg = vscode.workspace.getConfiguration('tokenSaver');
+                    await cfg.update('compactDiffContext', newCompact, vscode.ConfigurationTarget.Global);
+                    const scope = cfg.get('targetScope', 'all');
+                    SkillInstaller.syncRules(context.globalState.get('tokenSaver.enabled', true), scope);
+                } catch (e) {
+                    // ignore
+                }
+                triggerRefresh(300);
+                break;
+            case 'runCompactDiff':
+                await vscode.commands.executeCommand('tokenSaver.runCompactDiff');
+                break;
+            case 'runFileOutline':
+                await vscode.commands.executeCommand('tokenSaver.generateAstOutline');
                 break;
         }
     }

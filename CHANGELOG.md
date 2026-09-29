@@ -2,6 +2,22 @@
 
 All notable changes to the **Token Saver (RTK)** project will be documented in this file.
 
+## [1.5.0] - 2026-09-29
+### Added & Improved
+- **Full-Spectrum Token Saver Suite (Input + Output + Context)**:
+  - Combined **RTK Core** (CLI input compression) with **Ponytail YAGNI philosophy** (output token reduction), **AST Symbol Outlining** (`/rtk-outline`), and **Compact Diffs** (`/rtk-diff`).
+- **Ponytail Mode & Terse Agent Directives (`/ponytail`)**:
+  - Added new `/ponytail [lite|full|ultra|off]` slash action and skill.
+  - Slashes expensive output tokens (3-4x input cost) by banning unsolicited essays and enforcing standard library over bloat, shortest working diffs, and max 3-line explanations.
+  - Multi-IDE rule synchronization automatically embeds Ponytail and Terse directives across Cursor, Windsurf, Cline, Claude Code, Copilot, Antigravity, and `AGENTS.md`.
+- **AST / Symbol Outliner (`/rtk-outline` & `tokenSaver.generateAstOutline`)**:
+  - Generates concise structural class/function signature outlines with line numbers, saving 80–95% context tokens vs reading whole files into context.
+- **Compact Git Diff Context (`/rtk-diff` & `tokenSaver.runCompactDiff`)**:
+  - Integrates single-line context (`rtk git diff -U1`), eliminating redundant unchanged code blocks and saving 50–70% of diff tokens.
+- **Interactive Dashboard Controls**:
+  - Added dedicated **🥋 Output & Context Token Saver** section in the webview dashboard with segmented mode selector (`[Off | Lite | Full | Ultra]`), Terse toggle, and Compact Diff toggle.
+  - Added Quick Action buttons: `🌲 AST Symbol Outline` and `⚡ Compact Diff (-U1)`.
+
 ## [1.4.1] - 2026-09-29
 ### Added & Improved
 - **Open VSX Marketplace Release Notes Synchronization**:

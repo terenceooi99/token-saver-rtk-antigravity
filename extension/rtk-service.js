@@ -1,5 +1,7 @@
 const { exec, spawn } = require('child_process');
 const vscode = require('vscode');
+const fs = require('fs');
+const path = require('path');
 
 class RtkService {
     static checkInstalled() {
@@ -200,6 +202,64 @@ class RtkService {
                 }
             });
         });
+    }
+
+    static getCompactDiffRaw() {
+        return new Promise((resolve) => {
+            exec('rtk git diff -U1', (error, stdout) => {
+                if (error || !stdout) {
+                    exec('git diff -U1', (gErr, gStdout) => {
+                        resolve(gStdout ? gStdout.trim() : '(No modified files found in working tree)');
+                    });
+                } else {
+                    resolve(stdout.trim());
+                }
+            });
+        });
+    }
+
+    static generateFileOutline(filePath) {
+        if (!filePath || !fs.existsSync(filePath)) {
+            return 'File not found or no file selected.';
+        }
+        const content = fs.readFileSync(filePath, 'utf8');
+        const lines = content.split(/\r?\n/);
+        const outline = [];
+        const baseName = path.basename(filePath);
+
+        outline.push(`=== Symbol Outline: ${baseName} (${lines.length} lines) ===`);
+        outline.push(`[Context saved: ~${Math.round(lines.length * 3.5)} tokens vs reading full file]\n`);
+
+        const patterns = [
+            { type: 'Class/Type', regex: /^\s*(export\s+)?(class|interface|type|struct|enum|trait)\s+([A-Za-z0-9_$]+)/ },
+            { type: 'Function', regex: /^\s*(export\s+)?(async\s+)?function\s+([A-Za-z0-9_$]+)\s*\((.*?)\)/ },
+            { type: 'Method', regex: /^\s*(static\s+)?(async\s+)?([A-Za-z0-9_$]+)\s*\((.*?)\)\s*\{/ },
+            { type: 'ArrowFn', regex: /^\s*(export\s+)?(const|let|var)\s+([A-Za-z0-9_$]+)\s*=\s*(async\s*)?\((.*?)\)\s*=>/ },
+            { type: 'Python', regex: /^\s*(class|def)\s+([A-Za-z0-9_]+)\s*(\(.*?\))?:/ },
+            { type: 'Rust/Go', regex: /^\s*(pub\s+)?fn\s+([A-Za-z0-9_]+)|^\s*func\s+([A-Za-z0-9_]+)/ }
+        ];
+
+        let foundCount = 0;
+        lines.forEach((line, idx) => {
+            const lineNum = idx + 1;
+            const trimmed = line.trim();
+            if (!trimmed || trimmed.startsWith('//') || trimmed.startsWith('#') || trimmed.startsWith('/*')) return;
+
+            for (const p of patterns) {
+                if (p.regex.test(line)) {
+                    const display = trimmed.length > 95 ? trimmed.substring(0, 92) + '...' : trimmed;
+                    outline.push(`Line ${String(lineNum).padStart(4, ' ')}: ${display}`);
+                    foundCount++;
+                    break;
+                }
+            }
+        });
+
+        if (foundCount === 0) {
+            outline.push('(No top-level class or function declarations matched. File may be configuration, data, or markup.)');
+        }
+
+        return outline.join('\n');
     }
 
     static runInTerminal(command = 'rtk gain') {

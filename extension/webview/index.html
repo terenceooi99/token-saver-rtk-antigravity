@@ -178,6 +178,60 @@
                     </div>
                 </section>
 
+                <!-- Output & Context Token Optimization (Ponytail & AST) -->
+                <section class="panel-card output-optimization-section" id="sectionOutputOpt">
+                    <div class="panel-header collapsible" data-target="bodyOutputOpt">
+                        <div class="panel-header-left">
+                            <span class="collapse-chevron">▾</span>
+                            <div>
+                                <h2>🥋 Output & Context Token Saver</h2>
+                                <p class="panel-subtitle">Ponytail YAGNI philosophy, terse agent rules, & minimal diffs</p>
+                            </div>
+                        </div>
+                        <span class="panel-tag tag-cyan" id="ponytailActiveBadge">Full Mode</span>
+                    </div>
+
+                    <div class="panel-body" id="bodyOutputOpt">
+                        <!-- Ponytail Intensity Control -->
+                        <div class="opt-row">
+                            <div class="opt-info">
+                                <span class="opt-title">Ponytail YAGNI Mode:</span>
+                                <span class="opt-desc">Prioritize stdlib, shortest diffs, and max 3-line explanations (no essays)</span>
+                            </div>
+                            <div class="mode-segment-group" id="ponytailSegmentGroup">
+                                <button class="segment-btn" data-mode="off">Off</button>
+                                <button class="segment-btn" data-mode="lite">Lite</button>
+                                <button class="segment-btn active" data-mode="full">Full</button>
+                                <button class="segment-btn" data-mode="ultra">Ultra</button>
+                            </div>
+                        </div>
+
+                        <!-- Terse Agent Output Toggle -->
+                        <div class="opt-row">
+                            <div class="opt-info">
+                                <span class="opt-title">Terse Agent Directives:</span>
+                                <span class="opt-desc">Strip greetings, filler words, and conversational fluff to slash output tokens</span>
+                            </div>
+                            <div class="custom-toggle">
+                                <input type="checkbox" id="terseAgentCheckbox" checked>
+                                <span class="custom-toggle-slider"></span>
+                            </div>
+                        </div>
+
+                        <!-- Compact Diff Context (-U1) Toggle -->
+                        <div class="opt-row">
+                            <div class="opt-info">
+                                <span class="opt-title">Compact Diffs (-U1 Context):</span>
+                                <span class="opt-desc">Limit git diff context to 1 neighboring line, cutting diff context size by 50-70%</span>
+                            </div>
+                            <div class="custom-toggle">
+                                <input type="checkbox" id="compactDiffCheckbox" checked>
+                                <span class="custom-toggle-slider"></span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
                 <!-- Command Savings Breakdown -->
                 <section class="panel-card chart-section" id="sectionSavings">
                     <div class="panel-header collapsible" data-target="bodySavings">
@@ -216,13 +270,33 @@
                                     <span class="btn-icon">🧠</span>
                                     <div class="btn-text-block">
                                         <span class="btn-label">1-Click Antigravity Skills</span>
-                                        <span class="btn-sub" id="skillsSubText">Install /rtk-* chat commands</span>
+                                        <span class="btn-sub" id="skillsSubText">Install /rtk-* & /ponytail chat commands</span>
                                     </div>
                                 </div>
                                 <span class="action-status-badge" id="skillsStatusBadge">
                                     <span class="badge-icon">✓</span>
                                     <span class="badge-text">Active</span>
                                 </span>
+                            </button>
+
+                            <button class="btn btn-action" id="runOutlineBtn" title="Extract function and class signatures for current file (saves ~90% tokens)">
+                                <div class="btn-action-left">
+                                    <span class="btn-icon">🌲</span>
+                                    <div class="btn-text-block">
+                                        <span class="btn-label">AST Symbol Outline</span>
+                                        <span class="btn-sub">Inspect outline before reading file</span>
+                                    </div>
+                                </div>
+                            </button>
+
+                            <button class="btn btn-action" id="runDiffBtn" title="Run compact diff with single-line context (-U1)">
+                                <div class="btn-action-left">
+                                    <span class="btn-icon">⚡</span>
+                                    <div class="btn-text-block">
+                                        <span class="btn-label">Compact Diff (-U1)</span>
+                                        <span class="btn-sub">Review changes with minimal context</span>
+                                    </div>
+                                </div>
                             </button>
 
                             <div class="action-row-split">
