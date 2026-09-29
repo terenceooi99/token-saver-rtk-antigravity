@@ -1,6 +1,6 @@
-# Contributing to Token Saver (RTK)
+# Contributing to Token Saver (RTK & Headroom)
 
-Thank you for your interest in contributing to **Token Saver (RTK) for VS Code & Agentic IDEs**! This project aims to bring intelligent terminal token optimization and CLI output compression across all modern AI coding assistants and IDEs.
+Thank you for your interest in contributing to **Token Saver (RTK & Headroom) for VS Code & Agentic IDEs**! This project brings intelligent terminal token optimization, CLI output compression, Headroom context compression, and Ponytail YAGNI mode across all modern AI coding assistants and IDEs.
 
 We welcome contributions of all kinds: bug fixes, new IDE/agent integrations, performance improvements, documentation enhancements, and UI polish.
 
@@ -15,16 +15,21 @@ token-saver-rtk-ide/
 ├── extension/                 # VS Code & OpenVSX Extension Core
 │   ├── extension.js           # Extension entry point & command registrations
 │   ├── rtk-service.js         # RTK CLI telemetry, execution proxy & metrics parser
-│   ├── rtk-updater.js         # Upstream GitHub release checker & updater
+│   ├── rtk-updater.js         # Dual upstream GitHub release checker & updater (RTK + Headroom)
 │   ├── statusbar.js           # Real-time status bar metric widget
-│   ├── skill-installer.js     # Multi-IDE rule injection & delimited sync engine
-│   ├── dashboard-panel.js     # Webview panel coordinator
+│   ├── sidebar-provider.js    # Activity Bar Primary Sidebar Webview Provider
+│   ├── dashboard-panel.js     # Pop-out Editor Tab Webview Panel coordinator
+│   ├── webview-helper.js      # Unified webview message bridge, state & HTML generator
 │   └── webview/               # Interactive glassmorphic dashboard (HTML/CSS/JS)
-├── skills/                    # Antigravity agent skills (/rtk-savedtokenon, /rtk-gain, etc.)
+├── skills/                    # Global Antigravity agent skills (/rtk-*, /ponytail, etc.)
+├── .agents/                   # Workspace Antigravity skills & rules configuration
 ├── rules/                     # System prompt & token-saving behavior rules
-├── scripts/                   # Cross-platform installation and sync scripts (.ps1 / .sh)
+├── scripts/                   # Cross-platform installation, sync & packaging scripts (.ps1 / .sh)
+├── latestvsixfile/            # Pre-compiled local VSIX package for instant IDE testing
 ├── .github/                   # Workflows (CI/CD, OpenVSX publishing)
 ├── AGENTS.md                  # Universal agent instructions
+├── CHANGELOG.md               # Version history & release notes
+├── README.md                  # Project overview & documentation
 └── package.json               # Extension manifest and scripts
 ```
 
@@ -55,8 +60,9 @@ npm install
 1. Open the project root in VS Code, Cursor, Windsurf, or Antigravity IDE.
 2. Press `F5` (or go to **Run and Debug** -> **Launch Extension**) to start an Extension Development Host window.
 3. In the new window:
+   - Click the **RTK Meter icon** on the Activity Bar to test the Primary Sidebar dashboard.
    - Run `Token Saver: Open Interactive Dashboard` from the Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`).
-   - Test toggle commands, status bar updates, and multi-IDE synchronization.
+   - Test toggle commands, status bar updates, Ponytail modes, and multi-IDE synchronization.
 
 ### Testing Antigravity Skills & Agent Rules
 - **Windows (PowerShell)**:
@@ -67,7 +73,7 @@ npm install
   ```bash
   ./scripts/install-skills.sh
   ```
-- Verify that slash commands (`/rtk-savedtokenon`, `/rtk-savedtokenoff`, `/rtk-gain`) work inside the chat interface.
+- Verify that slash commands (`/rtk-savedtokenon`, `/rtk-savedtokenoff`, `/rtk-gain`, `/rtk-diff`, `/rtk-outline`, `/rtk-doctor`, `/rtk-tree`, `/rtk-compress`, `/rtk-roi`, `/rtk-update`, `/ponytail`) work inside the chat interface.
 
 ### Testing Multi-IDE Rule Synchronization
 - **Windows (PowerShell)**:
@@ -78,16 +84,19 @@ npm install
   ```bash
   ./scripts/install-all-ide-rules.sh
   ```
-- Verify that delimiters (`<!-- RTK_TOKEN_SAVER_START -->` / `<!-- RTK_TOKEN_SAVER_END -->`) correctly preserve existing file content when writing to `.cursorrules`, `.windsurfrules`, `.clinerules`, `CLAUDE.md`, and `AGENTS.md`.
+- Verify that delimiters (`<!-- RTK_TOKEN_SAVER_START -->` / `<!-- RTK_TOKEN_SAVER_END -->`) correctly preserve existing file content when writing to `.cursorrules`, `.cursor/rules/rtk.mdc`, `.windsurfrules`, `.clinerules`, `CLAUDE.md`, and `AGENTS.md`.
 
 ---
 
 ## 📦 Packaging & Building
 
-To verify the extension packages without errors:
+To compile and verify the extension package:
 
 ```bash
-# Package the .vsix bundle
+# Compile local VSIX package (updates latestvsixfile/token-saver-rtk-ide.vsix)
+npm run package
+
+# Or package via @vscode/vsce
 npx @vscode/vsce package
 ```
 
