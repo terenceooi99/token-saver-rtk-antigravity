@@ -1750,6 +1750,14 @@ pre {
 .footer-links a:hover {
     color: var(--accent-cyan);
 }
+.footer-links a.tip-link {
+    color: #9fe870;
+    font-weight: 500;
+}
+.footer-links a.tip-link:hover {
+    color: #bbf78f;
+    text-decoration: underline;
+}
 
 /* ==========================================================================
    Responsive Architecture (Container Queries & Dynamic Width Adaptation)

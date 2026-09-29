@@ -202,6 +202,7 @@ You can also synchronize rules directly from terminal:
 
 - **Terence** — [terenceooi1688@gmail.com](mailto:terenceooi1688@gmail.com)
 - **GitHub**: [terenceooi99/token-saver-rtk-ide](https://github.com/terenceooi99/token-saver-rtk-ide)
+- **Support / Tip**: [Tip me @ Wise](https://wise.com/pay/me/terenceooit)
 
 ---
 
