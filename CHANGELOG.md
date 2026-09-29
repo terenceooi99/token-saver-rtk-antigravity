@@ -2,6 +2,16 @@
 
 All notable changes to the **Token Saver (RTK)** project will be documented in this file.
 
+## [1.6.0] - 2026-09-29
+### Added & Improved
+- **Comprehensive Documentation & Ecosystem Overhaul**:
+  - Overhauled and updated `README.md` with complete documentation for all 15 Antigravity & AI agent slash commands (`/rtk-*`, `/ponytail`, `/publish*`).
+  - Documented dual-engine architecture powered by **RTK Core** and **Headroom Context Compression**.
+  - Added complete extension settings reference schema and configuration options.
+- **Enhanced Packaging & Distribution Pipeline**:
+  - Updated build and packaging automation to generate versioned VSIX distribution artifacts (`token-saver-rtk-ide-1.6.0.vsix`).
+  - Synchronized internal distribution bundle in `latestvsixfile/token-saver-rtk-ide.vsix`.
+
 ## [1.5.2] - 2026-09-29
 ### Added & Improved
 - **Dual Upstream Engine Integration (RTK + Headroom)**:

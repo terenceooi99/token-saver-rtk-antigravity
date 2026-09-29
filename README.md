@@ -193,7 +193,7 @@ You can also synchronize rules directly from terminal:
 
 2. **Publish to Open VSX**:
    ```bash
-   npx ovsx publish token-saver-rtk-ide-1.5.2.vsix -p <YOUR_OPENVSX_ACCESS_TOKEN>
+   npx ovsx publish token-saver-rtk-ide-1.6.0.vsix -p <YOUR_OPENVSX_ACCESS_TOKEN>
    ```
 
 ---
