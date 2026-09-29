@@ -243,7 +243,8 @@
     }
   },
   "scripts": {
-    "package": "npx @vscode/vsce package",
+    "package": "powershell -ExecutionPolicy Bypass -File scripts/package-vsix.ps1",
+    "package-vsce": "npx @vscode/vsce package",
     "publish-ovsx": "npx ovsx publish"
   }
 }

@@ -28,3 +28,4 @@ Command output is condensed to save 60-90% LLM context window tokens while prese
 ## Context Optimization (Compact Diffs & Outlines)
 - Inspect git changes using compact single-line diffs: `rtk git diff -U1` instead of wide multi-line context.
 - When exploring codebases, inspect function signatures / AST outlines (/rtk-outline) before reading entire files into context.
+

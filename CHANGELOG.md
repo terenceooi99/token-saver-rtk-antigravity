@@ -2,6 +2,11 @@
 
 All notable changes to the **Token Saver (RTK)** project will be documented in this file.
 
+## [1.5.1] - 2026-09-29
+### Added & Improved
+- **VSIX Packaging & Verification**:
+  - Updated latest internal `.vsix` distribution bundle with Ponytail, AST Outlining, and Compact Diff features.
+
 ## [1.5.0] - 2026-09-29
 ### Added & Improved
 - **Full-Spectrum Token Saver Suite (Input + Output + Context)**:
