@@ -2,6 +2,15 @@
 
 All notable changes to the **Token Saver (RTK)** project will be documented in this file.
 
+## [1.5.2] - 2026-09-29
+### Added & Improved
+- **Dual Upstream Engine Integration (RTK + Headroom)**:
+  - Added native support for **Headroom** (`headroomlabs-ai/headroom`) upstream alongside **RTK** (`rtk-ai/rtk`).
+  - Added user configuration setting `tokenSaver.headroomEnabled` with interactive toggle control in the webview dashboard.
+  - Upgraded **"Sync Upstream GitHub"** action to concurrently query releases from both `rtk-ai/rtk` and `headroomlabs-ai/headroom` with unified 1-click update support.
+  - Added Headroom status telemetry to System Health diagnostics panel.
+  - Updated multi-IDE rules and `/rtk-update` skill to incorporate Headroom context compression and CCR directives.
+
 ## [1.5.1] - 2026-09-29
 ### Added & Improved
 - **VSIX Packaging & Verification**:

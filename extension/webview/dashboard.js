@@ -6,6 +6,7 @@ const dashboardContainer = document.getElementById('dashboardContainer');
 const statusPill = document.getElementById('statusPill');
 const statusText = document.getElementById('statusText');
 const toggleModeBtn = document.getElementById('toggleModeBtn');
+const toggleHeadroomBtn = document.getElementById('toggleHeadroomBtn');
 const popOutBtn = document.getElementById('popOutBtn');
 const minimizeBtn = document.getElementById('minimizeBtn');
 
@@ -54,15 +55,32 @@ const latencySubText = document.getElementById('latencySubText');
 const ponytailActiveBadge = document.getElementById('ponytailActiveBadge');
 const ponytailSegmentGroup = document.getElementById('ponytailSegmentGroup');
 const terseAgentCheckbox = document.getElementById('terseAgentCheckbox');
+const headroomCheckbox = document.getElementById('headroomCheckbox');
+const astOutlineCheckbox = document.getElementById('astOutlineCheckbox');
 const compactDiffCheckbox = document.getElementById('compactDiffCheckbox');
-const runOutlineBtn = document.getElementById('runOutlineBtn');
-const runDiffBtn = document.getElementById('runDiffBtn');
 
 const diagCliStatus = document.getElementById('diagCliStatus');
+const diagHeadroomStatus = document.getElementById('diagHeadroomStatus');
 const diagVersion = document.getElementById('diagVersion');
 const diagBinaryPath = document.getElementById('diagBinaryPath');
 const diagScope = document.getElementById('diagScope');
 const diagActiveTargets = document.getElementById('diagActiveTargets');
+
+// Setup Hub Elements
+const setupBanner = document.getElementById('setupBanner');
+const setupBannerDesc = document.getElementById('setupBannerDesc');
+const setupMissingTags = document.getElementById('setupMissingTags');
+const setupAskAiBtn = document.getElementById('setupAskAiBtn');
+const setupTerminalBtn = document.getElementById('setupTerminalBtn');
+const setupCopyCmdBtn = document.getElementById('setupCopyCmdBtn');
+
+const rtkDiagActions = document.getElementById('rtkDiagActions');
+const rtkDiagAiBtn = document.getElementById('rtkDiagAiBtn');
+const rtkDiagRunBtn = document.getElementById('rtkDiagRunBtn');
+
+const headroomDiagActions = document.getElementById('headroomDiagActions');
+const headroomDiagAiBtn = document.getElementById('headroomDiagAiBtn');
+const headroomDiagRunBtn = document.getElementById('headroomDiagRunBtn');
 
 const IDE_ICONS = {
     antigravity_global: '🌌',
@@ -447,6 +465,13 @@ toggleModeBtn.addEventListener('click', () => {
     vscode.postMessage({ command: 'toggleMode' });
 });
 
+if (toggleHeadroomBtn) {
+    toggleHeadroomBtn.addEventListener('click', () => {
+        const current = headroomCheckbox ? headroomCheckbox.checked : true;
+        vscode.postMessage({ command: 'toggleHeadroom', enabled: !current });
+    });
+}
+
 syncAllIdesBtn.addEventListener('click', () => {
     syncAllIdesBtn.textContent = 'Syncing...';
     vscode.postMessage({ command: 'syncAllIdeRules' });
@@ -497,21 +522,88 @@ if (terseAgentCheckbox) {
     });
 }
 
+if (headroomCheckbox) {
+    headroomCheckbox.addEventListener('change', () => {
+        vscode.postMessage({ command: 'toggleHeadroom', enabled: headroomCheckbox.checked });
+    });
+}
+
+if (astOutlineCheckbox) {
+    astOutlineCheckbox.addEventListener('change', () => {
+        vscode.postMessage({ command: 'toggleAstOutline', enabled: astOutlineCheckbox.checked });
+    });
+}
+
 if (compactDiffCheckbox) {
     compactDiffCheckbox.addEventListener('change', () => {
         vscode.postMessage({ command: 'toggleCompactDiff', enabled: compactDiffCheckbox.checked });
     });
 }
 
-if (runOutlineBtn) {
-    runOutlineBtn.addEventListener('click', () => {
-        vscode.postMessage({ command: 'runFileOutline' });
+// Setup Hub Listeners
+if (setupAskAiBtn) {
+    setupAskAiBtn.addEventListener('click', () => {
+        vscode.postMessage({ command: 'copyAiInstallPrompt' });
+        const textSpan = setupAskAiBtn.querySelector('.btn-text');
+        if (textSpan) {
+            const original = textSpan.innerHTML;
+            textSpan.innerHTML = '✓ Prompt Copied! <span class="btn-sub-tag">Paste in Chat</span>';
+            setTimeout(() => {
+                textSpan.innerHTML = original;
+            }, 3000);
+        }
     });
 }
 
-if (runDiffBtn) {
-    runDiffBtn.addEventListener('click', () => {
-        vscode.postMessage({ command: 'runCompactDiff' });
+if (setupTerminalBtn) {
+    setupTerminalBtn.addEventListener('click', () => {
+        vscode.postMessage({ command: 'installCli' });
+    });
+}
+
+if (setupCopyCmdBtn) {
+    setupCopyCmdBtn.addEventListener('click', () => {
+        vscode.postMessage({ command: 'copyInstallCommands' });
+        const textSpan = setupCopyCmdBtn.querySelector('.btn-text');
+        if (textSpan) {
+            const original = textSpan.textContent;
+            textSpan.textContent = '✓ Copied!';
+            setTimeout(() => {
+                textSpan.textContent = original;
+            }, 2500);
+        }
+    });
+}
+
+if (rtkDiagAiBtn) {
+    rtkDiagAiBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        vscode.postMessage({ command: 'copyAiInstallPrompt' });
+        rtkDiagAiBtn.textContent = '✓ Copied';
+        setTimeout(() => { rtkDiagAiBtn.textContent = '🤖 Ask AI'; }, 2500);
+    });
+}
+
+if (rtkDiagRunBtn) {
+    rtkDiagRunBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        vscode.postMessage({ command: 'installCli' });
+    });
+}
+
+if (headroomDiagAiBtn) {
+    headroomDiagAiBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        vscode.postMessage({ command: 'copyAiInstallPrompt' });
+        headroomDiagAiBtn.textContent = '✓ Copied';
+        setTimeout(() => { headroomDiagAiBtn.textContent = '🤖 Ask AI'; }, 2500);
+    });
+}
+
+if (headroomDiagRunBtn) {
+    headroomDiagRunBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        vscode.postMessage({ command: 'installCli' });
     });
 }
 
@@ -520,6 +612,9 @@ window.addEventListener('message', (event) => {
     const message = event.data;
 
     switch (message.type) {
+        case 'toast':
+            // Visual feedback handled on buttons, or log if needed
+            break;
         case 'stateUpdate':
             renderDashboardState(message.data);
             break;
@@ -531,12 +626,19 @@ window.addEventListener('message', (event) => {
             }
             break;
         case 'updateCheckResult':
-            if (message.data && message.data.hasUpdate && message.data.release) {
+            if (message.data && message.data.hasUpdate) {
+                const parts = [];
+                if (message.data.rtk && message.data.rtk.hasUpdate && message.data.rtk.release) {
+                    parts.push(`RTK ${message.data.rtk.release.tag}`);
+                }
+                if (message.data.headroom && message.data.headroom.hasUpdate && message.data.headroom.release) {
+                    parts.push(`Headroom ${message.data.headroom.release.tag}`);
+                }
                 if (checkUpdatesLabel) {
-                    checkUpdatesLabel.textContent = `Update to ${message.data.release.tag}!`;
+                    checkUpdatesLabel.textContent = `Update: ${parts.join(' & ')}!`;
                 }
                 if (checkUpdatesSub) {
-                    checkUpdatesSub.textContent = 'Click to upgrade now';
+                    checkUpdatesSub.textContent = 'Click to upgrade upstream tools';
                 }
             }
             break;
@@ -572,7 +674,7 @@ function renderDashboardState(data) {
         }
     }
 
-    // Status Pill
+    // Status Pill & RTK Button
     if (isEnabled) {
         statusPill.className = 'status-pill active';
         statusText.textContent = 'RTK ACTIVE';
@@ -583,6 +685,18 @@ function renderDashboardState(data) {
         statusText.textContent = 'RTK INACTIVE';
         toggleModeBtn.textContent = 'Turn RTK ON';
         toggleModeBtn.className = 'btn btn-primary';
+    }
+
+    // Headroom Button
+    if (toggleHeadroomBtn) {
+        const isHeadroom = Boolean(data.headroomEnabled);
+        if (isHeadroom) {
+            toggleHeadroomBtn.textContent = 'Turn Headroom OFF';
+            toggleHeadroomBtn.className = 'btn btn-ghost';
+        } else {
+            toggleHeadroomBtn.textContent = 'Turn Headroom ON';
+            toggleHeadroomBtn.className = 'btn btn-primary';
+        }
     }
 
     // Top Metric Cards
@@ -649,9 +763,60 @@ function renderDashboardState(data) {
     // Raw Output text snippet
     rawOutputText.textContent = metrics.rawText || 'No output recorded yet.';
 
+    // Setup Hub Alert Banner Rendering
+    const isRtkMissing = !installed;
+    const isHeadroomMissing = !data.headroomInstalled;
+    const isAnyMissing = isRtkMissing || isHeadroomMissing;
+
+    if (setupBanner) {
+        if (isAnyMissing) {
+            setupBanner.style.display = 'flex';
+            if (setupMissingTags) {
+                const chips = [];
+                if (isRtkMissing) {
+                    chips.push('<span class="missing-chip chip-rose">⚡ RTK CLI Missing</span>');
+                }
+                if (isHeadroomMissing) {
+                    chips.push('<span class="missing-chip chip-amber">📦 Headroom Missing</span>');
+                }
+                setupMissingTags.innerHTML = chips.join('');
+            }
+            if (setupBannerDesc) {
+                if (isRtkMissing && isHeadroomMissing) {
+                    setupBannerDesc.textContent = 'Install RTK CLI (Rust Token Killer) and Headroom context compression to start saving 60-90% token consumption across AI agent interactions.';
+                } else if (isRtkMissing) {
+                    setupBannerDesc.textContent = 'Install RTK CLI (Rust Token Killer) to compress shell outputs and slash 60-90% prompt tokens.';
+                } else {
+                    setupBannerDesc.textContent = 'Install Headroom Context Compression (Python CLI) to enable deep JSON/CCR payload compression.';
+                }
+            }
+        } else {
+            setupBanner.style.display = 'none';
+        }
+    }
+
     // Diagnostics
     diagCliStatus.textContent = installed ? 'Detected & Ready' : 'Not Installed';
     diagCliStatus.style.color = installed ? 'var(--accent-green)' : 'var(--accent-rose)';
+    if (rtkDiagActions) {
+        rtkDiagActions.style.display = installed ? 'none' : 'inline-flex';
+    }
+
+    if (diagHeadroomStatus) {
+        const hrInstalled = data.headroomInstalled;
+        const hrVer = data.headroomVersion;
+        if (hrInstalled) {
+            diagHeadroomStatus.textContent = `Active (${hrVer || 'Ready'})`;
+            diagHeadroomStatus.style.color = 'var(--accent-green)';
+        } else {
+            diagHeadroomStatus.textContent = data.headroomEnabled ? 'Not Installed (Optional)' : 'Disabled';
+            diagHeadroomStatus.style.color = data.headroomEnabled ? 'var(--text-muted)' : 'var(--text-secondary)';
+        }
+    }
+    if (headroomDiagActions) {
+        headroomDiagActions.style.display = data.headroomInstalled ? 'none' : 'inline-flex';
+    }
+
     diagVersion.textContent = version;
     diagBinaryPath.textContent = binaryPath;
     diagScope.textContent = scope === 'all' ? 'All Supported IDEs & Agents' : scope;
@@ -702,6 +867,12 @@ function renderDashboardState(data) {
     }
     if (terseAgentCheckbox && data.terseAgentMode !== undefined) {
         terseAgentCheckbox.checked = Boolean(data.terseAgentMode);
+    }
+    if (headroomCheckbox && data.headroomEnabled !== undefined) {
+        headroomCheckbox.checked = Boolean(data.headroomEnabled);
+    }
+    if (astOutlineCheckbox && data.astOutlineContext !== undefined) {
+        astOutlineCheckbox.checked = Boolean(data.astOutlineContext);
     }
     if (compactDiffCheckbox && data.compactDiffContext !== undefined) {
         compactDiffCheckbox.checked = Boolean(data.compactDiffContext);

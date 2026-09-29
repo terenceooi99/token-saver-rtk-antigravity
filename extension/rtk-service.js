@@ -20,6 +20,27 @@ class RtkService {
         });
     }
 
+    static checkHeadroomInstalled() {
+        return new Promise((resolve) => {
+            exec('headroom --version', (error, stdout) => {
+                if (!error && stdout) {
+                    const version = stdout.trim();
+                    resolve({ installed: true, version, path: 'headroom' });
+                } else {
+                    exec('python -m headroom --version || py -m headroom --version || pip show headroom-ai', (pErr, pStdout) => {
+                        if (!pErr && pStdout) {
+                            const match = pStdout.match(/Version:\s*([^\r\n]+)/i);
+                            const version = match ? match[1].trim() : (pStdout.trim().split(/\r?\n/)[0] || 'installed');
+                            resolve({ installed: true, version, path: 'python -m headroom' });
+                        } else {
+                            resolve({ installed: false, version: null, path: null });
+                        }
+                    });
+                }
+            });
+        });
+    }
+
     static getSavingsRaw() {
         return new Promise((resolve, reject) => {
             exec('rtk gain', (error, stdout, stderr) => {
@@ -260,6 +281,59 @@ class RtkService {
         }
 
         return outline.join('\n');
+    }
+
+    static getInstallCommands(isWindows = (process.platform === 'win32'), isMac = (process.platform === 'darwin')) {
+        let rtkCmd;
+        if (isWindows) {
+            rtkCmd = 'winget install --id rtk-ai.rtk --accept-source-agreements --accept-package-agreements';
+        } else if (isMac) {
+            rtkCmd = 'brew install rtk-ai/tap/rtk || curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/main/install.sh | bash';
+        } else {
+            rtkCmd = 'curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/main/install.sh | bash';
+        }
+
+        const headroomCmd = 'pip install "headroom-ai[all]" || pipx install headroom-ai || pip install headroom-ai';
+        const verifyCmd = 'rtk --version ; headroom --version';
+
+        return {
+            rtkCmd,
+            headroomCmd,
+            verifyCmd,
+            combinedCmd: isWindows ? `${rtkCmd} ; ${headroomCmd}` : `${rtkCmd} && ${headroomCmd}`
+        };
+    }
+
+    static generateAiInstallPrompt(isWindows = (process.platform === 'win32'), isMac = (process.platform === 'darwin'), rtkMissing = true, headroomMissing = true) {
+        const osName = isWindows ? 'Windows (PowerShell / Command Prompt)' : (isMac ? 'macOS (Homebrew / Terminal)' : 'Linux (Bash / Terminal)');
+        const cmds = this.getInstallCommands(isWindows, isMac);
+
+        let items = [];
+        let stepIdx = 1;
+
+        if (rtkMissing) {
+            items.push(`${stepIdx}. **Install RTK CLI (Rust Token Killer)**:\n   Run command: \`${cmds.rtkCmd}\``);
+            stepIdx++;
+        }
+
+        if (headroomMissing) {
+            items.push(`${stepIdx}. **Install Headroom Context Compression (Python CLI)**:\n   Run command: \`${cmds.headroomCmd}\``);
+            stepIdx++;
+        }
+
+        items.push(`${stepIdx}. **Verify Installations**:\n   Run: \`rtk --version\` and \`headroom --version\``);
+        stepIdx++;
+        items.push(`${stepIdx}. **Confirm Success**:\n   Report the installed version numbers back to me once done.`);
+
+        const prompt = [
+            `Please help me install and configure the necessary CLI tools for Token Saver on this ${osName} machine:`,
+            '',
+            items.join('\n\n'),
+            '',
+            'Please execute these terminal commands now and verify they are available on PATH.'
+        ].join('\n');
+
+        return prompt;
     }
 
     static runInTerminal(command = 'rtk gain') {

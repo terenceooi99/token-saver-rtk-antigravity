@@ -17,6 +17,10 @@ Command output is condensed to save 60-90% LLM context window tokens while prese
 - `rtk proxy <cmd>` - Run a command unfiltered if raw output is strictly needed.
 - `RTK_DISABLED=1 <cmd>` - Skip RTK for one command.
 
+## Headroom Context Compression (Upstream: headroomlabs-ai/headroom)
+- Utilize Headroom context compression and Compress-Cache-Retrieve (CCR) for heavy JSON structures, file reads, and tool payloads to minimize prompt tokens.
+
+
 ## Output & Generation Token Saver Rule (Ponytail Mode: FULL)
 - **YAGNI & Shortest Diff:** Only write code that must exist. Reach for standard library before custom code or new dependencies. Shortest working diff wins.
 - **Terse Responses:** Code first. At most 3 short lines of explanation: what was skipped, when to add it. No essays, no unsolicited design tours, no feature walkthroughs.

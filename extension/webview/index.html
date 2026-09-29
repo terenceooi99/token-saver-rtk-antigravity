@@ -23,7 +23,8 @@
                     <span class="status-dot"></span>
                     <span id="statusText">Checking...</span>
                 </div>
-                <button class="btn btn-primary" id="toggleModeBtn">Toggle</button>
+                <button class="btn btn-primary" id="toggleModeBtn">Turn RTK ON</button>
+                <button class="btn btn-primary" id="toggleHeadroomBtn">Turn Headroom ON</button>
 
                 <!-- Refresh Button with Auto-Refresh Dropdown -->
                 <div class="refresh-dropdown-group" id="refreshDropdownGroup">
@@ -74,6 +75,36 @@
                 <button class="btn btn-ghost" id="minimizeBtn" title="Minimize / Compact Dashboard">🗕</button>
             </div>
         </header>
+
+        <!-- Setup Alert & Installation Hub (Visible when RTK CLI or Headroom is not detected) -->
+        <div class="setup-alert-banner" id="setupBanner" style="display: none;">
+            <div class="setup-banner-top">
+                <div class="setup-banner-title-block">
+                    <span class="setup-banner-icon">⚡</span>
+                    <div>
+                        <h3 class="setup-banner-title">CLI Installation Required</h3>
+                        <p class="setup-banner-desc" id="setupBannerDesc">Install RTK CLI and Headroom to start saving 60-90% token consumption across your AI agent interactions.</p>
+                    </div>
+                </div>
+                <div class="setup-missing-tags" id="setupMissingTags">
+                    <!-- Dynamic missing chips (e.g. RTK CLI Missing, Headroom Missing) -->
+                </div>
+            </div>
+            <div class="setup-banner-actions">
+                <button class="btn btn-setup btn-setup-ai" id="setupAskAiBtn" title="Copy an optimized installation prompt to clipboard for your AI chat assistant">
+                    <span class="btn-icon">🤖</span>
+                    <span class="btn-text">Ask AI to Install <span class="btn-sub-tag">Copy Prompt</span></span>
+                </button>
+                <button class="btn btn-setup btn-setup-terminal" id="setupTerminalBtn" title="Auto-run installation commands in IDE terminal">
+                    <span class="btn-icon">⚡</span>
+                    <span class="btn-text">Run in Terminal</span>
+                </button>
+                <button class="btn btn-setup btn-setup-copy" id="setupCopyCmdBtn" title="Copy raw shell install commands to clipboard">
+                    <span class="btn-icon">📋</span>
+                    <span class="btn-text">Copy Commands</span>
+                </button>
+            </div>
+        </div>
 
         <!-- Metric Summary Cards -->
         <section class="metrics-grid">
@@ -196,7 +227,7 @@
                         <div class="opt-row">
                             <div class="opt-info">
                                 <span class="opt-title">Ponytail YAGNI Mode:</span>
-                                <span class="opt-desc">Prioritize stdlib, shortest diffs, and max 3-line explanations (no essays)</span>
+                                <span class="opt-desc">Directs AI to prioritize stdlib, shortest diffs, and max 3-line explanations (no essays)</span>
                             </div>
                             <div class="mode-segment-group" id="ponytailSegmentGroup">
                                 <button class="segment-btn" data-mode="off">Off</button>
@@ -210,10 +241,34 @@
                         <div class="opt-row">
                             <div class="opt-info">
                                 <span class="opt-title">Terse Agent Directives:</span>
-                                <span class="opt-desc">Strip greetings, filler words, and conversational fluff to slash output tokens</span>
+                                <span class="opt-desc">Strips greetings, filler words, and conversational fluff to slash output tokens</span>
                             </div>
                             <div class="custom-toggle">
                                 <input type="checkbox" id="terseAgentCheckbox" checked>
+                                <span class="custom-toggle-slider"></span>
+                            </div>
+                        </div>
+
+                        <!-- AST Symbol Outlines Toggle -->
+                        <div class="opt-row">
+                            <div class="opt-info">
+                                <span class="opt-title">AST Symbol Outlines (/rtk-outline):</span>
+                                <span class="opt-desc">Directs AI to inspect class/function signatures before reading full files (saves 80–95% tokens)</span>
+                            </div>
+                            <div class="custom-toggle">
+                                <input type="checkbox" id="astOutlineCheckbox" checked>
+                                <span class="custom-toggle-slider"></span>
+                            </div>
+                        </div>
+
+                        <!-- Headroom Context Compression Toggle -->
+                        <div class="opt-row">
+                            <div class="opt-info">
+                                <span class="opt-title">Headroom Context Compression (CCR):</span>
+                                <span class="opt-desc">Compresses heavy JSON payloads, tool responses, and code context via upstream headroomlabs-ai/headroom</span>
+                            </div>
+                            <div class="custom-toggle">
+                                <input type="checkbox" id="headroomCheckbox" checked>
                                 <span class="custom-toggle-slider"></span>
                             </div>
                         </div>
@@ -222,7 +277,7 @@
                         <div class="opt-row">
                             <div class="opt-info">
                                 <span class="opt-title">Compact Diffs (-U1 Context):</span>
-                                <span class="opt-desc">Limit git diff context to 1 neighboring line, cutting diff context size by 50-70%</span>
+                                <span class="opt-desc">Directs AI to use single-line context diffs (rtk git diff -U1), saving 50–70% diff tokens</span>
                             </div>
                             <div class="custom-toggle">
                                 <input type="checkbox" id="compactDiffCheckbox" checked>
@@ -279,37 +334,17 @@
                                 </span>
                             </button>
 
-                            <button class="btn btn-action" id="runOutlineBtn" title="Extract function and class signatures for current file (saves ~90% tokens)">
-                                <div class="btn-action-left">
-                                    <span class="btn-icon">🌲</span>
-                                    <div class="btn-text-block">
-                                        <span class="btn-label">AST Symbol Outline</span>
-                                        <span class="btn-sub">Inspect outline before reading file</span>
-                                    </div>
-                                </div>
-                            </button>
-
-                            <button class="btn btn-action" id="runDiffBtn" title="Run compact diff with single-line context (-U1)">
-                                <div class="btn-action-left">
-                                    <span class="btn-icon">⚡</span>
-                                    <div class="btn-text-block">
-                                        <span class="btn-label">Compact Diff (-U1)</span>
-                                        <span class="btn-sub">Review changes with minimal context</span>
-                                    </div>
-                                </div>
-                            </button>
-
                             <div class="action-row-split">
-                                <button class="btn btn-action action-btn-main" id="checkUpdatesBtn" title="Check upstream GitHub repository (rtk-ai/rtk) for updates">
+                                <button class="btn btn-action action-btn-main" id="checkUpdatesBtn" title="Check upstream GitHub repositories (rtk-ai/rtk & headroomlabs-ai/headroom) for updates">
                                     <div class="btn-action-left">
                                         <span class="btn-icon">🚀</span>
                                         <div class="btn-text-block">
-                                            <span class="btn-label" id="checkUpdatesLabel">Sync Upstream GitHub RTK</span>
-                                            <span class="btn-sub" id="checkUpdatesSub">Check & update rtk-ai/rtk</span>
+                                            <span class="btn-label" id="checkUpdatesLabel">Sync Upstream GitHub</span>
+                                            <span class="btn-sub" id="checkUpdatesSub">Check & update rtk & headroom</span>
                                         </div>
                                     </div>
                                 </button>
-                                <div class="action-side-toggle" id="weeklySyncWrapper" title="Weekly Auto Sync: automatically check for new RTK releases once a week">
+                                <div class="action-side-toggle" id="weeklySyncWrapper" title="Weekly Auto Sync: automatically check for new upstream releases once a week">
                                     <label class="weekly-toggle-label" for="weeklySyncCheckbox">
                                         <span class="weekly-toggle-text">Weekly Auto</span>
                                         <div class="custom-toggle">
@@ -355,7 +390,23 @@
                         <div class="diagnostics-list">
                             <div class="diag-row">
                                 <span class="diag-key">RTK CLI:</span>
-                                <span class="diag-val" id="diagCliStatus">Checking...</span>
+                                <div class="diag-val-wrapper">
+                                    <span class="diag-val" id="diagCliStatus">Checking...</span>
+                                    <span class="diag-action-btns" id="rtkDiagActions" style="display: none;">
+                                        <button class="btn-diag-mini btn-diag-ai" id="rtkDiagAiBtn" title="Copy AI install prompt for RTK">🤖 Ask AI</button>
+                                        <button class="btn-diag-mini btn-diag-run" id="rtkDiagRunBtn" title="Run RTK install in terminal">⚡ Install</button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="diag-row">
+                                <span class="diag-key">Headroom:</span>
+                                <div class="diag-val-wrapper">
+                                    <span class="diag-val" id="diagHeadroomStatus">Checking...</span>
+                                    <span class="diag-action-btns" id="headroomDiagActions" style="display: none;">
+                                        <button class="btn-diag-mini btn-diag-ai" id="headroomDiagAiBtn" title="Copy AI install prompt for Headroom">🤖 Ask AI</button>
+                                        <button class="btn-diag-mini btn-diag-run" id="headroomDiagRunBtn" title="Run Headroom install in terminal">⚡ Install</button>
+                                    </span>
+                                </div>
                             </div>
                             <div class="diag-row">
                                 <span class="diag-key">Version:</span>

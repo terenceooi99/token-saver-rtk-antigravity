@@ -66,41 +66,34 @@ Execute standard shell/terminal commands directly without \`rtk\` prefixing.
     'rtk-update': `---
 name: rtk-update
 description: >
-  Manually check and update RTK (Rust Token Killer) CLI binary from upstream GitHub repository (rtk-ai/rtk).
-  Activate when the user types /rtk-update, "rtk update", "update rtk", "sync rtk", or asks to
-  manually update upstream GitHub RTK sync.
+  Manually check and update upstream GitHub repositories (rtk-ai/rtk and headroomlabs-ai/headroom).
+  Activate when the user types /rtk-update, /headroom-sync, "update upstream", "sync rtk", or asks to
+  synchronize upstream tools.
 ---
 
-# Upstream GitHub RTK Sync & Update (/rtk-update)
+# Upstream GitHub Sync & Update (/rtk-update)
 
-Manually update and synchronize the RTK (Rust Token Killer) CLI binary with the latest upstream release from GitHub (\`rtk-ai/rtk\`).
+Manually update and synchronize the dual upstream token saver engines:
+1. **RTK (Rust Token Killer):** CLI binary from GitHub (\`rtk-ai/rtk\`)
+2. **Headroom:** Context compression engine from GitHub (\`headroomlabs-ai/headroom\`)
 
 ## Execution Steps
 
-1. **Check Local RTK Version:**
-   Run \`rtk --version\` to determine the currently installed RTK binary version.
+1. **Check Local Engine Versions:**
+   - Run \`rtk --version\` to check the installed RTK binary version.
+   - Run \`headroom --version\` (or \`python -m headroom --version\`) to check Headroom.
 
 2. **Fetch Upstream Release & Update:**
-   Run the platform-appropriate update command:
-   - **Windows (PowerShell / Winget):**
-     \`\`\`powershell
-     winget upgrade --id rtk-ai.rtk --accept-source-agreements --accept-package-agreements
-     \`\`\`
-     *Fallback if installed via Cargo:*
-     \`\`\`powershell
-     cargo install --git https://github.com/rtk-ai/rtk --force
-     \`\`\`
-   - **macOS:**
-     \`\`\`bash
-     brew upgrade rtk || (curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/main/install.sh | bash)
-     \`\`\`
-   - **Linux / Generic Unix:**
-     \`\`\`bash
-     curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/main/install.sh | bash
-     \`\`\`
+   - **RTK (CLI):**
+     - *Windows:* \`winget upgrade --id rtk-ai.rtk --accept-source-agreements --accept-package-agreements\`
+     - *macOS:* \`brew upgrade rtk || (curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/main/install.sh | bash)\`
+     - *Linux:* \`curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/main/install.sh | bash\`
+   - **Headroom (Context Compression Layer):**
+     - \`pip install --upgrade "headroom-ai[all]"\` or \`pipx upgrade headroom-ai\`
 
 3. **Verify Installation:**
-   Run \`rtk --version\` and \`rtk gain\` to confirm the binary is active, functioning, and displays the latest metrics scoreboard.
+   - Run \`rtk --version\` and \`rtk gain\` for CLI compression.
+   - Run \`headroom --version\` for context compression.
 `,
     'ponytail': `---
 name: ponytail
@@ -267,17 +260,26 @@ class SkillInstaller {
         let ponytailMode = 'full';
         let terseMode = true;
         let compactDiff = true;
+        let astOutline = true;
+        let headroomEnabled = true;
 
         try {
             const config = vscode.workspace.getConfiguration('tokenSaver');
             ponytailMode = config.get('ponytailMode', 'full');
             terseMode = config.get('terseAgentMode', true);
             compactDiff = config.get('compactDiffContext', true);
+            astOutline = config.get('astOutlineContext', true);
+            headroomEnabled = config.get('headroomEnabled', true);
         } catch (e) {
             // Use defaults if config is inaccessible
         }
 
         let text = CORE_RULE_TEXT;
+
+        if (headroomEnabled) {
+            text += `\n\n## Headroom Context Compression (Upstream: headroomlabs-ai/headroom)\n`;
+            text += `- Utilize Headroom context compression and Compress-Cache-Retrieve (CCR) for heavy JSON structures, file reads, and tool payloads to minimize prompt tokens.\n`;
+        }
 
         if (ponytailMode !== 'off') {
             text += `\n\n## Output & Generation Token Saver Rule (Ponytail Mode: ${ponytailMode.toUpperCase()})\n`;
@@ -294,10 +296,14 @@ class SkillInstaller {
             text += `- Avoid reprinting unchanged code blocks. Use targeted search/replace blocks or concise snippets.\n`;
         }
 
-        if (compactDiff) {
+        if (compactDiff || astOutline) {
             text += `\n## Context Optimization (Compact Diffs & Outlines)\n`;
-            text += `- Inspect git changes using compact single-line diffs: \`rtk git diff -U1\` instead of wide multi-line context.\n`;
-            text += `- When exploring codebases, inspect function signatures / AST outlines (/rtk-outline) before reading entire files into context.\n`;
+            if (compactDiff) {
+                text += `- Inspect git changes using compact single-line diffs: \`rtk git diff -U1\` instead of wide multi-line context.\n`;
+            }
+            if (astOutline) {
+                text += `- When exploring codebases, inspect function signatures / AST outlines (/rtk-outline) before reading entire files into context.\n`;
+            }
         }
 
         return text;
@@ -309,17 +315,18 @@ class SkillInstaller {
 
     static formatCursorMdc() {
         return `---
-description: Automatically routes terminal execution commands through RTK and enforces Ponytail terse token-saving rules.
+description: Automatically routes terminal execution commands through RTK and enforces Ponytail terse token-saving rules with Headroom context compression.
 globs: *
 alwaysApply: true
 ---
 
-# RTK (Rust Token Killer) & Ponytail Token Saver Automation
+# RTK (Rust Token Killer) & Headroom Token Saver Automation
 
 Always prefix terminal and CLI execution commands with \`rtk\` (e.g. \`rtk git status\`, \`rtk cargo test\`, \`rtk npm test\`, \`rtk pytest\`, \`rtk vitest\`, \`rtk ls\`, \`rtk rg\`).
 - Output is compressed to save tokens while preserving critical errors and signal.
 - In multi-command chains, prefix each sub-command: \`rtk git add . && rtk git commit -m "update"\`.
 - Use \`rtk gain\` to review token savings metrics.
+- Utilize Headroom context compression (CCR) for heavy JSON/tool payload reduction.
 - Enforce Ponytail YAGNI: shortest working diff, standard library first, max 3 lines explanation, zero fluff.
 - Use \`rtk git diff -U1\` for compact single-line context diffs.
 - Inspect AST symbol outlines (/rtk-outline) before reading entire files.

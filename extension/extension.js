@@ -64,21 +64,26 @@ async function activate(context) {
     const targetScope = config.get('targetScope', 'all');
     const autoInstallSkills = config.get('autoInstallSkills', true);
 
-    // Initial check of RTK binary
+    // Initial check of RTK & Headroom binaries
     const check = await RtkService.checkInstalled();
-    if (!check.installed) {
+    const headroomCheck = await RtkService.checkHeadroomInstalled();
+    if (!check.installed || !headroomCheck.installed) {
+        const missing = [];
+        if (!check.installed) missing.push('RTK CLI');
+        if (!headroomCheck.installed) missing.push('Headroom');
+
         vscode.window.showWarningMessage(
-            'RTK binary is not detected on PATH. Token Saver requires RTK (Rust Token Killer) CLI.',
-            'Install RTK via winget/brew',
-            'Open Dashboard',
-            'View Guide'
+            `⚡ Token Saver: ${missing.join(' & ')} not detected on PATH. Choose how you would like to install:`,
+            '🤖 Ask AI (Copy Prompt)',
+            '⚡ Auto-Run in Terminal',
+            'Open Setup Hub'
         ).then(choice => {
-            if (choice === 'Install RTK via winget/brew') {
+            if (choice === '🤖 Ask AI (Copy Prompt)') {
+                vscode.commands.executeCommand('tokenSaver.copyAiInstallPrompt');
+            } else if (choice === '⚡ Auto-Run in Terminal') {
                 vscode.commands.executeCommand('tokenSaver.installCli');
-            } else if (choice === 'Open Dashboard') {
+            } else if (choice === 'Open Setup Hub') {
                 vscode.commands.executeCommand('tokenSaver.openDashboard');
-            } else if (choice === 'View Guide') {
-                vscode.env.openExternal(vscode.Uri.parse('https://github.com/rtk-ai/rtk'));
             }
         });
     }
@@ -114,13 +119,15 @@ async function activate(context) {
         checkWeeklyAutoSync(context);
     }, 30000);
 
-    // Listen to configuration changes (e.g. tokenPricePerMillion, statusMetricDisplay, ponytailMode)
+    // Listen to configuration changes (e.g. tokenPricePerMillion, statusMetricDisplay, ponytailMode, headroomEnabled)
     context.subscriptions.push(
         vscode.workspace.onDidChangeConfiguration(async (e) => {
             if (e.affectsConfiguration('tokenSaver')) {
                 if (e.affectsConfiguration('tokenSaver.ponytailMode') ||
                     e.affectsConfiguration('tokenSaver.terseAgentMode') ||
-                    e.affectsConfiguration('tokenSaver.compactDiffContext')) {
+                    e.affectsConfiguration('tokenSaver.compactDiffContext') ||
+                    e.affectsConfiguration('tokenSaver.astOutlineContext') ||
+                    e.affectsConfiguration('tokenSaver.headroomEnabled')) {
                     const scope = vscode.workspace.getConfiguration('tokenSaver').get('targetScope', 'all');
                     SkillInstaller.syncRules(isEnabled, scope);
                 }
@@ -238,20 +245,34 @@ async function activate(context) {
         }
     });
 
-    const installCliCmd = vscode.commands.registerCommand('tokenSaver.installCli', () => {
+    const installCliCmd = vscode.commands.registerCommand('tokenSaver.installCli', async () => {
         const isWindows = process.platform === 'win32';
         const isMac = process.platform === 'darwin';
+        const cmds = RtkService.getInstallCommands(isWindows, isMac);
+        RtkService.runInTerminal(cmds.combinedCmd);
+    });
 
-        let installCmd;
-        if (isWindows) {
-            installCmd = 'winget install --id rtk-ai.rtk --accept-source-agreements --accept-package-agreements';
-        } else if (isMac) {
-            installCmd = 'brew install rtk-ai/tap/rtk || curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/main/install.sh | bash';
-        } else {
-            installCmd = 'curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/main/install.sh | bash';
-        }
-        
-        RtkService.runInTerminal(installCmd);
+    const copyAiInstallPromptCmd = vscode.commands.registerCommand('tokenSaver.copyAiInstallPrompt', async () => {
+        const isWindows = process.platform === 'win32';
+        const isMac = process.platform === 'darwin';
+        const check = await RtkService.checkInstalled();
+        const headroomCheck = await RtkService.checkHeadroomInstalled();
+
+        const prompt = RtkService.generateAiInstallPrompt(isWindows, isMac, !check.installed, !headroomCheck.installed);
+        await vscode.env.clipboard.writeText(prompt);
+
+        vscode.window.showInformationMessage(
+            '🤖 AI Agent setup prompt copied to clipboard! Paste it into your AI assistant chat (Antigravity, Cursor, Windsurf, Claude Code, Cline) to install automatically.',
+            'Open Chat'
+        );
+    });
+
+    const copyInstallCommandsCmd = vscode.commands.registerCommand('tokenSaver.copyInstallCommands', async () => {
+        const isWindows = process.platform === 'win32';
+        const isMac = process.platform === 'darwin';
+        const cmds = RtkService.getInstallCommands(isWindows, isMac);
+        await vscode.env.clipboard.writeText(cmds.combinedCmd);
+        vscode.window.showInformationMessage('📋 Raw install commands copied to clipboard: ' + cmds.combinedCmd);
     });
 
     const setPonytailModeCmd = vscode.commands.registerCommand('tokenSaver.setPonytailMode', async (modeArg) => {
@@ -274,6 +295,20 @@ async function activate(context) {
         const scope = cfg.get('targetScope', 'all');
         SkillInstaller.syncRules(isEnabled, scope);
         vscode.window.showInformationMessage(`🥋 Ponytail Token Saver mode set to: ${chosenMode.toUpperCase()}`);
+        await refreshStatus(context);
+    });
+
+    const toggleHeadroomCmd = vscode.commands.registerCommand('tokenSaver.toggleHeadroom', async () => {
+        const config = vscode.workspace.getConfiguration('tokenSaver');
+        const current = config.get('headroomEnabled', true);
+        await config.update('headroomEnabled', !current, vscode.ConfigurationTarget.Global);
+        const scope = config.get('targetScope', 'all');
+        SkillInstaller.syncRules(isEnabled, scope);
+        vscode.window.showInformationMessage(
+            !current
+                ? '⚡ Headroom context compression ENABLED.'
+                : '⚪ Headroom context compression DISABLED.'
+        );
         await refreshStatus(context);
     });
 
@@ -303,6 +338,7 @@ async function activate(context) {
         toggleCmd,
         enableCmd,
         disableCmd,
+        toggleHeadroomCmd,
         syncAllIdeRulesCmd,
         selectIdeTargetsCmd,
         checkUpdatesCmd,
@@ -311,6 +347,8 @@ async function activate(context) {
         syncGlobalRulesCmd,
         showSavingsCmd,
         installCliCmd,
+        copyAiInstallPromptCmd,
+        copyInstallCommandsCmd,
         setPonytailModeCmd,
         runCompactDiffCmd,
         generateAstOutlineCmd

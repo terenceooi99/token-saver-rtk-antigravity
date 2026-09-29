@@ -3,11 +3,11 @@ const vscode = require('vscode');
 const RtkService = require('./rtk-service');
 
 class RtkUpdater {
-    static getLatestRelease() {
-        return new Promise((resolve, reject) => {
+    static fetchGitHubJson(repoPath) {
+        return new Promise((resolve) => {
             const options = {
                 hostname: 'api.github.com',
-                path: '/repos/rtk-ai/rtk/releases/latest',
+                path: repoPath,
                 method: 'GET',
                 headers: {
                     'User-Agent': 'TokenSaver-Antigravity-IDE-Extension'
@@ -23,17 +23,10 @@ class RtkUpdater {
                 res.on('end', () => {
                     if (res.statusCode >= 200 && res.statusCode < 300) {
                         try {
-                            const release = JSON.parse(data);
-                            resolve({
-                                success: true,
-                                tag: release.tag_name,
-                                name: release.name || release.tag_name,
-                                body: release.body || '',
-                                htmlUrl: release.html_url,
-                                publishedAt: release.published_at
-                            });
+                            const parsed = JSON.parse(data);
+                            resolve({ success: true, data: parsed });
                         } catch (e) {
-                            reject(new Error('Failed to parse GitHub release data'));
+                            resolve({ success: false, error: 'Failed to parse JSON response' });
                         }
                     } else if (res.statusCode === 403) {
                         resolve({
@@ -50,16 +43,50 @@ class RtkUpdater {
             });
 
             req.on('error', (err) => {
-                reject(err);
+                resolve({ success: false, error: err.message });
             });
 
             req.setTimeout(8000, () => {
                 req.destroy();
-                resolve({ success: false, error: 'GitHub update check timed out' });
+                resolve({ success: false, error: 'GitHub request timed out' });
             });
 
             req.end();
         });
+    }
+
+    static async getLatestRelease(repo = 'rtk-ai/rtk') {
+        const res = await this.fetchGitHubJson(`/repos/${repo}/releases/latest`);
+        if (res.success && res.data) {
+            const release = res.data;
+            return {
+                success: true,
+                tag: release.tag_name,
+                name: release.name || release.tag_name,
+                body: release.body || '',
+                htmlUrl: release.html_url,
+                publishedAt: release.published_at
+            };
+        }
+
+        // Fallback to tags if latest release is not published as formal release
+        const tagsRes = await this.fetchGitHubJson(`/repos/${repo}/tags`);
+        if (tagsRes.success && Array.isArray(tagsRes.data) && tagsRes.data.length > 0) {
+            const tag = tagsRes.data[0];
+            return {
+                success: true,
+                tag: tag.name,
+                name: tag.name,
+                body: '',
+                htmlUrl: `https://github.com/${repo}/releases/tag/${tag.name}`,
+                publishedAt: null
+            };
+        }
+
+        return {
+            success: false,
+            error: res.error || 'No release tags found'
+        };
     }
 
     static isNewer(latestStr, currentStr) {
@@ -70,59 +97,87 @@ class RtkUpdater {
         return latest.localeCompare(current, undefined, { numeric: true, sensitivity: 'base' }) > 0;
     }
 
-
     static async checkForUpdates(silent = false) {
         try {
-            const check = await RtkService.checkInstalled();
-            const release = await this.getLatestRelease();
+            const [rtkCheck, headroomCheck, rtkRelease, headroomRelease] = await Promise.all([
+                RtkService.checkInstalled(),
+                RtkService.checkHeadroomInstalled(),
+                this.getLatestRelease('rtk-ai/rtk'),
+                this.getLatestRelease('headroomlabs-ai/headroom')
+            ]);
 
-            if (!release.success) {
-                if (!silent) {
-                    vscode.window.showWarningMessage(`RTK Update Check: ${release.error}`);
-                }
-                return { hasUpdate: false, release: null, currentVersion: check.version };
-            }
+            const rtkHasUpdate = rtkRelease.success && rtkCheck.installed && this.isNewer(rtkRelease.tag, rtkCheck.version);
+            const headroomHasUpdate = headroomRelease.success && headroomCheck.installed && this.isNewer(headroomRelease.tag, headroomCheck.version);
+            const hasAnyUpdate = rtkHasUpdate || headroomHasUpdate;
 
-            const hasUpdate = check.installed && this.isNewer(release.tag, check.version);
+            if (hasAnyUpdate) {
+                const updatesList = [];
+                if (rtkHasUpdate) updatesList.push(`RTK ${rtkRelease.tag}`);
+                if (headroomHasUpdate) updatesList.push(`Headroom ${headroomRelease.tag}`);
 
-            if (hasUpdate) {
                 const choice = await vscode.window.showInformationMessage(
-                    `🚀 A new RTK release is available: ${release.tag} (Installed: ${check.version || 'unknown'})`,
-                    'Update Now',
+                    `🚀 Upstream updates available: ${updatesList.join(' & ')}`,
+                    'Update All Now',
+                    'Update RTK',
+                    'Update Headroom',
                     'Release Notes'
                 );
 
-                if (choice === 'Update Now') {
+                if (choice === 'Update All Now') {
+                    this.performAllUpdates();
+                } else if (choice === 'Update RTK') {
                     this.performUpdate();
+                } else if (choice === 'Update Headroom') {
+                    this.performHeadroomUpdate();
                 } else if (choice === 'Release Notes') {
-                    vscode.env.openExternal(vscode.Uri.parse(release.htmlUrl));
+                    if (rtkHasUpdate && rtkRelease.htmlUrl) {
+                        vscode.env.openExternal(vscode.Uri.parse(rtkRelease.htmlUrl));
+                    }
+                    if (headroomHasUpdate && headroomRelease.htmlUrl) {
+                        vscode.env.openExternal(vscode.Uri.parse(headroomRelease.htmlUrl));
+                    }
                 }
             } else if (!silent) {
-                if (!check.installed) {
-                    vscode.window.showWarningMessage(
-                        'RTK is not currently installed on this system.',
-                        'Install RTK'
-                    ).then(c => {
-                        if (c === 'Install RTK') {
-                            vscode.commands.executeCommand('tokenSaver.installCli');
-                        }
-                    });
+                const parts = [];
+                if (rtkCheck.installed) {
+                    parts.push(`RTK: ${rtkCheck.version} (Latest: ${rtkRelease.tag || 'up-to-date'})`);
                 } else {
-                    vscode.window.showInformationMessage(
-                        `✨ RTK is already up to date! (Current version: ${check.version})`
-                    );
+                    parts.push('RTK: Not installed');
                 }
+                if (headroomCheck.installed) {
+                    parts.push(`Headroom: ${headroomCheck.version} (Latest: ${headroomRelease.tag || 'up-to-date'})`);
+                } else {
+                    parts.push('Headroom: Not installed');
+                }
+
+                vscode.window.showInformationMessage(
+                    `✨ Upstream GitHub Sync Status: ${parts.join(' | ')}`,
+                    'Install/Update CLI Tools'
+                ).then(c => {
+                    if (c === 'Install/Update CLI Tools') {
+                        this.performAllUpdates();
+                    }
+                });
             }
 
             return {
-                hasUpdate,
-                release,
-                currentVersion: check.version,
-                installed: check.installed
+                hasUpdate: hasAnyUpdate,
+                rtk: {
+                    hasUpdate: rtkHasUpdate,
+                    release: rtkRelease,
+                    installed: rtkCheck.installed,
+                    currentVersion: rtkCheck.version
+                },
+                headroom: {
+                    hasUpdate: headroomHasUpdate,
+                    release: headroomRelease,
+                    installed: headroomCheck.installed,
+                    currentVersion: headroomCheck.version
+                }
             };
         } catch (e) {
             if (!silent) {
-                vscode.window.showErrorMessage(`RTK update check failed: ${e.message}`);
+                vscode.window.showErrorMessage(`Upstream GitHub update check failed: ${e.message}`);
             }
             return { hasUpdate: false, error: e.message };
         }
@@ -144,10 +199,33 @@ class RtkUpdater {
         RtkService.runInTerminal(updateCmd);
     }
 
+    static performHeadroomUpdate() {
+        const cmd = 'pip install --upgrade "headroom-ai[all]" || pipx upgrade headroom-ai || pip install --upgrade headroom-ai';
+        RtkService.runInTerminal(cmd);
+    }
+
+    static performAllUpdates() {
+        const isWindows = process.platform === 'win32';
+        const isMac = process.platform === 'darwin';
+
+        let rtkCmd;
+        if (isWindows) {
+            rtkCmd = 'winget upgrade --id rtk-ai.rtk --accept-source-agreements --accept-package-agreements';
+        } else if (isMac) {
+            rtkCmd = 'brew upgrade rtk || (curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/main/install.sh | bash)';
+        } else {
+            rtkCmd = 'curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/main/install.sh | bash';
+        }
+
+        const fullCmd = `${rtkCmd} ; pip install --upgrade "headroom-ai[all]"`;
+        RtkService.runInTerminal(fullCmd);
+    }
+
     static async manualUpdate() {
-        vscode.window.showInformationMessage('🔄 Checking and syncing RTK with upstream GitHub (rtk-ai/rtk)...');
+        vscode.window.showInformationMessage('🔄 Checking & syncing upstream GitHub repositories (rtk-ai/rtk & headroomlabs-ai/headroom)...');
         return this.checkForUpdates(false);
     }
 }
 
 module.exports = RtkUpdater;
+

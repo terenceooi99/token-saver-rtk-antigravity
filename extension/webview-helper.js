@@ -25,7 +25,9 @@ class WebviewHelper {
         const isEnabled = context.globalState.get('tokenSaver.enabled', config.get('enableOnStartup', true));
         const weeklyAutoSync = context.globalState.get('tokenSaver.weeklyAutoSync', config.get('weeklyAutoSync', true));
         const tokenPricePerMillion = config.get('tokenPricePerMillion', 3.00);
+        const headroomEnabled = config.get('headroomEnabled', true);
         const check = await RtkService.checkInstalled();
+        const headroomCheck = await RtkService.checkHeadroomInstalled();
         const metrics = await RtkService.getParsedMetrics();
         const skillsInstalled = SkillInstaller.checkSkillsInstalled('all');
         const ideStatus = SkillInstaller.getIdeStatus();
@@ -34,9 +36,13 @@ class WebviewHelper {
             isEnabled,
             weeklyAutoSync,
             tokenPricePerMillion,
+            headroomEnabled,
+            headroomInstalled: headroomCheck.installed,
+            headroomVersion: headroomCheck.version || 'Not installed',
             ponytailMode: config.get('ponytailMode', 'full'),
             terseAgentMode: config.get('terseAgentMode', true),
             compactDiffContext: config.get('compactDiffContext', true),
+            astOutlineContext: config.get('astOutlineContext', true),
             installed: check.installed,
             version: check.version || 'Not installed',
             binaryPath: check.path || 'Not detected',
@@ -121,6 +127,14 @@ class WebviewHelper {
             case 'installCli':
                 vscode.commands.executeCommand('tokenSaver.installCli');
                 break;
+            case 'copyAiInstallPrompt':
+                await vscode.commands.executeCommand('tokenSaver.copyAiInstallPrompt');
+                webview.postMessage({ type: 'toast', message: '🤖 AI Agent prompt copied to clipboard!' });
+                break;
+            case 'copyInstallCommands':
+                await vscode.commands.executeCommand('tokenSaver.copyInstallCommands');
+                webview.postMessage({ type: 'toast', message: '📋 Raw install commands copied to clipboard!' });
+                break;
             case 'installSkills':
                 await vscode.commands.executeCommand('tokenSaver.installSkills');
                 triggerRefresh(500);
@@ -168,11 +182,40 @@ class WebviewHelper {
                 }
                 triggerRefresh(300);
                 break;
+            case 'toggleHeadroom':
+                const newHeadroom = message.enabled !== undefined ? message.enabled : true;
+                try {
+                    const cfg = vscode.workspace.getConfiguration('tokenSaver');
+                    await cfg.update('headroomEnabled', newHeadroom, vscode.ConfigurationTarget.Global);
+                    const scope = cfg.get('targetScope', 'all');
+                    SkillInstaller.syncRules(context.globalState.get('tokenSaver.enabled', true), scope);
+                } catch (e) {
+                    // ignore
+                }
+                vscode.window.showInformationMessage(
+                    newHeadroom
+                        ? '⚡ Headroom context compression is now ENABLED.'
+                        : '⚪ Headroom context compression is now DISABLED.'
+                );
+                triggerRefresh(300);
+                break;
             case 'toggleCompactDiff':
                 const newCompact = message.enabled !== undefined ? message.enabled : true;
                 try {
                     const cfg = vscode.workspace.getConfiguration('tokenSaver');
                     await cfg.update('compactDiffContext', newCompact, vscode.ConfigurationTarget.Global);
+                    const scope = cfg.get('targetScope', 'all');
+                    SkillInstaller.syncRules(context.globalState.get('tokenSaver.enabled', true), scope);
+                } catch (e) {
+                    // ignore
+                }
+                triggerRefresh(300);
+                break;
+            case 'toggleAstOutline':
+                const newOutline = message.enabled !== undefined ? message.enabled : true;
+                try {
+                    const cfg = vscode.workspace.getConfiguration('tokenSaver');
+                    await cfg.update('astOutlineContext', newOutline, vscode.ConfigurationTarget.Global);
                     const scope = cfg.get('targetScope', 'all');
                     SkillInstaller.syncRules(context.globalState.get('tokenSaver.enabled', true), scope);
                 } catch (e) {
