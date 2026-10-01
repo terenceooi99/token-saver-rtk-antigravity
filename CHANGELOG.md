@@ -2,6 +2,19 @@
 
 All notable changes to the **Token Saver (RTK)** project will be documented in this file.
 
+## [1.8.0] - 2026-10-01
+### Added & Improved
+- **Apple Human Interface Design (HIG) Redesign**:
+  - Completely redesigned the interactive webview dashboard using Apple Human Interface Guidelines and Liquid Glass material principles.
+  - Implemented Apple semantic color palettes, SF typography with tabular numbers, macOS-style segmented controls, and fluid iOS/macOS toggle switches.
+- **UI & Layout Optimizations**:
+  - Unified the "Enable Rule" / IDE target button UI language with dark frosted glass styling matching terminal action buttons.
+  - Added right-aligned, shortened binary path display in System Health diagnostics with hover tooltips for full file path inspection.
+  - Enforced strict flex containment and text truncation to ensure Active & Synced status badges stay strictly within card bounds.
+- **GitHub Sponsorship & Documentation**:
+  - Added `.github/FUNDING.yml` configuration supporting direct Wise sponsorship (`https://wise.com/pay/me/terenceooit`).
+  - Added new dashboard interface screenshots and breakdown visual previews to `README.md`.
+
 ## [1.7.0] - 2026-09-29
 ### Added & Improved
 - **Full Ponytail & YAGNI Skills Suite**:

@@ -2,12 +2,17 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![OpenVSX](https://img.shields.io/badge/Open%20VSX-available-blue.svg)](https://open-vsx.org/extension/terenceooi/token-saver-rtk-ide)
+[![Sponsor on Wise](https://img.shields.io/badge/Sponsor-Wise-9fe870?logo=wise&logoColor=black)](https://wise.com/pay/me/terenceooit)
 [![VS Code](https://img.shields.io/badge/VS%20Code-Compatible-007ACC.svg)](https://code.visualstudio.com)
 [![Cursor](https://img.shields.io/badge/Cursor%20IDE-Compatible-black.svg)](https://cursor.com)
 [![Windsurf](https://img.shields.io/badge/Windsurf%20IDE-Compatible-00E5FF.svg)](https://codeium.com/windsurf)
 [![Antigravity](https://img.shields.io/badge/Antigravity%20IDE-Compatible-purple.svg)](https://github.com/terenceooi99/token-saver-rtk-ide)
 
 **Token Saver (RTK, Headroom & Ponytail)** is an all-in-one token optimization suite and CLI output compression proxy. Powered by [RTK (Rust Token Killer)](https://www.rtk-ai.app), [Headroom context compression](https://github.com/headroomlabs-ai/headroom), and [Ponytail YAGNI mode](https://github.com/DietrichGebert/ponytail), it slashes AI context window token consumption by **60% - 90%** during terminal command execution (`git`, `cargo`, `npm`, `pnpm`, `pytest`, `vitest`, `rg`, `ls`, `tree`, etc.) and code generation across **all major Agentic AI IDEs and coding assistants**.
+
+<p align="center">
+  <img src="resources/dashboard-preview.png" alt="Token Saver Apple Design Interactive Dashboard" width="100%" />
+</p>
 
 ---
 
@@ -101,6 +106,11 @@ The extension provides full graphical and automated control directly from your *
    - Per-tool visual savings charts (`git`, `cargo`, `npm`, `pytest`, `vitest`, `rg`, `ls`, etc.).
    - Action center with 1-click skill sync, Ponytail GitHub sync, GitHub release update check, and proxy latency test.
    - Diagnostics panel displaying local binary path, version, and active target counts.
+
+<p align="center">
+  <img src="resources/dashboard-breakdown.png" alt="Token Saver Real-time Compression Scoreboard & Savings Breakdown" width="100%" />
+</p>
+
 4. **Upstream GitHub 3-Way Core Sync (RTK, Headroom & Ponytail)**:
    - Automatic non-intrusive update checks against official GitHub releases (`rtk-ai/rtk`, `headroomlabs-ai/headroom`, & `DietrichGebert/ponytail`).
    - 1-click update trigger for Windows (`winget`), macOS (`brew`), and Linux (`curl`), plus GitHub skill fetch for Ponytail.
@@ -204,11 +214,21 @@ You can also synchronize rules directly from terminal:
 
 ---
 
+## ☕ Support & Sponsor
+
+If Token Saver helps you save tokens, accelerate agent development, or lower your LLM API bills, please consider supporting the project!
+
+[![Sponsor on Wise](https://img.shields.io/badge/Sponsor_via_Wise-Terence_Ooi-9fe870?style=for-the-badge&logo=wise&logoColor=black)](https://wise.com/pay/me/terenceooit)
+
+- **Direct Wise Link**: [https://wise.com/pay/me/terenceooit](https://wise.com/pay/me/terenceooit)
+
+---
+
 ## 👤 Author & Maintainer
 
 - **Terence** — [terenceooi1688@gmail.com](mailto:terenceooi1688@gmail.com)
 - **GitHub**: [terenceooi99/token-saver-rtk-ide](https://github.com/terenceooi99/token-saver-rtk-ide)
-- **Support / Tip**: [Tip me @ Wise](https://wise.com/pay/me/terenceooit)
+- **Sponsor / Tip**: [Tip me @ Wise](https://wise.com/pay/me/terenceooit)
 
 ---
 
