@@ -901,6 +901,7 @@ function renderDashboardState(data) {
 
     diagVersion.textContent = version;
     diagBinaryPath.textContent = binaryPath;
+    diagBinaryPath.title = binaryPath;
     diagScope.textContent = scope === 'all' ? 'All Supported IDEs & Agents' : scope;
     diagActiveTargets.textContent = `${syncedCount} IDE Targets Active`;
 
